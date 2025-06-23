@@ -1,6 +1,6 @@
 // PC Counter Testbench
 // Created:     2025-06-23
-// Modified:    
+// Modified:    2025-06-24
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -17,6 +17,7 @@ module tb_pc_ctr
 
     logic clk;
     logic rst;
+    logic en;
 
     logic pc_override;
     logic [PC_WIDTH-1:0] pc_in;
@@ -28,6 +29,7 @@ module tb_pc_ctr
     (
         .clk(clk),
         .rst(rst),
+        .en(en),
         .pc_override(pc_override),
         .pc_in(pc_in),
         .pc_out(pc_out)
@@ -39,6 +41,7 @@ module tb_pc_ctr
     begin
         clk <= 1'b0;
         rst <= 1'b0;
+        en <= 1'b1;
         pc_override <= 1'b0;
         pc_in <= 1'b0;
 
@@ -60,6 +63,12 @@ module tb_pc_ctr
 
         repeat(3) @(posedge clk);
         rst <= 1'b0;
+
+        repeat(3) @(posedge clk);
+        en <= 1'b0;
+
+        repeat(3) @(posedge clk);
+        en <= 1'b1;
     end
 
 endmodule

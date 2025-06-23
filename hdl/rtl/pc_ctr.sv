@@ -1,6 +1,6 @@
 // PC Counter
 // Created:     2025-06-23
-// Modified:    
+// Modified:    2025-06-24
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -17,6 +17,7 @@ module pc_ctr
     )(
         input logic clk,
         input logic rst,
+        input logic en,
 
         input logic pc_override,
         input logic [PC_WIDTH-1:0] pc_in,
@@ -28,7 +29,7 @@ module pc_ctr
 
     always_ff @(posedge clk)
     begin
-        pc_reg <= pc_reg + PC_INC;
+        if(en) pc_reg <= pc_reg + PC_INC;
 
         if(pc_override) pc_reg <= pc_in;
         
