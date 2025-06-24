@@ -1,6 +1,6 @@
 // FIFO testbench
 // Created:     2025-06-23
-// Modified:    
+// Modified:    2025-06-24
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -74,6 +74,9 @@ module tb_fifo
 
         repeat(10) @(posedge clk);
         wr_en <= 1'b0;
+
+        repeat(10) @(posedge clk);
+        $finish;
     end
 
 endmodule

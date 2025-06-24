@@ -69,6 +69,9 @@ module tb_pc_ctr
 
         repeat(3) @(posedge clk);
         en <= 1'b1;
+
+        repeat(10) @(posedge clk);
+        $finish;
     end
 
 endmodule
