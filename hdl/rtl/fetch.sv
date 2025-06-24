@@ -1,6 +1,6 @@
 // Fetch stage of the instruction pipeline
 // Created:     2025-06-24
-// Modified:    
+// Modified:    2025-06-24
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -13,7 +13,7 @@ module fetch
     #(
         parameter INSTR_WIDTH = 32,
         parameter PMEM_INIT_FILE = "",
-        parameter PC_WIDTH = 32,
+        parameter PC_WIDTH = 12,
         parameter PC_RESET_VAL = 0
     )(
         input logic clk,
@@ -32,6 +32,8 @@ module fetch
 
     logic pc_override;
     logic [PC_WIDTH-1:0] pc_ctr_pc_out;
+    logic [INSTR_WIDTH-1:0] pmem_douta;
+
 
     //
     //  program memory
@@ -39,8 +41,8 @@ module fetch
 
     ram_sp_rf #(
         .RAM_WIDTH(INSTR_WIDTH),
-        .RAM_DEPTH(4096),
-        .RAM_PERFORMANCE("HIGH_PERFORMANCE"),
+        .RAM_DEPTH(2**PC_WIDTH),
+        .RAM_PERFORMANCE("LOW_LATENCY"),
         .INIT_FILE(PMEM_INIT_FILE)
     ) qu_pmem (
         .addra(pc_ctr_pc_out),

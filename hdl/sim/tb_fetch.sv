@@ -1,6 +1,6 @@
 // Fetch stage testbench
 // Created:     2025-06-24
-// Modified:    
+// Modified:    2025-06-24
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -10,11 +10,11 @@
 
 module tb_fetch
     #(
-        parameter PMEM_INIT_FILE = ""
+        parameter PMEM_INIT_FILE = "test.hex"
     )();
 
     localparam INSTR_WIDTH = 32;
-    localparam PC_WIDTH = 32;
+    localparam PC_WIDTH = 12;
     localparam PC_RESET_VAL = 0;
 
     logic clk;
@@ -77,6 +77,9 @@ module tb_fetch
 
         repeat(2) @(posedge clk);
         stall <= 1'b0;
+
+        repeat(10) @(posedge clk);
+        $finish;
     end
 
 endmodule
