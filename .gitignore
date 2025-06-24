@@ -1,3 +1,9 @@
 tests/
 build/
+xsim.dir/
 *.prj
+*.wdb
+*.log
+*.pb
+*.jou
+hdl/sim/*.hex
