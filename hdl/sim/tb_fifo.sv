@@ -1,6 +1,6 @@
 // FIFO testbench
 // Created:     2025-06-23
-// Modified:    2025-06-24
+// Modified:    2025-06-27
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -23,8 +23,11 @@ module tb_fifo
     logic wr_en;
     logic [FIFO_WIDTH-1:0] data_in;
 
-    logic full;
     logic empty;
+    logic almost_empty;
+
+    logic full;
+    logic almost_full;
 
     fifo #(.FIFO_WIDTH(FIFO_WIDTH), .FIFO_DEPTH(FIFO_DEPTH))
     dut
@@ -35,8 +38,10 @@ module tb_fifo
         .data_out(data_out),
         .wr_en(wr_en),
         .data_in(data_in),
+        .empty(empty),
+        .almost_empty(almost_empty),
         .full(full),
-        .empty(empty)
+        .almost_full(almost_full)
     );
 
     always #5   clk = ~clk;

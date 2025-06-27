@@ -1,6 +1,6 @@
 // FIFO module
 // Created:     2025-06-23
-// Modified:    
+// Modified:    2025-06-27
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -23,13 +23,17 @@ module fifo
         input logic wr_en,
         input logic [FIFO_WIDTH-1:0] data_in,
 
+        output logic empty,
+        output logic almost_empty,
+
         output logic full,
-        output logic empty
+        output logic almost_full
     );
 
     localparam FIFO_ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
-    logic empty_buf, full_buf;
+    logic empty_buf, almost_empty_buf;
+    logic full_buf, almost_full_buf;
     logic [FIFO_ADDR_WIDTH-1:0] rd_ptr, wr_ptr;
     logic [FIFO_DEPTH-1:0][FIFO_WIDTH-1:0] fifo;
 
@@ -49,7 +53,8 @@ module fifo
                 rd_ptr <= rd_ptr + 1;
                 data_out <= fifo[rd_ptr];
             end
-            else if(wr_en && !full_buf)
+            
+            if(wr_en && !full_buf)
             begin
                 wr_ptr <= wr_ptr + 1;
                 fifo[wr_ptr] <= data_in;
@@ -59,14 +64,24 @@ module fifo
 
     always_comb
     begin
-        empty_buf = 1'b0;
-        full_buf = 1'b0;
+        empty_buf = 1'b0;   
+        almost_empty_buf = 1'b0;
+
+        full_buf = 1'b0;    
+        almost_full_buf = 1'b0;
+
         if(rd_ptr == wr_ptr) empty_buf = 1'b1;
+        if(rd_ptr+1 == wr_ptr) almost_empty_buf = 1'b1;
+
         if(rd_ptr == wr_ptr+1) full_buf = 1'b1;
+        if(rd_ptr == wr_ptr+2) almost_full_buf = 1'b1;
     end
 
     assign empty = empty_buf;
+    assign almost_empty = almost_empty_buf;
+
     assign full = full_buf;
+    assign almost_full = almost_full_buf;
 
 endmodule
 
