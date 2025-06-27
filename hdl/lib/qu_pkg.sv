@@ -15,7 +15,9 @@ package qu_pkg;
     //  general parameters
     //
 
-    parameter int INSTR_WIDTH = 32;
+    parameter int QU_INSTR_WIDTH = 32;
+    parameter int QU_PC_WIDTH = 12;
+    parameter int QU_PC_RESET_VAL = 0;
 
     //
     //  funct3 parameters
@@ -105,7 +107,7 @@ package qu_pkg;
     //
 
     parameter logic [6:0] R_OPCODE        = 7'b0110011;
-    parameter logic [6:0] I_OPCODE        = 7'b0000011;
+    parameter logic [6:0] I_OPCODE        = 7'b0010011;
     parameter logic [6:0] S_OPCODE        = 7'b0100011;  
     parameter logic [6:0] B_OPCODE        = 7'b1100011;
     parameter logic [6:0] JAL_OPCODE      = 7'b1101111;
@@ -120,7 +122,7 @@ package qu_pkg;
     //  type definitions
     //
 
-    typedef logic [INSTR_WIDTH-1:0] instr_t;
+    typedef logic [QU_INSTR_WIDTH-1:0] instr_t;
 
     typedef logic [6:0] opcode_t;
 
