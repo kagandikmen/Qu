@@ -108,6 +108,7 @@ package qu_common;
 
     parameter logic [6:0] R_OPCODE        = 7'b0110011;
     parameter logic [6:0] I_OPCODE        = 7'b0010011;
+    parameter logic [6:0] LOAD_OPCODE     = 7'b0000011;
     parameter logic [6:0] S_OPCODE        = 7'b0100011;  
     parameter logic [6:0] B_OPCODE        = 7'b1100011;
     parameter logic [6:0] JAL_OPCODE      = 7'b1101111;
@@ -209,6 +210,12 @@ package qu_common;
     function instr_t get_encoding_i_instr(funct3_t funct3, reg_addr_t rd, reg_addr_t rs1, imm12_t imm12);
         instr_t instr;
         instr = {imm12, rs1, funct3, rd, I_OPCODE};
+        return instr;
+    endfunction
+
+    function instr_t get_encoding_load_instr(funct3_t funct3, reg_addr_t rd, reg_addr_t rs1, imm12_t imm12);
+        instr_t instr;
+        instr = {imm12, rs1, funct3, rd, LOAD_OPCODE};
         return instr;
     endfunction
 
