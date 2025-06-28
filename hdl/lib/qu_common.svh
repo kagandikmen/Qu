@@ -266,13 +266,13 @@ package qu_common;
         return instr;
     endfunction
 
-    function instr_t get_encoding_csr_instr(funct3_t funct3, reg_addr_t rd, imm12_t csr, logic[4:0] rs1_uimm);
+    function instr_t get_encoding_csr_instr(funct3_t funct3, reg_addr_t rd, imm12_t csr, input logic[4:0] rs1_uimm);
         instr_t instr;
         instr = {csr, rs1_uimm, funct3, rd, CSR_OPCODE};
         return instr;
     endfunction
 
-    function instr_t get_encoding_fence_instr(reg_addr_t rd, reg_addr_t rs1, logic [3:0] pred, logic [3:0] succ);
+    function instr_t get_encoding_fence_instr(reg_addr_t rd, reg_addr_t rs1, input logic [3:0] pred, input logic [3:0] succ);
         instr_t instr;
         instr = {4'b0, pred, succ, rs1, FUNCT3_FENCE, rd, FENCE_OPCODE};
         return instr;
