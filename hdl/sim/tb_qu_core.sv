@@ -1,6 +1,6 @@
 // The Qu Processor CPU core testbench
 // Created:     2025-06-27
-// Modified:    
+// Modified:    2025-06-28
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -8,9 +8,9 @@
 
 `timescale 1ns/1ps
 
-`include "../lib/qu_pkg.sv"
+`include "../lib/qu_common.svh"
 
-import qu_pkg::*;
+import qu_common::*;
 
 module tb_qu_core
     #(

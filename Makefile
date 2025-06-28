@@ -1,13 +1,13 @@
 # Makefile to compile tests for The Qu Processor
 # Created:     2025-06-24
-# Modified:    2025-06-26
+# Modified:    2025-06-28
 
 # Copyright (c) 2025 Kagan Dikmen
 # SPDX-License-Identifier: MIT
 # See LICENSE for details
 
 DESIGN_SOURCES := \
-	hdl/lib/qu_pkg.sv \
+	hdl/lib/qu_common.svh \
 	hdl/rtl/fetch.sv \
 	hdl/rtl/fifo.sv \
 	hdl/rtl/pc_ctr.sv \

@@ -1,6 +1,6 @@
 // Decode stage of the instruction pipeline
 // Created:     2025-06-27
-// Modified:    
+// Modified:    2025-06-28
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -9,7 +9,9 @@
 `ifndef QU_DECODE
 `define QU_DECODE
 
-import qu_pkg::*;
+`include "../lib/qu_common.svh"
+
+import qu_common::*;
 
 module decode
     #(

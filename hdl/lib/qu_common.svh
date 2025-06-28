@@ -1,15 +1,15 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-06-27
+// Modified:    2025-06-28
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
 // See LICENSE for details
 
-`ifndef QU_PKG
-`define QU_PKG
+`ifndef QU_COMMON
+`define QU_COMMON
 
-package qu_pkg;
+package qu_common;
 
     //
     //  general parameters

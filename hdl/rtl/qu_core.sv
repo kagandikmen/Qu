@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    
+// Modified:    2025-06-28
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -9,9 +9,9 @@
 `ifndef QU_CORE
 `define QU_CORE
 
-`include "../lib/qu_pkg.sv"
+`include "../lib/qu_common.svh"
 
-import qu_pkg::*;
+import qu_common::*;
 
 module qu_core
     #(
