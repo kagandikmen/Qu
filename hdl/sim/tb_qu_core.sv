@@ -8,9 +8,8 @@
 
 `timescale 1ns/1ps
 
-`include "../lib/qu_common.svh"
-
 import qu_common::*;
+import qu_uop::*;
 
 module tb_qu_core
     #(
@@ -34,7 +33,7 @@ module tb_qu_core
 
     logic nop;
     logic invalid;
-    logic [INSTR_WIDTH-1:0] instr_out;
+    uop_t uop_out;
 
     qu_core #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
@@ -52,7 +51,7 @@ module tb_qu_core
         .id_stall(id_stall),
         .nop(nop),
         .invalid(invalid),
-        .instr_out(instr_out)
+        .uop_out(uop_out)
     );
 
     always #5   clk = ~clk;
@@ -72,10 +71,10 @@ module tb_qu_core
         @(posedge clk);
         rst <= 1'b1;
 
-        repeat(2) @(posedge clk);
+        repeat(5) @(posedge clk);
         rst <= 1'b0;
 
-        repeat(3) @(posedge clk);
+        repeat(10) @(posedge clk);
         if_stall <= 1'b1;
 
         repeat(20) @(posedge clk);

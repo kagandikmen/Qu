@@ -9,9 +9,8 @@
 `ifndef QU_CORE
 `define QU_CORE
 
-`include "../lib/qu_common.svh"
-
 import qu_common::*;
+import qu_uop::*;
 
 module qu_core
     #(
@@ -33,7 +32,7 @@ module qu_core
 
         output logic nop,
         output logic invalid,
-        output logic [INSTR_WIDTH-1:0] instr_out
+        output uop_t uop_out
     );
 
     logic fetch_branch_in;
@@ -47,7 +46,7 @@ module qu_core
     logic [INSTR_WIDTH-1:0] decode_instr_in;
     logic decode_nop_out;
     logic decode_invalid_out;
-    logic [INSTR_WIDTH-1:0] decode_instr_out;
+    uop_t decode_uop_out;
 
     logic fifo_rd_en_in;
     logic [INSTR_WIDTH-1:0] fifo_data_out;
@@ -56,6 +55,7 @@ module qu_core
     logic fifo_empty_out;
     logic fifo_full_out;
 
+    logic startup_ctrl_if_en_out;
     logic startup_ctrl_id_en_out;
 
     fetch #(
@@ -97,12 +97,13 @@ module qu_core
         .instr_in(decode_instr_in),
         .nop(decode_nop_out),
         .invalid(decode_invalid_out),
-        .instr_out(decode_instr_out)
+        .uop_out(decode_uop_out)
     );
 
     startup_ctrl qu_startup_ctrl (
         .clk(clk),
         .rst(rst),
+        .if_en(startup_ctrl_if_en_out),
         .id_en(startup_ctrl_id_en_out)
     );
     
@@ -113,13 +114,13 @@ module qu_core
     assign fetch_pc_override_in = pc_override;
     
     assign fifo_rd_en_in = !stall && !id_stall && !fifo_empty_out && startup_ctrl_id_en_out;
-    assign fifo_wr_en_in = !fetch_stall_in;
+    assign fifo_wr_en_in = !fetch_stall_in && startup_ctrl_if_en_out;
     assign fifo_data_in = fetch_instr_out;
     
     assign decode_instr_in = fifo_data_out;
     assign nop = decode_nop_out;
     assign invalid = decode_invalid_out;
-    assign instr_out = decode_instr_out;
+    assign uop_out = decode_uop_out;
 
 endmodule
 

@@ -8,8 +8,6 @@
 
 `timescale 1ns/1ps
 
-`include "../lib/qu_common.svh"
-
 import qu_common::*;
 
 module tb_decode
@@ -23,7 +21,7 @@ module tb_decode
 
     logic nop;
     logic invalid;
-    logic [INSTR_WIDTH-1:0] instr_out;
+    uop_t uop_out;
 
     decode #(
         .INSTR_WIDTH(INSTR_WIDTH)
@@ -31,7 +29,7 @@ module tb_decode
         .instr_in(instr_in),
         .nop(nop),
         .invalid(invalid),
-        .instr_out(instr_out)
+        .uop_out(uop_out)
     );
 
     always #5   clk = ~clk;

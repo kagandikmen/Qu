@@ -9,19 +9,19 @@
 `ifndef QU_DECODE
 `define QU_DECODE
 
-`include "../lib/qu_common.svh"
-
 import qu_common::*;
+import qu_uop::*;
 
 module decode
     #(
-        parameter INSTR_WIDTH = 32
+        parameter INSTR_WIDTH = 32,
+        parameter UOP_WIDTH = 60
     )(
         input logic [INSTR_WIDTH-1:0] instr_in,
 
         output logic nop,
         output logic invalid,
-        output logic [INSTR_WIDTH-1:0] instr_out
+        output uop_t uop_out
     );
 
     logic [6:0] opcode;
@@ -34,6 +34,7 @@ module decode
     logic [31:0] imm32;
 
     logic valid;
+    uop_t uop_out_buf;
 
     assign opcode   = instr_in[6:0];
     assign rd       = instr_in[11:7];
@@ -47,17 +48,95 @@ module decode
     assign imm21   = {instr_in[31], instr_in[19:12], instr_in[20], instr_in[30:21], 1'b0};
     assign imm32   = {instr_in[31:12], 12'b0};
 
-    assign nop      = ((opcode == R_OPCODE) || (opcode == I_OPCODE) || (opcode == LUI_OPCODE) || (opcode == AUIPC_OPCODE))
+    assign nop      = ((opcode == R_OPCODE) || (opcode == LOAD_OPCODE) || (opcode == I_OPCODE) || (opcode == LUI_OPCODE) || (opcode == AUIPC_OPCODE))
                     && (rd == 5'b00000);
 
-    assign valid    = ((opcode == R_OPCODE)     || (opcode == I_OPCODE)     || (opcode == S_OPCODE)
-                    || (opcode == B_OPCODE)     || (opcode == JAL_OPCODE)   || (opcode == JALR_OPCODE)
-                    || (opcode == LUI_OPCODE)   || (opcode == AUIPC_OPCODE) || (opcode == SYSCALL_OPCODE)
-                    || (opcode == CSR_OPCODE));
+    assign valid    = ((opcode == R_OPCODE)         || (opcode == I_OPCODE)     || (opcode == LOAD_OPCODE)
+                    || (opcode == S_OPCODE)         || (opcode == B_OPCODE)     || (opcode == JAL_OPCODE)
+                    || (opcode == JALR_OPCODE)      || (opcode == LUI_OPCODE)   || (opcode == AUIPC_OPCODE)
+                    || (opcode == SYSCALL_OPCODE)   || (opcode == CSR_OPCODE));
 
     assign invalid  = ~valid;
 
-    assign instr_out    = instr_in;
+    assign uop_out = uop_out_buf;
+
+    always_comb
+    begin
+        if(opcode == R_OPCODE)
+        begin
+            uop_out_buf.uop_ic.imm = 'd0;
+            uop_out_buf.uop_ic.imm_valid = IMM_INVALID;
+            uop_out_buf.uop_ic.rs2 = rs2;
+            uop_out_buf.uop_ic.rs2_valid = RS2_VALID;
+            uop_out_buf.uop_ic.rs1 = rs1;
+            uop_out_buf.uop_ic.rs1_valid = RS1_VALID;
+            uop_out_buf.uop_ic.rd = rd;
+            uop_out_buf.uop_ic.rd_valid = RD_VALID;
+            case(funct3)
+                FUNCT3_ADD  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_SUB  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_SLL  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SLL_SLLI;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_SLT  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LT;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_YES;
+                end
+                FUNCT3_SLTU : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LTU;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_YES;
+                end
+                FUNCT3_XOR  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_XOR;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_SRL  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRL_SRLI;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_SRA  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRA_SRAI;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_OR   : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_OR;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+                FUNCT3_AND  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_AND;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
+                    uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+                end
+            endcase
+            uop_out_buf.uop_ic.optype = OPTYPE_INT;
+        end
+    end
 
 endmodule
 
