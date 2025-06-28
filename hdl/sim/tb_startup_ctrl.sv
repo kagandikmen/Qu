@@ -1,6 +1,6 @@
 // Startup Controller Testbench
 // Created:     2025-06-27
-// Modified:    
+// Modified:    2025-06-28
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -13,11 +13,13 @@ module tb_startup_ctrl
 
     logic clk;
     logic rst;
+    logic if_en;
     logic id_en;
 
     startup_ctrl dut (
         .clk(clk),
         .rst(rst),
+        .if_en(if_en),
         .id_en(id_en)
     );
 
