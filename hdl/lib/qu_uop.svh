@@ -1,6 +1,6 @@
 // Micro-op library for The Qu Processor
 // Created:     2025-06-28
-// Modified:    2025-06-29
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -74,12 +74,12 @@ package qu_uop;
     // uop_ic_t: integer & control
     typedef struct packed {
         logic [31:0] imm;
-        logic imm_valid;
         logic [PHY_RF_ADDR_WIDTH-1:0] rs2;
-        logic rs2_valid;
         logic [PHY_RF_ADDR_WIDTH-1:0] rs1;
-        logic rs1_valid;
         logic [PHY_RF_ADDR_WIDTH-1:0] rd;
+        logic imm_valid;
+        logic rs2_valid;
+        logic rs1_valid;
         logic rd_valid;
         logic [3:0] alu_subunit_op_sel;
         logic [1:0] alu_subunit_res_sel;
@@ -90,12 +90,12 @@ package qu_uop;
     // uop_ldst_t: load & store
     typedef struct packed {
         logic [31:0] imm;
-        logic imm_valid;
         logic [PHY_RF_ADDR_WIDTH-1:0] rs2;
-        logic rs2_valid;
         logic [PHY_RF_ADDR_WIDTH-1:0] rs1;
-        logic rs1_valid;
         logic [PHY_RF_ADDR_WIDTH-1:0] rd;
+        logic imm_valid;
+        logic rs2_valid;
+        logic rs1_valid;
         logic rd_valid;
         logic [3:0] ignore;
         logic [2:0] funct3;

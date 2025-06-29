@@ -1,6 +1,6 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-06-28
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -18,6 +18,11 @@ package qu_common;
     parameter int QU_INSTR_WIDTH = 32;
     parameter int QU_PC_WIDTH = 12;
     parameter int QU_PC_RESET_VAL = 0;
+
+    parameter int RES_ST_DEPTH = 32;
+    parameter int RES_ST_DATA_WIDTH = 32;
+    parameter int RES_ST_ADDR_WIDTH = $clog2(RES_ST_DEPTH);
+    parameter int RES_ST_A_FIELD_WIDTH = 12;
 
     //
     //  funct3 parameters
@@ -181,6 +186,16 @@ package qu_common;
         reg_addr_t rd;
         opcode_t opcode;
     } uj_instr_t;
+
+    typedef struct packed {
+        logic [RES_ST_A_FIELD_WIDTH-1:0] a;
+        logic [RES_ST_DATA_WIDTH-1:0] vk;
+        logic [RES_ST_DATA_WIDTH-1:0] vj;
+        logic [RES_ST_ADDR_WIDTH-1:0] qk;
+        logic [RES_ST_ADDR_WIDTH-1:0] qj;
+        logic [12:0] op;
+        logic busy;
+    } res_st_cell_t;
 
     //
     //  functions
