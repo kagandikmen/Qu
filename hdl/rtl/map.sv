@@ -27,13 +27,17 @@ module map
         input   uop_t uop_in,
         output  uop_t uop_out,
 
-        output  logic full
+        output  logic full,
+
+        // busy table interface
+        output  logic busy_table_wr_en,
+        output  logic [$clog2(PHY_RF_DEPTH)-1:0] busy_table_wr_addr,
+        output  logic busy_table_data_out
     );
 
     localparam LOG_RF_ADDR_WIDTH = $clog2(LOG_RF_DEPTH);
     localparam PHY_RF_ADDR_WIDTH = $clog2(PHY_RF_DEPTH);
 
-    logic [PHY_RF_DEPTH-1:0] busy_table;
     logic [PHY_RF_DEPTH-1:0] phyreg_renamed;
     logic [LOG_RF_DEPTH-1:0][PHY_RF_ADDR_WIDTH-1:0] rename_table;
 
@@ -98,6 +102,8 @@ module map
         // rd
         uop_out_buf.uop_ic.rd = next_to_assign[0];
         rename_executed[0] = 1'b1;
+        
+        // uop_out logic
 
         uop_out_buf.uop_ic.optype = uop_in.uop_ic.optype;
         uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = uop_in.uop_ic.alu_cu_input_opd3_opd4_sel;
@@ -141,6 +147,11 @@ module map
                     break;
             end
         end
+
+        // busy table logic
+        busy_table_wr_en = 1'b1;
+        busy_table_wr_addr = next_to_assign[0];
+        busy_table_data_out = 1'b1;
     end
 
     always_ff @(posedge clk)
@@ -150,7 +161,6 @@ module map
         begin
             for(int i=0; i<PHY_RF_DEPTH; i=i+1)
             begin
-                busy_table[i] <= 1'b0;
                 phyreg_renamed[i] <= 1'b0;
             end
 
@@ -175,7 +185,6 @@ module map
             
             if(rename_executed[0])
             begin
-                busy_table[next_to_assign[0]] <= 1'b1;
                 rename_table[rd_in]  <= next_to_assign[0];
                 phyreg_renamed[next_to_assign[0]] <= 1'b1;
             end

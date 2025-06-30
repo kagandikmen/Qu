@@ -29,6 +29,10 @@ module tb_map
 
     logic full;
 
+    logic busy_table_wr_en;
+    logic [$clog2(PHY_RF_DEPTH)-1:0] busy_table_wr_addr;
+    logic busy_table_data_out;
+
     map #(
         .LOG_RF_DEPTH(LOG_RF_DEPTH),
         .PHY_RF_DEPTH(PHY_RF_DEPTH)
@@ -38,7 +42,10 @@ module tb_map
         .en(en),
         .uop_in(uop_in),
         .uop_out(uop_out),
-        .full(full)
+        .full(full),
+        .busy_table_wr_en(busy_table_wr_en),
+        .busy_table_wr_addr(busy_table_wr_addr),
+        .busy_table_data_out(busy_table_data_out)
     );
 
     always #5   clk = ~clk;
