@@ -136,7 +136,7 @@ module map
 
         next_to_assign = '{default: 'b0};
 
-        for(int i=0; i<PHY_RF_DEPTH; i++)
+        for(int i=1; i<PHY_RF_DEPTH; i++)
         begin
             if((phyreg_renamed[i] == 1'b0))
             begin

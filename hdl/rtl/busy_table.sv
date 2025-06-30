@@ -1,6 +1,6 @@
 // Busy table of The Qu Processor
 // Created:     2025-06-30
-// Modified:    
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -16,11 +16,9 @@ module busy_table
         input   logic clk,
         input   logic rst,
         
-        // for reads from map stage
         input   logic [$clog2(PHY_RF_DEPTH)-1:0] rd1_addr,
         output  logic data1_out,
 
-        // for reads from rename stage
         input   logic [$clog2(PHY_RF_DEPTH)-1:0] rd2_addr,
         output  logic data2_out,
 
