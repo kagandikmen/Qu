@@ -1,6 +1,6 @@
 // Rename stage testbench
 // Created:     2025-06-30
-// Modified:    
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -87,10 +87,14 @@ module tb_rename
 
         @(posedge clk);
         phy_rf_rs1_data_in <= 'd5;
-        uop_in.uop_ic.rs1 <= 'd30;
+        uop_in.uop_ic.rd <= 'd20;
+        uop_in.uop_ic.rs1 <= 'd16;
         busy_table_data1_in <= 1'b1;
 
         @(posedge clk);
+        phy_rf_rs1_data_in <= 'd10;
+        uop_in.uop_ic.rd <= 'd30;
+        uop_in.uop_ic.rs1 <= 'd35;
         busy_table_data1_in <= 1'b0;
 
         @(posedge clk);

@@ -1,6 +1,6 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -43,6 +43,7 @@ module rename
 
     res_st_addr_t wr_ptr;
     res_st_cell_t data_out_buf;
+    res_st_addr_t [PHY_RF_DEPTH-1:0] qi_list;
 
     assign res_st_wr_en_out = en;
     assign res_st_wr_addr_out = wr_ptr;
@@ -60,7 +61,7 @@ module rename
 
         if(busy_table_data1_in)
         begin
-            data_out_buf.qj = uop_in.uop_ic.rs1;
+            data_out_buf.qj = qi_list[uop_in.uop_ic.rs1];
             data_out_buf.vj = 'd0;
         end
         else
@@ -71,7 +72,7 @@ module rename
 
         if(busy_table_data2_in)
         begin
-            data_out_buf.qk = uop_in.uop_ic.rs2;
+            data_out_buf.qk = qi_list[uop_in.uop_ic.rs2];
             data_out_buf.vk = 'd0;
         end
         else
@@ -89,10 +90,12 @@ module rename
     begin
         if(rst)
         begin
+            qi_list <= '{default: 'b0};
             wr_ptr <= 'b0;
         end
         else if(en)
         begin
+            qi_list[uop_in.uop_ic.rd] <= res_st_wr_addr_out;
             wr_ptr <= wr_ptr + 1;
         end
     end
