@@ -1,6 +1,6 @@
 // Register file testbench
 // Created:     2025-06-28
-// Modified:    
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -13,7 +13,6 @@ module tb_rf
 
     localparam RF_WIDTH = 32;
     localparam RF_DEPTH = 32;
-    localparam QI_WIDTH = 6;
 
     logic clk;
     logic rst;
@@ -22,19 +21,14 @@ module tb_rf
     logic [$clog2(RF_DEPTH)-1:0] rs2_addr;
     logic [RF_WIDTH-1:0] rs1_data_out;
     logic [RF_WIDTH-1:0] rs2_data_out;
-    logic [QI_WIDTH-1:0] rs1_qi_out;
-    logic [QI_WIDTH-1:0] rs2_qi_out;
 
-    logic reg_wr_en;
-    logic qi_wr_en;
+    logic wr_en;
     logic [$clog2(RF_DEPTH)-1:0] rd_addr;
-    logic [RF_WIDTH-1:0] reg_data_in;
-    logic [QI_WIDTH-1:0] qi_data_in;
+    logic [RF_WIDTH-1:0] data_in;
 
     rf #(
         .RF_WIDTH(RF_WIDTH),
-        .RF_DEPTH(RF_DEPTH),
-        .QI_WIDTH(QI_WIDTH)
+        .RF_DEPTH(RF_DEPTH)
     ) dut (
         .clk(clk),
         .rst(rst),
@@ -42,13 +36,9 @@ module tb_rf
         .rs2_addr(rs2_addr),
         .rs1_data_out(rs1_data_out),
         .rs2_data_out(rs2_data_out),
-        .rs1_qi_out(rs1_qi_out),
-        .rs2_qi_out(rs2_qi_out),
-        .reg_wr_en(reg_wr_en),
-        .qi_wr_en(qi_wr_en),
+        .wr_en(wr_en),
         .rd_addr(rd_addr),
-        .reg_data_in(reg_data_in),
-        .qi_data_in(qi_data_in)
+        .data_in(data_in)
     );
 
     always #5   clk = ~clk;
@@ -59,11 +49,9 @@ module tb_rf
         rst <= 1'b0;
         rs1_addr <= 'd0;
         rs2_addr <= 'd0;
-        reg_wr_en <= 1'b0;
-        qi_wr_en <= 1'b0;
+        wr_en <= 1'b0;
         rd_addr <= 'd0;
-        reg_data_in <= 'd0;
-        qi_data_in <= 'd0;
+        data_in <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -72,28 +60,18 @@ module tb_rf
         rst <= 1'b0;
 
         @(posedge clk);
-        qi_wr_en <= 1'b1;
+        wr_en <= 1'b1;
         rd_addr <= 'd2;
-        qi_data_in <= 'd3;
-
-        @(posedge clk);
-        reg_wr_en <= 1'b1;
-        qi_wr_en <= 1'b0;
-        reg_data_in <= 'd446;
+        data_in <= 'd446;
 
         @(posedge clk);
         rd_addr <= 'd3;
-        reg_data_in <= 'd331;
+        data_in <= 'd331;
 
         @(posedge clk);
-        reg_wr_en <= 1'b0;
-        qi_wr_en <= 1'b1;
-        qi_data_in <= 'd5;
+        wr_en <= 1'b0;
         rs1_addr <= 'd2;
         rs2_addr <= 'd3;
-
-        @(posedge clk);
-        qi_wr_en <= 1'b0;
 
         #100;
         $finish;
