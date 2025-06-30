@@ -20,9 +20,10 @@ package qu_common;
     parameter int QU_PC_RESET_VAL = 0;
 
     parameter int RES_ST_DEPTH = 32;
-    parameter int RES_ST_DATA_WIDTH = 32;
+    parameter int RES_ST_OP_WIDTH = 13;
     parameter int RES_ST_ADDR_WIDTH = $clog2(RES_ST_DEPTH);
-    parameter int RES_ST_A_FIELD_WIDTH = 12;
+    parameter int RES_ST_VDATA_WIDTH = 32;
+    parameter int RES_ST_ADATA_WIDTH = 12;
 
     //
     //  funct3 parameters
@@ -187,13 +188,18 @@ package qu_common;
         opcode_t opcode;
     } uj_instr_t;
 
+    typedef logic [RES_ST_VDATA_WIDTH-1:0] res_st_vdata_t;
+    typedef logic [RES_ST_ADATA_WIDTH-1:0] res_st_adata_t;
+    typedef logic [RES_ST_ADDR_WIDTH-1:0] res_st_addr_t;
+    typedef logic [RES_ST_OP_WIDTH-1:0] res_st_op_t;
+
     typedef struct packed {
-        logic [RES_ST_A_FIELD_WIDTH-1:0] a;
-        logic [RES_ST_DATA_WIDTH-1:0] vk;
-        logic [RES_ST_DATA_WIDTH-1:0] vj;
-        logic [RES_ST_ADDR_WIDTH-1:0] qk;
-        logic [RES_ST_ADDR_WIDTH-1:0] qj;
-        logic [12:0] op;
+        res_st_adata_t a;
+        res_st_vdata_t vk;
+        res_st_vdata_t vj;
+        res_st_addr_t qk;
+        res_st_addr_t qj;
+        res_st_op_t op;
         logic busy;
     } res_st_cell_t;
 
