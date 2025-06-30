@@ -1,6 +1,6 @@
 // Map stage of The Qu Processor
 // Created:     2025-06-29
-// Modified:    
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -34,6 +34,7 @@ module map
     localparam PHY_RF_ADDR_WIDTH = $clog2(PHY_RF_DEPTH);
 
     logic [PHY_RF_DEPTH-1:0] busy_table;
+    logic [PHY_RF_DEPTH-1:0] phyreg_renamed;
     logic [LOG_RF_DEPTH-1:0][PHY_RF_ADDR_WIDTH-1:0] rename_table;
 
     uop_t uop_out_buf;
@@ -42,9 +43,10 @@ module map
     logic rd_valid_in, rs2_valid_in, rs1_valid_in;
 
     logic [PHY_RF_ADDR_WIDTH-1:0] next_to_assign [2:0];
-    logic [2:0] busy_buf;
+    logic [2:0] rename_executed;
 
-    logic [PHY_RF_DEPTH-1:0] num_free;
+    int num_free = 0;
+    int found = 0; 
 
     assign rd_in = uop_in.uop_ic.rd;
     assign rd_valid_in = uop_in.uop_ic.rd_valid;
@@ -63,30 +65,39 @@ module map
         // rs2
         if(rename_table[rs2_in] == 'b0)
         begin
-            uop_out_buf.uop_ic.rs2 = next_to_assign[2];
-            busy_buf[2] = 1'b1;
+            if(rs1_in == rs2_in)
+            begin
+                uop_out_buf.uop_ic.rs2 = next_to_assign[1];
+                rename_executed[1] = 1'b1;
+                rename_executed[2] = 1'b0;
+            end
+            else
+            begin
+                uop_out_buf.uop_ic.rs2 = next_to_assign[2];
+                rename_executed[2] = 1'b1;
+            end
         end
         else
         begin
             uop_out_buf.uop_ic.rs2 = rename_table[rs2_in];
-            busy_buf[2] = 1'b0;
+            rename_executed[2] = 1'b0;
         end
 
         // rs1
         if(rename_table[rs1_in] == 'b0)
         begin
             uop_out_buf.uop_ic.rs1 = next_to_assign[1];
-            busy_buf[1] = 1'b1;
+            rename_executed[1] = 1'b1;
         end
         else
         begin
             uop_out_buf.uop_ic.rs1 = rename_table[rs1_in];
-            busy_buf[1] = 1'b0;
+            rename_executed[1] = 1'b0;
         end
 
         // rd
         uop_out_buf.uop_ic.rd = next_to_assign[0];
-        busy_buf[0] = 1'b1;
+        rename_executed[0] = 1'b1;
 
         uop_out_buf.uop_ic.optype = uop_in.uop_ic.optype;
         uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = uop_in.uop_ic.alu_cu_input_opd3_opd4_sel;
@@ -98,11 +109,13 @@ module map
         uop_out_buf.uop_ic.imm_valid = uop_in.uop_ic.imm_valid;
         uop_out_buf.uop_ic.imm = uop_in.uop_ic.imm;
 
+        // full logic
+
         num_free = 0;
 
         for(int i=0; i<PHY_RF_DEPTH; i=i+1)
         begin
-            if(busy_table[i] == 1'b0)
+            if(phyreg_renamed[i] == 1'b0)
                 num_free++;
         end
 
@@ -110,6 +123,24 @@ module map
             full = 1'b1;
         else
             full = 1'b0;
+
+        // next_to_assign logic
+
+        found = 0;
+
+        next_to_assign = '{default: 'b0};
+
+        for(int i=0; i<PHY_RF_DEPTH; i++)
+        begin
+            if((phyreg_renamed[i] == 1'b0))
+            begin
+                next_to_assign[found] = i;
+                found++;
+
+                if(found == 3)
+                    break;
+            end
+        end
     end
 
     always_ff @(posedge clk)
@@ -120,56 +151,33 @@ module map
             for(int i=0; i<PHY_RF_DEPTH; i=i+1)
             begin
                 busy_table[i] <= 1'b0;
+                phyreg_renamed[i] <= 1'b0;
             end
 
             for(int i=0; i<LOG_RF_DEPTH; i=i+1)
             begin
                 rename_table[i] <= 1'b0;
             end
-            
-            next_to_assign[2] <= 'd2;
-            next_to_assign[1] <= 'd1;
-            next_to_assign[0] <= 'd0;
         end
         else if(en)
         begin
-            if(busy_buf[2])
+            if(rename_executed[2])
             begin
-                for(int i=PHY_RF_DEPTH-1; i>=0; i=i-1)
-                begin
-                    if((busy_table[i] == 1'b0) && (i != next_to_assign[2]))
-                    begin
-                        next_to_assign[2] <= i;
-                    end
-                end
-                busy_table[next_to_assign[2]] <= 1'b1;
                 rename_table[rs2_in] <= next_to_assign[2];
+                phyreg_renamed[next_to_assign[2]] <= 1'b1;
             end
 
-            if(busy_buf[1])
+            if(rename_executed[1])
             begin
-                for(int i=PHY_RF_DEPTH-1; i>=0; i=i-1)
-                begin
-                    if((busy_table[i] == 1'b0) && (i != next_to_assign[1]))
-                    begin
-                        next_to_assign[1] <= i;
-                    end
-                end
-                busy_table[next_to_assign[1]] <= 1'b1;
                 rename_table[rs1_in] <= next_to_assign[1];
+                phyreg_renamed[next_to_assign[1]] <= 1'b1;
             end
             
-            if(busy_buf[0])
+            if(rename_executed[0])
             begin
-                for(int i=PHY_RF_DEPTH-1; i>=0; i=i-1)
-                begin
-                    if((busy_table[i] == 1'b0) && (i != next_to_assign[0]))
-                    begin
-                        next_to_assign[0] <= i;
-                    end
-                end
                 busy_table[next_to_assign[0]] <= 1'b1;
                 rename_table[rd_in]  <= next_to_assign[0];
+                phyreg_renamed[next_to_assign[0]] <= 1'b1;
             end
         end
     end

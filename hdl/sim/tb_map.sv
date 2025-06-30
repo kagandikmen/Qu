@@ -1,6 +1,6 @@
 // Map stage testbench
 // Created:     2025-06-29
-// Modified:    
+// Modified:    2025-06-30
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -17,8 +17,8 @@ import qu_uop::*;
 module tb_map
     #()();
 
-    localparam LOG_RF_DEPTH = 4;
-    localparam PHY_RF_DEPTH = 8;
+    localparam LOG_RF_DEPTH = 8;
+    localparam PHY_RF_DEPTH = 16;
 
     logic clk;
     logic rst;
@@ -125,6 +125,34 @@ module tb_map
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         @(posedge clk);
+        uop_in.uop_ic.imm = 'd0;
+        uop_in.uop_ic.imm_valid = IMM_INVALID;
+        uop_in.uop_ic.rs2 = 'd7;
+        uop_in.uop_ic.rs2_valid = RS2_VALID;
+        uop_in.uop_ic.rs1 = 'd7;
+        uop_in.uop_ic.rs1_valid = RS1_VALID;
+        uop_in.uop_ic.rd = 'd6;
+        uop_in.uop_ic.rd_valid = RD_VALID;
+        uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
+        uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.optype = OPTYPE_INT;
+
+        @(posedge clk);
+        uop_in.uop_ic.imm = 'd0;
+        uop_in.uop_ic.imm_valid = IMM_INVALID;
+        uop_in.uop_ic.rs2 = 'd5;
+        uop_in.uop_ic.rs2_valid = RS2_VALID;
+        uop_in.uop_ic.rs1 = 'd5;
+        uop_in.uop_ic.rs1_valid = RS1_VALID;
+        uop_in.uop_ic.rd = 'd5;
+        uop_in.uop_ic.rd_valid = RD_VALID;
+        uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
+        uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.optype = OPTYPE_INT;
+
+        repeat(6) @(posedge clk);
         en <= 1'b0;
         uop_in.uop_ic <= '{default: 'b0};
 
