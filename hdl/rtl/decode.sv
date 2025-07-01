@@ -62,6 +62,8 @@ module decode
 
     always_comb
     begin
+        uop_out_buf = 'b0;
+
         if(opcode == R_OPCODE)
         begin
             uop_out_buf.uop_ic.imm = 'd0;

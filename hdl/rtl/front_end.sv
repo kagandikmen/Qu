@@ -180,7 +180,7 @@ module front_end
 
     map #(
         .LOG_RF_DEPTH(LOG_RF_DEPTH),
-        .LOG_RF_WIDTH(LOG_RF_WIDTH)
+        .PHY_RF_DEPTH(PHY_RF_DEPTH)
     ) qu_map (
         .clk(clk),
         .rst(rst),
