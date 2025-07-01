@@ -1,6 +1,6 @@
 // Map stage of The Qu Processor
 // Created:     2025-06-29
-// Modified:    2025-06-30
+// Modified:    2025-07-01
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -66,6 +66,30 @@ module map
     always_comb
     begin
 
+        //
+        // next_to_assign logic
+        //
+
+        found = 0;
+
+        next_to_assign = '{default: 'b0};
+
+        for(int i=1; i<PHY_RF_DEPTH; i++)
+        begin
+            if((phyreg_renamed[i] == 1'b0))
+            begin
+                next_to_assign[found] = i;
+                found++;
+
+                if(found == 3)
+                    break;
+            end
+        end
+
+        //
+        // rename logicqi_list
+        //
+
         // rs2
         if(rename_table[rs2_in] == 'b0)
         begin
@@ -103,7 +127,9 @@ module map
         uop_out_buf.uop_ic.rd = next_to_assign[0];
         rename_executed[0] = 1'b1;
         
+        //
         // uop_out logic
+        //
 
         uop_out_buf.uop_ic.optype = uop_in.uop_ic.optype;
         uop_out_buf.uop_ic.alu_cu_input_opd3_opd4_sel = uop_in.uop_ic.alu_cu_input_opd3_opd4_sel;
@@ -115,7 +141,9 @@ module map
         uop_out_buf.uop_ic.imm_valid = uop_in.uop_ic.imm_valid;
         uop_out_buf.uop_ic.imm = uop_in.uop_ic.imm;
 
-        // full logic
+        //
+        // full signal logic
+        //
 
         num_free = 0;
 
@@ -130,27 +158,12 @@ module map
         else
             full = 1'b0;
 
-        // next_to_assign logic
-
-        found = 0;
-
-        next_to_assign = '{default: 'b0};
-
-        for(int i=1; i<PHY_RF_DEPTH; i++)
-        begin
-            if((phyreg_renamed[i] == 1'b0))
-            begin
-                next_to_assign[found] = i;
-                found++;
-
-                if(found == 3)
-                    break;
-            end
-        end
-
+        //
         // busy table logic
-        busy_table_wr_en = 1'b1;
-        busy_table_wr_addr = next_to_assign[0];
+        //
+
+        busy_table_wr_en = en;
+        busy_table_wr_addr = uop_out_buf.uop_ic.rd;
         busy_table_data_out = 1'b1;
     end
 
