@@ -1,6 +1,6 @@
 // Startup Controller Testbench
 // Created:     2025-06-27
-// Modified:    2025-06-28
+// Modified:    2025-07-01
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -13,14 +13,20 @@ module tb_startup_ctrl
 
     logic clk;
     logic rst;
+    
+    logic fifo_mp_rn_empty;
+
     logic if_en;
     logic id_en;
+    logic rn_en;
 
     startup_ctrl dut (
         .clk(clk),
         .rst(rst),
+        .fifo_mp_rn_empty(fifo_mp_rn_empty),
         .if_en(if_en),
-        .id_en(id_en)
+        .id_en(id_en),
+        .rn_en(rn_en)
     );
 
     always #5   clk = ~clk;
@@ -29,6 +35,7 @@ module tb_startup_ctrl
     begin
         clk <= 1'b0;
         rst <= 1'b0;
+        fifo_mp_rn_empty <= 1'b1;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -41,6 +48,12 @@ module tb_startup_ctrl
 
         @(posedge clk);
         rst <= 1'b0;
+
+        repeat(20) @(posedge clk);
+        fifo_mp_rn_empty <= 1'b0;
+
+        repeat(2) @(posedge clk);
+        fifo_mp_rn_empty <= 1'b1;
 
         #50;
         $finish;

@@ -1,6 +1,6 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-06-30
+// Modified:    2025-07-01
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -24,6 +24,9 @@ package qu_common;
     parameter int RES_ST_ADDR_WIDTH = $clog2(RES_ST_DEPTH);
     parameter int RES_ST_VDATA_WIDTH = 32;
     parameter int RES_ST_ADATA_WIDTH = 12;
+
+    parameter int LOG_RF_DEPTH = 32;
+    parameter int LOG_RF_WIDTH = 32;
 
     //
     //  funct3 parameters
