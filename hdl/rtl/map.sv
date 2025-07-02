@@ -1,6 +1,6 @@
 // Map stage of The Qu Processor
 // Created:     2025-06-29
-// Modified:    2025-07-01
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -162,7 +162,7 @@ module map
         // busy table logic
         //
 
-        busy_table_wr_en = en;
+        busy_table_wr_en = uop_in.uop_ic.optype[0];
         busy_table_wr_addr = uop_out_buf.uop_ic.rd;
         busy_table_data_out = 1'b1;
     end
