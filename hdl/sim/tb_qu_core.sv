@@ -21,9 +21,9 @@ module tb_qu_core
 
     localparam INSTR_WIDTH = QU_INSTR_WIDTH;
     localparam PC_WIDTH = QU_PC_WIDTH;
-    localparam FIFO_IF_ID_DEPTH = 12;
-    localparam FIFO_ID_MP_DEPTH = 12;
-    localparam FIFO_MP_RN_DEPTH = 12;
+    localparam FIFO_IF_ID_DEPTH = 4;
+    localparam FIFO_ID_MP_DEPTH = 4;
+    localparam FIFO_MP_RN_DEPTH = 4;
     
     logic clk;
     logic rst;
@@ -102,6 +102,24 @@ module tb_qu_core
 
         repeat(5) @(posedge clk);
         rst <= 1'b0;
+
+        repeat(4) @(posedge clk);
+        id_stall <= 1'b1;
+
+        repeat(4) @(posedge clk);
+        id_stall <= 1'b0;
+
+        repeat(4) @(posedge clk);
+        mp_stall <= 1'b1;
+
+        repeat(4) @(posedge clk);
+        mp_stall <= 1'b0;
+
+        repeat(4) @(posedge clk);
+        rn_stall <= 1'b1;
+
+        repeat(4) @(posedge clk);
+        rn_stall <= 1'b0;
 
         #200;
         $finish;
