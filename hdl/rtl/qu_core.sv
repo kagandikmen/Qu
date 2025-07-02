@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    2025-07-01
+// Modified:    2025-07-02
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -19,7 +19,10 @@ module qu_core
     #(
         parameter PMEM_INIT_FILE = "",
         parameter INSTR_WIDTH = QU_INSTR_WIDTH,
-        parameter PC_WIDTH = QU_PC_WIDTH
+        parameter PC_WIDTH = QU_PC_WIDTH,
+        parameter FIFO_IF_ID_DEPTH = 12,
+        parameter FIFO_ID_MP_DEPTH = 12,
+        parameter FIFO_MP_RN_DEPTH = 12
     )(
         input   logic clk,
         input   logic rst,
@@ -74,7 +77,10 @@ module qu_core
     front_end #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .INSTR_WIDTH(INSTR_WIDTH),
-        .PC_WIDTH(PC_WIDTH)
+        .PC_WIDTH(PC_WIDTH),
+        .FIFO_IF_ID_DEPTH(FIFO_IF_ID_DEPTH),
+        .FIFO_ID_MP_DEPTH(FIFO_ID_MP_DEPTH),
+        .FIFO_MP_RN_DEPTH(FIFO_MP_RN_DEPTH)
     ) qu_front_end (
         .clk(clk),
         .rst(rst),

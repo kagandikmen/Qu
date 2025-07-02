@@ -1,6 +1,6 @@
 // Testbench for the top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    
+// Modified:    2025-07-02
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -21,6 +21,9 @@ module tb_front_end
 
     localparam INSTR_WIDTH = QU_INSTR_WIDTH;
     localparam PC_WIDTH = QU_PC_WIDTH;
+    localparam FIFO_IF_ID_DEPTH = 12;
+    localparam FIFO_ID_MP_DEPTH = 12;
+    localparam FIFO_MP_RN_DEPTH = 12;
 
     logic clk;
     logic rst;
@@ -47,7 +50,10 @@ module tb_front_end
     front_end #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .INSTR_WIDTH(INSTR_WIDTH),
-        .PC_WIDTH(PC_WIDTH)
+        .PC_WIDTH(PC_WIDTH),
+        .FIFO_IF_ID_DEPTH(FIFO_IF_ID_DEPTH),
+        .FIFO_ID_MP_DEPTH(FIFO_ID_MP_DEPTH),
+        .FIFO_MP_RN_DEPTH(FIFO_MP_RN_DEPTH)
     ) dut (
         .clk(clk),
         .rst(rst),

@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    
+// Modified:    2025-07-02
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -19,7 +19,10 @@ module front_end
     #(
         parameter PMEM_INIT_FILE = "",
         parameter INSTR_WIDTH = QU_INSTR_WIDTH,
-        parameter PC_WIDTH = QU_PC_WIDTH
+        parameter PC_WIDTH = QU_PC_WIDTH,
+        parameter FIFO_IF_ID_DEPTH = 12,
+        parameter FIFO_ID_MP_DEPTH = 12,
+        parameter FIFO_MP_RN_DEPTH = 12
     )(
         input   logic clk,
         input   logic rst,
@@ -139,7 +142,7 @@ module front_end
 
     fifo #(
         .FIFO_WIDTH(INSTR_WIDTH),
-        .FIFO_DEPTH(4)
+        .FIFO_DEPTH(FIFO_IF_ID_DEPTH)
     ) qu_fifo_if_id (
         .clk(clk),
         .rst(rst),
@@ -164,7 +167,7 @@ module front_end
 
     fifo #(
         .FIFO_WIDTH(UOP_WIDTH+1),
-        .FIFO_DEPTH(4)
+        .FIFO_DEPTH(FIFO_ID_MP_DEPTH)
     ) qu_fifo_id_mp (
         .clk(clk),
         .rst(rst),
@@ -209,7 +212,7 @@ module front_end
 
     fifo #(
         .FIFO_WIDTH(UOP_WIDTH),
-        .FIFO_DEPTH(4)
+        .FIFO_DEPTH(FIFO_MP_RN_DEPTH)
     ) qu_fifo_mp_rn (
         .clk(clk),
         .rst(rst),
