@@ -1,6 +1,6 @@
 // Micro-op library for The Qu Processor
 // Created:     2025-06-28
-// Modified:    2025-06-30
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -15,7 +15,7 @@ package qu_uop;
     // configuration parameters
     //
 
-    parameter int UOP_WIDTH = 66;
+    parameter int UOP_WIDTH = 67;
     parameter int PHY_RF_DEPTH = 128;
     parameter int PHY_RF_ADDR_WIDTH = $clog2(PHY_RF_DEPTH);
 
@@ -23,10 +23,10 @@ package qu_uop;
     //  micro-op encoding parameters
     //
 
-    parameter logic [1:0] OPTYPE_INT        = 2'b00;
-    parameter logic [1:0] OPTYPE_CONT       = 2'b01;
-    parameter logic [1:0] OPTYPE_LOAD       = 2'b10;
-    parameter logic [1:0] OPTYPE_STORE      = 2'b11;
+    parameter logic [2:0] OPTYPE_INT        = 3'b001;
+    parameter logic [2:0] OPTYPE_CONT       = 3'b011;
+    parameter logic [2:0] OPTYPE_LOAD       = 3'b101;
+    parameter logic [2:0] OPTYPE_STORE      = 3'b111;
 
     parameter logic RD_VALID    = 1'b1;
     parameter logic RD_INVALID  = 1'b0;
@@ -84,7 +84,7 @@ package qu_uop;
         logic [3:0] alu_subunit_op_sel;
         logic [1:0] alu_subunit_res_sel;
         logic alu_cu_input_opd3_opd4_sel;
-        logic [1:0] optype;
+        logic [2:0] optype;
     } uop_ic_t;
     
     // uop_ldst_t: load & store
@@ -99,7 +99,7 @@ package qu_uop;
         logic rd_valid;
         logic [3:0] ignore;
         logic [2:0] funct3;
-        logic [1:0] optype;
+        logic [2:0] optype;
     } uop_ldst_t; 
 
     typedef union packed {

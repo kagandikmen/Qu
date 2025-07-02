@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-02
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -72,11 +72,12 @@ module front_end
     logic decode_nop_out;
     logic decode_invalid_out;
     uop_t decode_uop_out;
+    logic decode_proper_out;
 
     logic fifo_id_mp_rd_en_in;
-    logic [(UOP_WIDTH+1)-1:0] fifo_id_mp_data_out;
+    logic [UOP_WIDTH-1:0] fifo_id_mp_data_out;
     logic fifo_id_mp_wr_en_in;
-    logic [(UOP_WIDTH+1)-1:0] fifo_id_mp_data_in;
+    logic [UOP_WIDTH-1:0] fifo_id_mp_data_in;
     logic fifo_id_mp_empty_out;
     logic fifo_id_mp_full_out;
 
@@ -166,7 +167,7 @@ module front_end
     );
 
     fifo #(
-        .FIFO_WIDTH(UOP_WIDTH+1),
+        .FIFO_WIDTH(UOP_WIDTH),
         .FIFO_DEPTH(FIFO_ID_MP_DEPTH)
     ) qu_fifo_id_mp (
         .clk(clk),
@@ -261,12 +262,12 @@ module front_end
     assign decode_proper_out = !decode_invalid_out && !decode_nop_out;
 
     assign fifo_id_mp_rd_en_in = !stall && !fifo_id_mp_empty_out;
-    assign fifo_id_mp_wr_en_in = !stall;
-    assign fifo_id_mp_data_in = {decode_proper_out, decode_uop_out};
+    assign fifo_id_mp_wr_en_in = !stall && decode_proper_out;
+    assign fifo_id_mp_data_in = decode_uop_out;
 
-    assign map_uop_data_in_proper = fifo_id_mp_data_out[UOP_WIDTH];
+    assign map_uop_data_in_proper = fifo_id_mp_data_out[0];
     assign map_en = !mp_stall && map_uop_data_in_proper && !rst;
-    assign map_uop_in = fifo_id_mp_data_out[UOP_WIDTH-1:0];
+    assign map_uop_in = fifo_id_mp_data_out;
 
     assign busy_table_rd1_addr_in = rename_busy_table_rd1_addr_out;
     assign busy_table_rd2_addr_in = rename_busy_table_rd2_addr_out;
