@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    2025-07-02
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -36,6 +36,7 @@ module qu_core
         input   logic if_stall,
         input   logic id_stall,
         input   logic mp_stall,
+        input   logic rn_stall,
 
         input   logic rf_wr_en,
         input   logic [PHY_RF_ADDR_WIDTH-1:0] rf_rd_addr,
@@ -92,6 +93,7 @@ module qu_core
         .if_stall(if_stall),
         .id_stall(id_stall),
         .mp_stall(mp_stall),
+        .rn_stall(rn_stall),
         .rf_rs1_addr(front_end_rf_rs1_addr_out),
         .rf_rs2_addr(front_end_rf_rs2_addr_out),
         .rf_rs1_data_in(front_end_rf_rs1_data_in),

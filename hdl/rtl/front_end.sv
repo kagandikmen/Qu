@@ -36,6 +36,7 @@ module front_end
         input   logic if_stall,
         input   logic id_stall,
         input   logic mp_stall,
+        input   logic rn_stall,
 
         // physical register file interface
         output  logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs1_addr,
@@ -261,12 +262,12 @@ module front_end
     assign decode_instr_in = fifo_if_id_data_out;
     assign decode_proper_out = !decode_invalid_out && !decode_nop_out;
 
-    assign fifo_id_mp_rd_en_in = !stall && !fifo_id_mp_empty_out;
+    assign fifo_id_mp_rd_en_in = !stall && !mp_stall && !fifo_id_mp_empty_out;
     assign fifo_id_mp_wr_en_in = !stall && decode_proper_out;
     assign fifo_id_mp_data_in = decode_uop_out;
 
     assign map_uop_data_in_proper = fifo_id_mp_data_out[0];
-    assign map_en = !mp_stall && map_uop_data_in_proper && !rst;
+    assign map_en = !stall && !mp_stall && map_uop_data_in_proper && !rst;
     assign map_uop_in = fifo_id_mp_data_out;
 
     assign busy_table_rd1_addr_in = rename_busy_table_rd1_addr_out;
@@ -275,11 +276,11 @@ module front_end
     assign busy_table_wr_addr_in = map_busy_table_wr_addr_out;
     assign busy_table_data_in = map_busy_table_data_out;
 
-    assign fifo_mp_rn_rd_en_in = !fifo_mp_rn_empty_out;
+    assign fifo_mp_rn_rd_en_in = !stall && !rn_stall && !fifo_mp_rn_empty_out;
     assign fifo_mp_rn_wr_en_in = busy_table_wr_en_in;   // whatever is enabling wr_en of busy table should enable the fifo too
     assign fifo_mp_rn_data_in = map_uop_out;
 
-    assign rename_en = startup_ctrl_rn_en_out;
+    assign rename_en = startup_ctrl_rn_en_out && !rn_stall;
     assign rename_uop_in = fifo_mp_rn_data_out;
     assign rename_busy_table_data1_in = busy_table_data1_out;
     assign rename_busy_table_data2_in = busy_table_data2_out;

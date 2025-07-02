@@ -1,6 +1,6 @@
 // Testbench for the top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-02
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -37,6 +37,7 @@ module tb_front_end
     logic if_stall;
     logic id_stall;
     logic mp_stall;
+    logic rn_stall;
 
     logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs1_addr;
     logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs2_addr;
@@ -65,6 +66,7 @@ module tb_front_end
         .if_stall(if_stall),
         .id_stall(id_stall),
         .mp_stall(mp_stall),
+        .rn_stall(rn_stall),
         .rf_rs1_addr(rf_rs1_addr),
         .rf_rs2_addr(rf_rs2_addr),
         .rf_rs1_data_in(rf_rs1_data_in),
@@ -94,6 +96,7 @@ module tb_front_end
         if_stall <= 1'b0;
         id_stall <= 1'b0;
         mp_stall <= 1'b0;
+        rn_stall <= 1'b0;
 
         @(posedge clk);
         rst <= 1'b1;

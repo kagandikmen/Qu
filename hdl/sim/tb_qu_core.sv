@@ -1,6 +1,6 @@
 // The Qu Processor CPU core testbench
 // Created:     2025-06-27
-// Modified:    2025-07-02
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -37,6 +37,7 @@ module tb_qu_core
     logic if_stall;
     logic id_stall;
     logic mp_stall;
+    logic rn_stall;
 
     logic rf_wr_en;
     logic [PHY_RF_ADDR_WIDTH-1:0] rf_rd_addr;
@@ -65,6 +66,7 @@ module tb_qu_core
         .if_stall(if_stall),
         .id_stall(id_stall),
         .mp_stall(mp_stall),
+        .rn_stall(rn_stall),
         .rf_wr_en(rf_wr_en),
         .rf_rd_addr(rf_rd_addr),
         .rf_data_in(rf_data_in),
@@ -88,6 +90,7 @@ module tb_qu_core
         if_stall <= 1'b0;
         id_stall <= 1'b0;
         mp_stall <= 1'b0;
+        rn_stall <= 1'b0;
         rf_wr_en <= 1'b0;
         rf_rd_addr <= 'd0;
         rf_data_in <= 'd0;
