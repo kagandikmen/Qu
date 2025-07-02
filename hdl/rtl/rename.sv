@@ -1,6 +1,6 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-06-30
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -45,7 +45,7 @@ module rename
     res_st_cell_t data_out_buf;
     res_st_addr_t [PHY_RF_DEPTH-1:0] qi_list;
 
-    assign res_st_wr_en_out = en;
+    assign res_st_wr_en_out = uop_in.uop_ic.optype[0];
     assign res_st_wr_addr_out = wr_ptr;
     assign res_st_data_out = data_out_buf;
 
