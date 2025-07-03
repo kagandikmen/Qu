@@ -82,6 +82,7 @@ module front_end
     logic fifo_id_mp_empty_out;
     logic fifo_id_mp_full_out;
 
+    logic map_en;
     uop_t map_uop_in;
     uop_t map_uop_out;
     logic map_full_out;
