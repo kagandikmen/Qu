@@ -47,6 +47,10 @@ module tb_qu_core
     res_st_cell_t res_st_rd1_out;
     res_st_addr_t res_st_rd2_addr_in;
     res_st_cell_t res_st_rd2_out;
+    res_st_addr_t res_st_rd3_addr_in;
+    res_st_cell_t res_st_rd3_out;
+    res_st_addr_t res_st_rd4_addr_in;
+    res_st_cell_t res_st_rd4_out;
 
     qu_core #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
@@ -73,7 +77,11 @@ module tb_qu_core
         .res_st_rd1_addr_in(res_st_rd1_addr_in),
         .res_st_rd1_out(res_st_rd1_out),
         .res_st_rd2_addr_in(res_st_rd2_addr_in),
-        .res_st_rd2_out(res_st_rd2_out)
+        .res_st_rd2_out(res_st_rd2_out),
+        .res_st_rd3_addr_in(res_st_rd3_addr_in),
+        .res_st_rd3_out(res_st_rd3_out),
+        .res_st_rd4_addr_in(res_st_rd4_addr_in),
+        .res_st_rd4_out(res_st_rd4_out)
     );
 
     always #5   clk = ~clk;
@@ -96,6 +104,8 @@ module tb_qu_core
         rf_data_in <= 'd0;
         res_st_rd1_addr_in <= 'd0;
         res_st_rd2_addr_in <= 'd0;
+        res_st_rd3_addr_in <= 'd0;
+        res_st_rd4_addr_in <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;

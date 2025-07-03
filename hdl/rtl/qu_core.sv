@@ -45,7 +45,11 @@ module qu_core
         input   res_st_addr_t res_st_rd1_addr_in,
         output  res_st_cell_t res_st_rd1_out,
         input   res_st_addr_t res_st_rd2_addr_in,
-        output  res_st_cell_t res_st_rd2_out
+        output  res_st_cell_t res_st_rd2_out,
+        input   res_st_addr_t res_st_rd3_addr_in,
+        output  res_st_cell_t res_st_rd3_out,
+        input   res_st_addr_t res_st_rd4_addr_in,
+        output  res_st_cell_t res_st_rd4_out
     );
 
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs1_addr_out;
@@ -114,7 +118,11 @@ module qu_core
         .rd1_addr(res_st_rd1_addr_in),
         .rd1_out(res_st_rd1_out),
         .rd2_addr(res_st_rd2_addr_in),
-        .rd2_out(res_st_rd2_out)
+        .rd2_out(res_st_rd2_out),
+        .rd3_addr(res_st_rd3_addr_in),
+        .rd3_out(res_st_rd3_out),
+        .rd4_addr(res_st_rd4_addr_in),
+        .rd4_out(res_st_rd4_out)
     );
 
     rf #(

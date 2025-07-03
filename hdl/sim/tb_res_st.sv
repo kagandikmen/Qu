@@ -1,6 +1,6 @@
 // Testbench for the reservation station
 // Created:     2025-06-30
-// Modified:    
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -32,6 +32,12 @@ module tb_res_st
     logic [$clog2(RES_ST_DEPTH)-1:0] rd2_addr;
     res_st_cell_t rd2_out;
 
+    logic [$clog2(RES_ST_DEPTH)-1:0] rd3_addr;
+    res_st_cell_t rd3_out;
+
+    logic [$clog2(RES_ST_DEPTH)-1:0] rd4_addr;
+    res_st_cell_t rd4_out;
+
     res_st #(
         .RES_ST_DEPTH(RES_ST_DEPTH)
     ) dut (
@@ -43,7 +49,11 @@ module tb_res_st
         .rd1_addr(rd1_addr),
         .rd1_out(rd1_out),
         .rd2_addr(rd2_addr),
-        .rd2_out(rd2_out)
+        .rd2_out(rd2_out),
+        .rd3_addr(rd3_addr),
+        .rd3_out(rd3_out),
+        .rd4_addr(rd4_addr),
+        .rd4_out(rd4_out)
     );
 
     always #5   clk = ~clk;
@@ -57,6 +67,8 @@ module tb_res_st
         wr_in <= 'b0;
         rd1_addr <= 'b0;
         rd2_addr <= 'b0;
+        rd3_addr <= 'b0;
+        rd4_addr <= 'b0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -87,6 +99,12 @@ module tb_res_st
         wr_en <= 1'b0;
         rd1_addr <= 'd2;
         rd2_addr <= 'd3;
+
+        @(posedge clk);
+        rd1_addr <= 'd0;
+        rd2_addr <= 'd0;
+        rd3_addr <= 'd2;
+        rd4_addr <= 'd3;
 
         #100;
         $finish;

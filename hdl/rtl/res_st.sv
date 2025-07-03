@@ -1,6 +1,6 @@
 // Reservation station of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-06-30
+// Modified:    2025-07-03
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -30,7 +30,13 @@ module res_st
         output  res_st_cell_t rd1_out,
 
         input   res_st_addr_t rd2_addr,
-        output  res_st_cell_t rd2_out
+        output  res_st_cell_t rd2_out,
+
+        input   res_st_addr_t rd3_addr,
+        output  res_st_cell_t rd3_out,
+
+        input   res_st_addr_t rd4_addr,
+        output  res_st_cell_t rd4_out
     );
 
     res_st_cell_t [RES_ST_DEPTH-1:0] res_st;
@@ -58,6 +64,8 @@ module res_st
     begin
         rd1_out = res_st[rd1_addr];
         rd2_out = res_st[rd2_addr];
+        rd3_out = res_st[rd3_addr];
+        rd4_out = res_st[rd4_addr];
     end
 
 endmodule
