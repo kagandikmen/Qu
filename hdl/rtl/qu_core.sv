@@ -42,14 +42,7 @@ module qu_core
         input   logic [PHY_RF_ADDR_WIDTH-1:0] rf_rd_addr,
         input   logic [31:0] rf_data_in,
 
-        input   res_st_addr_t res_st_rd1_addr_in,
-        output  res_st_cell_t res_st_rd1_out,
-        input   res_st_addr_t res_st_rd2_addr_in,
-        output  res_st_cell_t res_st_rd2_out,
-        input   res_st_addr_t res_st_rd3_addr_in,
-        output  res_st_cell_t res_st_rd3_out,
-        input   res_st_addr_t res_st_rd4_addr_in,
-        output  res_st_cell_t res_st_rd4_out
+        input   logic schedule_en
     );
 
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs1_addr_out;
@@ -63,11 +56,28 @@ module qu_core
     logic res_st_wr_en_in;
     res_st_addr_t res_st_wr_addr_in;
     res_st_cell_t res_st_wr_in;
+    res_st_addr_t res_st_rd1_addr_in;
+    res_st_cell_t res_st_rd1_out;
+    res_st_addr_t res_st_rd2_addr_in;
+    res_st_cell_t res_st_rd2_out;
+    res_st_addr_t res_st_rd3_addr_in;
+    res_st_cell_t res_st_rd3_out;
+    res_st_addr_t res_st_rd4_addr_in;
+    res_st_cell_t res_st_rd4_out;
 
     logic [PHY_RF_ADDR_WIDTH-1:0] rf_rs1_addr_in;
     logic [PHY_RF_ADDR_WIDTH-1:0] rf_rs2_addr_in;
     logic [31:0] rf_rs1_data_out;
     logic [31:0] rf_rs2_data_out;
+
+    res_st_addr_t back_end_res_st_rd1_addr_out;
+    res_st_cell_t back_end_res_st_rd1_in;
+    res_st_addr_t back_end_res_st_rd2_addr_out;
+    res_st_cell_t back_end_res_st_rd2_in;
+    res_st_addr_t back_end_res_st_rd3_addr_out;
+    res_st_cell_t back_end_res_st_rd3_in;
+    res_st_addr_t back_end_res_st_rd4_addr_out;
+    res_st_cell_t back_end_res_st_rd4_in;
 
     assign front_end_rf_rs1_data_in = rf_rs1_data_out;
     assign front_end_rf_rs2_data_in = rf_rs2_data_out;
@@ -75,9 +85,18 @@ module qu_core
     assign res_st_wr_en_in = front_end_res_st_wr_en_out;
     assign res_st_wr_addr_in = front_end_res_st_wr_addr_out;
     assign res_st_wr_in = front_end_res_st_data_out;
+    assign res_st_rd1_addr_in = back_end_res_st_rd1_addr_out;
+    assign res_st_rd2_addr_in = back_end_res_st_rd2_addr_out;
+    assign res_st_rd3_addr_in = back_end_res_st_rd3_addr_out;
+    assign res_st_rd4_addr_in = back_end_res_st_rd4_addr_out;
 
     assign rf_rs1_addr_in = front_end_rf_rs1_addr_out;
     assign rf_rs2_addr_in = front_end_rf_rs2_addr_out;
+
+    assign back_end_res_st_rd1_in = res_st_rd1_out;
+    assign back_end_res_st_rd2_in = res_st_rd2_out;
+    assign back_end_res_st_rd3_in = res_st_rd3_out;
+    assign back_end_res_st_rd4_in = res_st_rd4_out;
 
     front_end #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
@@ -140,7 +159,19 @@ module qu_core
         .data_in(rf_data_in)
     );
 
-    // TODO: Add back-end here when it is ready
+    back_end qu_back_end (
+        .clk(clk),
+        .rst(rst),
+        .schedule_en(schedule_en),
+        .res_st_rd1_addr(back_end_res_st_rd1_addr_out),
+        .res_st_rd1_in(back_end_res_st_rd1_in),
+        .res_st_rd2_addr(back_end_res_st_rd2_addr_out),
+        .res_st_rd2_in(back_end_res_st_rd2_in),
+        .res_st_rd3_addr(back_end_res_st_rd3_addr_out),
+        .res_st_rd3_in(back_end_res_st_rd3_in),
+        .res_st_rd4_addr(back_end_res_st_rd4_addr_out),
+        .res_st_rd4_in(back_end_res_st_rd4_in)
+    );
 
 endmodule
 

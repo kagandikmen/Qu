@@ -43,14 +43,7 @@ module tb_qu_core
     logic [PHY_RF_ADDR_WIDTH-1:0] rf_rd_addr;
     logic [31:0] rf_data_in;
 
-    res_st_addr_t res_st_rd1_addr_in;
-    res_st_cell_t res_st_rd1_out;
-    res_st_addr_t res_st_rd2_addr_in;
-    res_st_cell_t res_st_rd2_out;
-    res_st_addr_t res_st_rd3_addr_in;
-    res_st_cell_t res_st_rd3_out;
-    res_st_addr_t res_st_rd4_addr_in;
-    res_st_cell_t res_st_rd4_out;
+    logic schedule_en;
 
     qu_core #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
@@ -74,14 +67,7 @@ module tb_qu_core
         .rf_wr_en(rf_wr_en),
         .rf_rd_addr(rf_rd_addr),
         .rf_data_in(rf_data_in),
-        .res_st_rd1_addr_in(res_st_rd1_addr_in),
-        .res_st_rd1_out(res_st_rd1_out),
-        .res_st_rd2_addr_in(res_st_rd2_addr_in),
-        .res_st_rd2_out(res_st_rd2_out),
-        .res_st_rd3_addr_in(res_st_rd3_addr_in),
-        .res_st_rd3_out(res_st_rd3_out),
-        .res_st_rd4_addr_in(res_st_rd4_addr_in),
-        .res_st_rd4_out(res_st_rd4_out)
+        .schedule_en(schedule_en)
     );
 
     always #5   clk = ~clk;
@@ -102,10 +88,7 @@ module tb_qu_core
         rf_wr_en <= 1'b0;
         rf_rd_addr <= 'd0;
         rf_data_in <= 'd0;
-        res_st_rd1_addr_in <= 'd0;
-        res_st_rd2_addr_in <= 'd0;
-        res_st_rd3_addr_in <= 'd0;
-        res_st_rd4_addr_in <= 'd0;
+        schedule_en <= 1'b0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -130,6 +113,12 @@ module tb_qu_core
 
         repeat(4) @(posedge clk);
         rn_stall <= 1'b0;
+
+        repeat(20) @(posedge clk);
+        schedule_en <= 1'b1;
+
+        repeat(20) @(posedge clk);
+        schedule_en <= 1'b0;
 
         #200;
         $finish;
