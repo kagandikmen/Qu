@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 // See LICENSE for details
 
+// TODO: Reimplement enable logic
+
 `ifndef QU_RENAME
 `define QU_RENAME
 
@@ -44,8 +46,11 @@ module rename
     res_st_addr_t wr_ptr;
     res_st_cell_t data_out_buf;
     res_st_addr_t [PHY_RF_DEPTH-1:0] qi_list;
+    logic uop_valid;
 
-    assign res_st_wr_en_out = uop_in.uop_ic.optype[0];
+    assign uop_valid = uop_in.uop_ic.optype[0];
+
+    assign res_st_wr_en_out = uop_valid;
     assign res_st_wr_addr_out = wr_ptr;
     assign res_st_data_out = data_out_buf;
 
@@ -93,7 +98,7 @@ module rename
             qi_list <= '{default: 'b0};
             wr_ptr <= 'b0;
         end
-        else if(en)
+        else if(uop_valid)
         begin
             qi_list[uop_in.uop_ic.rd] <= res_st_wr_addr_out;
             wr_ptr <= wr_ptr + 1;
