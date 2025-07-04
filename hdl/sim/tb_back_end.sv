@@ -1,6 +1,6 @@
 // Testbench for the top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    
+// Modified:    2025-07-04
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -24,6 +24,9 @@ module tb_back_end
     res_st_addr_t res_st_rd4_addr;
     res_st_cell_t res_st_rd4_in;
 
+    logic [31:0] value_out;
+    res_st_cell_t op_out;
+
     back_end dut (
         .clk(clk),
         .rst(rst),
@@ -35,7 +38,9 @@ module tb_back_end
         .res_st_rd3_addr(res_st_rd3_addr),
         .res_st_rd3_in(res_st_rd3_in),
         .res_st_rd4_addr(res_st_rd4_addr),
-        .res_st_rd4_in(res_st_rd4_in)
+        .res_st_rd4_in(res_st_rd4_in),
+        .value_out(value_out),
+        .op_out(op_out)
     );
 
     always #5   clk = ~clk;
