@@ -1,6 +1,6 @@
 // Rename stage testbench
 // Created:     2025-06-30
-// Modified:    2025-06-30
+// Modified:    2025-07-04
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -19,7 +19,6 @@ module tb_rename
 
     logic clk;
     logic rst;
-    logic en;
 
     uop_t uop_in;
 
@@ -41,7 +40,6 @@ module tb_rename
     ) dut (
         .clk(clk),
         .rst(rst),
-        .en(en),
         .uop_in(uop_in),
         .busy_table_rd1_addr(busy_table_rd1_addr),
         .busy_table_data1_in(busy_table_data1_in),
@@ -62,7 +60,6 @@ module tb_rename
     begin
         clk <= 1'b0;
         rst <= 1'b0;
-        en <= 1'b1;
         uop_in <= 'b0;
         busy_table_data1_in <= 1'b0;
         busy_table_data2_in <= 1'b0;
@@ -74,6 +71,7 @@ module tb_rename
 
         @(posedge clk);
         rst <= 1'b0;
+        uop_in.uop_ic.optype <= 3'b011;
         uop_in.uop_ic.rd <= 'd4;
         uop_in.uop_ic.rs1 <= 'd8;
         uop_in.uop_ic.rs2 <= 'd12;
@@ -98,7 +96,7 @@ module tb_rename
         busy_table_data1_in <= 1'b0;
 
         @(posedge clk);
-        en <= 1'b0;
+        uop_in.uop_ic.optype <= 3'b000;
         
         #100;
         $finish;

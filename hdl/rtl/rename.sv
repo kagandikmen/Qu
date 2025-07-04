@@ -1,12 +1,10 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-07-03
+// Modified:    2025-07-04
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
 // See LICENSE for details
-
-// TODO: Reimplement enable logic
 
 `ifndef QU_RENAME
 `define QU_RENAME
@@ -21,7 +19,6 @@ module rename
     #()(
         input   logic clk,
         input   logic rst,
-        input   logic en,
 
         input   uop_t uop_in,
 

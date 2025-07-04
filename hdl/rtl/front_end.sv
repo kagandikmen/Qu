@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-03
+// Modified:    2025-07-04
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -52,7 +52,6 @@ module front_end
 
     logic startup_ctrl_if_en_out;
     logic startup_ctrl_id_en_out;
-    logic startup_ctrl_rn_en_out;
 
     logic fetch_branch_in;
     logic fetch_jump_in;
@@ -123,7 +122,7 @@ module front_end
         .fifo_mp_rn_empty(fifo_mp_rn_empty_out),
         .if_en(startup_ctrl_if_en_out),
         .id_en(startup_ctrl_id_en_out),
-        .rn_en(startup_ctrl_rn_en_out)
+        .rn_en()
     );
 
     fetch #(
@@ -232,7 +231,6 @@ module front_end
     rename #() qu_rename (
         .clk(clk),
         .rst(rst),
-        .en(rename_en),
         .uop_in(rename_uop_in),
         .busy_table_rd1_addr(rename_busy_table_rd1_addr_out),
         .busy_table_data1_in(rename_busy_table_data1_in),
@@ -281,7 +279,6 @@ module front_end
     assign fifo_mp_rn_wr_en_in = busy_table_wr_en_in;   // whatever is enabling wr_en of busy table should enable the fifo too
     assign fifo_mp_rn_data_in = map_uop_out;
 
-    assign rename_en = startup_ctrl_rn_en_out && !rn_stall;
     assign rename_uop_in = fifo_mp_rn_data_out;
     assign rename_busy_table_data1_in = busy_table_data1_out;
     assign rename_busy_table_data2_in = busy_table_data2_out;
