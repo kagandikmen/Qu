@@ -1,0 +1,3 @@
+[submodule "hdl/rtl/luftALU"]
+	path = hdl/rtl/luftALU
+	url = git@github.com:kagandikmen/luftALU.git
