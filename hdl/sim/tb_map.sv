@@ -1,6 +1,6 @@
 // Map stage testbench
 // Created:     2025-06-29
-// Modified:    2025-06-30
+// Modified:    2025-07-04
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -72,7 +72,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
         
         @(posedge clk);
@@ -86,7 +86,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         @(posedge clk);
@@ -100,7 +100,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         @(posedge clk);
@@ -114,7 +114,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         @(posedge clk);
@@ -128,7 +128,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         @(posedge clk);
@@ -142,7 +142,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         @(posedge clk);
@@ -156,7 +156,7 @@ module tb_map
         uop_in.uop_ic.rd_valid = RD_VALID;
         uop_in.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-        uop_in.uop_ic.alu_cu_input_opd3_opd4_sel = ALU_CU_INPUT_OPD3_OPD4_SEL_NO;
+        uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
 
         repeat(6) @(posedge clk);
