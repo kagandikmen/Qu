@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    2025-07-03
+// Modified:    2025-07-04
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -45,6 +45,11 @@ module qu_core
         input   logic schedule_en
     );
 
+    logic startup_ctrl_if_en_out;
+    logic startup_ctrl_id_en_out;
+
+    logic front_end_if_en;
+    logic front_end_id_en;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs1_addr_out;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs2_addr_out;
     logic [31:0] front_end_rf_rs1_data_in;
@@ -79,6 +84,8 @@ module qu_core
     res_st_addr_t back_end_res_st_rd4_addr_out;
     res_st_cell_t back_end_res_st_rd4_in;
 
+    assign front_end_if_en = startup_ctrl_if_en_out;
+    assign front_end_id_en = startup_ctrl_if_en_out;
     assign front_end_rf_rs1_data_in = rf_rs1_data_out;
     assign front_end_rf_rs2_data_in = rf_rs2_data_out;
 
@@ -98,6 +105,13 @@ module qu_core
     assign back_end_res_st_rd3_in = res_st_rd3_out;
     assign back_end_res_st_rd4_in = res_st_rd4_out;
 
+    startup_ctrl qu_startup_ctrl (
+        .clk(clk),
+        .rst(rst),
+        .if_en(startup_ctrl_if_en_out),
+        .id_en(startup_ctrl_id_en_out)
+    );
+
     front_end #(
         .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .INSTR_WIDTH(INSTR_WIDTH),
@@ -108,6 +122,8 @@ module qu_core
     ) qu_front_end (
         .clk(clk),
         .rst(rst),
+        .if_en(front_end_if_en),
+        .id_en(front_end_id_en),
         .branch(branch),
         .jump(jump),
         .exception(exception),

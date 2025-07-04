@@ -26,6 +26,8 @@ module front_end
     )(
         input   logic clk,
         input   logic rst,
+        input   logic if_en,
+        input   logic id_en,
 
         input   logic branch,
         input   logic jump,
@@ -49,9 +51,6 @@ module front_end
         output  res_st_addr_t res_st_wr_addr_out,
         output  res_st_cell_t res_st_data_out
     );
-
-    logic startup_ctrl_if_en_out;
-    logic startup_ctrl_id_en_out;
 
     logic fetch_branch_in;
     logic fetch_jump_in;
@@ -115,15 +114,6 @@ module front_end
     logic [31:0]rename_phy_rf_rs1_data_in;
     logic [PHY_RF_ADDR_WIDTH-1:0] rename_phy_rf_rs2_addr_out;
     logic [31:0]rename_phy_rf_rs2_data_in;
-
-    startup_ctrl qu_startup_ctrl (
-        .clk(clk),
-        .rst(rst),
-        .fifo_mp_rn_empty(fifo_mp_rn_empty_out),
-        .if_en(startup_ctrl_if_en_out),
-        .id_en(startup_ctrl_id_en_out),
-        .rn_en()
-    );
 
     fetch #(
         .INSTR_WIDTH(INSTR_WIDTH),
@@ -254,8 +244,8 @@ module front_end
     assign fetch_stall_in = stall || if_stall || fifo_if_id_full_out;
     assign fetch_pc_override_in = pc_override;
     
-    assign fifo_if_id_rd_en_in = !stall && !id_stall && !fifo_if_id_empty_out && startup_ctrl_id_en_out;
-    assign fifo_if_id_wr_en_in = !fetch_stall_in && startup_ctrl_if_en_out;
+    assign fifo_if_id_rd_en_in = !stall && !id_stall && !fifo_if_id_empty_out && id_en;
+    assign fifo_if_id_wr_en_in = !fetch_stall_in && if_en;
     assign fifo_if_id_data_in = fetch_instr_out;
     
     assign decode_instr_in = fifo_if_id_data_out;
