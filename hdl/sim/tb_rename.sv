@@ -1,6 +1,6 @@
 // Rename stage testbench
 // Created:     2025-06-30
-// Modified:    2025-07-04
+// Modified:    2025-07-05
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -36,6 +36,9 @@ module tb_rename
     res_st_addr_t res_st_wr_addr_out;
     res_st_cell_t res_st_data_out;
 
+    rob_addr_t rob_tail_ptr;
+    logic rob_incr_tail_ptr;
+
     rename #(
     ) dut (
         .clk(clk),
@@ -51,7 +54,9 @@ module tb_rename
         .phy_rf_rs2_data_in(phy_rf_rs2_data_in),
         .res_st_wr_en_out(res_st_wr_en_out),
         .res_st_wr_addr_out(res_st_wr_addr_out),
-        .res_st_data_out(res_st_data_out)
+        .res_st_data_out(res_st_data_out),
+        .rob_tail_ptr(rob_tail_ptr),
+        .rob_incr_tail_ptr(rob_incr_tail_ptr)
     );
 
     always #5   clk = ~clk;
@@ -65,6 +70,7 @@ module tb_rename
         busy_table_data2_in <= 1'b0;
         phy_rf_rs1_data_in <= 'd2;
         phy_rf_rs2_data_in <= 'd4;
+        rob_tail_ptr <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -82,18 +88,21 @@ module tb_rename
         phy_rf_rs2_data_in <= 'd6;
         uop_in.uop_ic.rs1 <= 'd20;
         uop_in.uop_ic.rs2 <= 'd24;
+        rob_tail_ptr <= 'd1;
 
         @(posedge clk);
         phy_rf_rs1_data_in <= 'd5;
         uop_in.uop_ic.rd <= 'd20;
         uop_in.uop_ic.rs1 <= 'd16;
         busy_table_data1_in <= 1'b1;
+        rob_tail_ptr <= 'd2;
 
         @(posedge clk);
         phy_rf_rs1_data_in <= 'd10;
         uop_in.uop_ic.rd <= 'd30;
         uop_in.uop_ic.rs1 <= 'd35;
         busy_table_data1_in <= 1'b0;
+        rob_tail_ptr <= 'd3;
 
         @(posedge clk);
         uop_in.uop_ic.optype <= 3'b000;

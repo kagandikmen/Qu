@@ -1,6 +1,6 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-07-04
+// Modified:    2025-07-05
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -37,7 +37,11 @@ module rename
         // reservation station interface
         output  logic res_st_wr_en_out,
         output  res_st_addr_t res_st_wr_addr_out,
-        output  res_st_cell_t res_st_data_out
+        output  res_st_cell_t res_st_data_out,
+        
+        // reorder buffer interface
+        input   rob_addr_t rob_tail_ptr,
+        output  logic rob_incr_tail_ptr
     );
 
     res_st_addr_t wr_ptr;
@@ -50,6 +54,8 @@ module rename
     assign res_st_wr_en_out = uop_valid;
     assign res_st_wr_addr_out = wr_ptr;
     assign res_st_data_out = data_out_buf;
+
+    assign rob_incr_tail_ptr = uop_valid;
 
     always_comb
     begin
@@ -83,6 +89,7 @@ module rename
             data_out_buf.vk = phy_rf_rs2_data_in;
         end
 
+        data_out_buf.rob_addr = rob_tail_ptr;
         data_out_buf.a = 'd0;
         data_out_buf.op = uop_in[RES_ST_OP_WIDTH-1:0];
         data_out_buf.busy = 1'b1;
