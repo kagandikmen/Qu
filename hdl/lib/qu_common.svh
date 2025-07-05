@@ -1,6 +1,6 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-07-03
+// Modified:    2025-07-05
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -27,6 +27,12 @@ package qu_common;
 
     parameter int LOG_RF_DEPTH = 32;
     parameter int LOG_RF_WIDTH = 32;
+
+    parameter int PHY_RF_DEPTH = 128;
+    parameter int PHY_RF_ADDR_WIDTH = $clog2(PHY_RF_DEPTH);
+
+    parameter int ROB_DEPTH = 8;
+    parameter int ROB_ADDR_WIDTH = $clog2(ROB_DEPTH);
 
     //
     //  funct3 parameters
@@ -191,12 +197,26 @@ package qu_common;
         opcode_t opcode;
     } uj_instr_t;
 
+    parameter logic [1:0] ROB_STATE_EMPTY = 2'b00;
+    parameter logic [1:0] ROB_STATE_RETIRED = 2'b01;
+    parameter logic [1:0] ROB_STATE_EXECUTE = 2'b10;
+    parameter logic [1:0] ROB_STATE_PENDING = 2'b11;
+
+    typedef logic [ROB_ADDR_WIDTH-1:0] rob_addr_t;
+
+    typedef struct packed {
+        logic [31:0] value;
+        logic [PHY_RF_ADDR_WIDTH-1:0] target_phy_reg;
+        logic [1:0] state;
+    } rob_cell_t;
+
     typedef logic [RES_ST_VDATA_WIDTH-1:0] res_st_vdata_t;
     typedef logic [RES_ST_ADATA_WIDTH-1:0] res_st_adata_t;
     typedef logic [RES_ST_ADDR_WIDTH-1:0] res_st_addr_t;
     typedef logic [RES_ST_OP_WIDTH-1:0] res_st_op_t;
 
     typedef struct packed {
+        rob_addr_t rob_addr;
         res_st_adata_t a;
         res_st_vdata_t vk;
         res_st_vdata_t vj;

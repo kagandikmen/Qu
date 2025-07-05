@@ -1,6 +1,6 @@
 // Micro-op library for The Qu Processor
 // Created:     2025-06-28
-// Modified:    2025-07-04
+// Modified:    2025-07-05
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -9,15 +9,17 @@
 `ifndef QU_UOP
 `define QU_UOP
 
+`include "qu_common.svh"
+
 package qu_uop;
+
+    import qu_common::PHY_RF_ADDR_WIDTH;
 
     //
     // configuration parameters
     //
 
     parameter int UOP_WIDTH = 67;
-    parameter int PHY_RF_DEPTH = 128;
-    parameter int PHY_RF_ADDR_WIDTH = $clog2(PHY_RF_DEPTH);
 
     //
     //  micro-op encoding parameters
