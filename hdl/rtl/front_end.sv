@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-04
+// Modified:    2025-07-06
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -39,6 +39,11 @@ module front_end
         input   logic id_stall,
         input   logic mp_stall,
         input   logic rn_stall,
+
+        // reorder buffer interface (back-end)
+        input   logic busy_table_wr_en,
+        input   logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr,
+        input   logic busy_table_wr_data,
 
         // physical register file interface
         output  logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs1_addr,
@@ -90,12 +95,15 @@ module front_end
     logic map_uop_data_in_proper;
 
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_rd1_addr_in;
-    logic busy_table_data1_out;
+    logic busy_table_rd1_out;
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_rd2_addr_in;
-    logic busy_table_data2_out;
-    logic busy_table_wr_en_in;
-    logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr_in;
-    logic busy_table_data_in;
+    logic busy_table_rd2_out;
+    logic busy_table_wr1_en_in;
+    logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr1_addr_in;
+    logic busy_table_wr1_in;
+    logic busy_table_wr2_en_in;
+    logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr2_addr_in;
+    logic busy_table_wr2_in;
 
     logic fifo_mp_rn_rd_en_in;
     uop_t fifo_mp_rn_data_out;
@@ -194,12 +202,15 @@ module front_end
         .clk(clk),
         .rst(rst),
         .rd1_addr(busy_table_rd1_addr_in),        
-        .data1_out(busy_table_data1_out),       
+        .rd1_out(busy_table_rd1_out),       
         .rd2_addr(busy_table_rd2_addr_in),        
-        .data2_out(busy_table_data2_out),       
-        .wr_en(busy_table_wr_en_in),
-        .wr_addr(busy_table_wr_addr_in),
-        .data_in(busy_table_data_in)
+        .rd2_out(busy_table_rd2_out),       
+        .wr1_en(busy_table_wr1_en_in),
+        .wr1_addr(busy_table_wr1_addr_in),
+        .wr1_in(busy_table_wr1_in),
+        .wr2_en(busy_table_wr2_en_in),
+        .wr2_addr(busy_table_wr2_addr_in),
+        .wr2_in(busy_table_wr2_in)
     );
 
     fifo #(
@@ -261,17 +272,20 @@ module front_end
 
     assign busy_table_rd1_addr_in = rename_busy_table_rd1_addr_out;
     assign busy_table_rd2_addr_in = rename_busy_table_rd2_addr_out;
-    assign busy_table_wr_en_in = map_busy_table_wr_en_out;
-    assign busy_table_wr_addr_in = map_busy_table_wr_addr_out;
-    assign busy_table_data_in = map_busy_table_data_out;
+    assign busy_table_wr1_en_in = map_busy_table_wr_en_out;
+    assign busy_table_wr1_addr_in = map_busy_table_wr_addr_out;
+    assign busy_table_wr1_in = map_busy_table_data_out;
+    assign busy_table_wr2_en_in = busy_table_wr_en;
+    assign busy_table_wr2_addr_in = busy_table_wr_addr;
+    assign busy_table_wr2_in = busy_table_wr_data;
 
     assign fifo_mp_rn_rd_en_in = !stall && !rn_stall && !fifo_mp_rn_empty_out;
-    assign fifo_mp_rn_wr_en_in = busy_table_wr_en_in;   // whatever is enabling wr_en of busy table should enable the fifo too
+    assign fifo_mp_rn_wr_en_in = busy_table_wr1_en_in;   // whatever is enabling wr_en of busy table should enable the fifo too
     assign fifo_mp_rn_data_in = map_uop_out;
 
     assign rename_uop_in = fifo_mp_rn_data_out;
-    assign rename_busy_table_data1_in = busy_table_data1_out;
-    assign rename_busy_table_data2_in = busy_table_data2_out;
+    assign rename_busy_table_data1_in = busy_table_rd1_out;
+    assign rename_busy_table_data2_in = busy_table_rd2_out;
     assign rename_phy_rf_rs1_data_in = rf_rs1_data_in;
     assign rename_phy_rf_rs2_data_in = rf_rs2_data_in;
 
