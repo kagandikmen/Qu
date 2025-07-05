@@ -45,6 +45,8 @@ module tb_front_end
     logic busy_table_wr_en;
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr;
     logic busy_table_wr_data;
+    rob_addr_t rob_tail_ptr;
+    logic rob_incr_tail_ptr;
 
     logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs1_addr;
     logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs2_addr;
@@ -79,6 +81,8 @@ module tb_front_end
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
         .busy_table_wr_data(busy_table_wr_data),
+        .rob_tail_ptr(rob_tail_ptr),
+        .rob_incr_tail_ptr(rob_incr_tail_ptr),
         .rf_rs1_addr(rf_rs1_addr),
         .rf_rs2_addr(rf_rs2_addr),
         .rf_rs1_data_in(rf_rs1_data_in),
@@ -114,6 +118,7 @@ module tb_front_end
         busy_table_wr_en <= 1'b0;
         busy_table_wr_addr <= 'd0;
         busy_table_wr_data <= 1'b0;
+        rob_tail_ptr <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;

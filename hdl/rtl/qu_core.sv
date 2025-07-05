@@ -53,6 +53,8 @@ module qu_core
     logic front_end_busy_table_wr_en_in;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_busy_table_wr_addr_in;
     logic front_end_busy_table_wr_data_in;
+    rob_addr_t front_end_rob_tail_ptr_in;
+    logic front_end_rob_incr_tail_ptr_out;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs1_addr_out;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs2_addr_out;
     logic [31:0] front_end_rf_rs1_data_in;
@@ -94,6 +96,7 @@ module qu_core
     assign front_end_busy_table_wr_en_in = 1'b0;
     assign front_end_busy_table_wr_addr_in = 'd0;
     assign front_end_busy_table_wr_data_in = 1'b0;
+    assign front_end_rob_tail_ptr_in = 'd0;
 
     assign res_st_wr_en_in = front_end_res_st_wr_en_out;
     assign res_st_wr_addr_in = front_end_res_st_wr_addr_out;
@@ -142,6 +145,8 @@ module qu_core
         .busy_table_wr_en(front_end_busy_table_wr_en_in),
         .busy_table_wr_addr(front_end_busy_table_wr_addr_in),
         .busy_table_wr_data(front_end_busy_table_wr_data_in),
+        .rob_tail_ptr(front_end_rob_tail_ptr_in),
+        .rob_incr_tail_ptr(front_end_rob_incr_tail_ptr_out),
         .rf_rs1_addr(front_end_rf_rs1_addr_out),
         .rf_rs2_addr(front_end_rf_rs2_addr_out),
         .rf_rs1_data_in(front_end_rf_rs1_data_in),

@@ -44,6 +44,8 @@ module front_end
         input   logic busy_table_wr_en,
         input   logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr,
         input   logic busy_table_wr_data,
+        input   rob_addr_t rob_tail_ptr,
+        output  logic rob_incr_tail_ptr,
 
         // physical register file interface
         output  logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs1_addr,
@@ -243,7 +245,9 @@ module front_end
         .phy_rf_rs2_data_in(rename_phy_rf_rs2_data_in),
         .res_st_wr_en_out(res_st_wr_en_out),
         .res_st_wr_addr_out(res_st_wr_addr_out),
-        .res_st_data_out(res_st_data_out)
+        .res_st_data_out(res_st_data_out),
+        .rob_tail_ptr(rob_tail_ptr),
+        .rob_incr_tail_ptr(rob_incr_tail_ptr)
     );
 
     assign rf_rs1_addr = rename_phy_rf_rs1_addr_out;
