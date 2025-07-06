@@ -40,12 +40,13 @@ module front_end
         input   logic mp_stall,
         input   logic rn_stall,
 
-        // reorder buffer interface (back-end)
+        // retire stage interface (back-end)
         input   logic busy_table_wr_en,
         input   logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr,
         input   logic busy_table_wr_data,
         input   rob_addr_t rob_tail_ptr,
         output  logic rob_incr_tail_ptr,
+        input   logic rob_full,
 
         // physical register file interface
         output  logic [$clog2(PHY_RF_DEPTH)-1:0] rf_rs1_addr,
@@ -283,7 +284,7 @@ module front_end
     assign busy_table_wr2_addr_in = busy_table_wr_addr;
     assign busy_table_wr2_in = busy_table_wr_data;
 
-    assign fifo_mp_rn_rd_en_in = !stall && !rn_stall && !fifo_mp_rn_empty_out;
+    assign fifo_mp_rn_rd_en_in = !stall && !rn_stall && !fifo_mp_rn_empty_out && !rob_full;
     assign fifo_mp_rn_wr_en_in = busy_table_wr1_en_in;   // whatever is enabling wr_en of busy table should enable the fifo too
     assign fifo_mp_rn_data_in = map_uop_out;
 
