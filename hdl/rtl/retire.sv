@@ -1,6 +1,6 @@
 // Retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    
+// Modified:    2025-07-07
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -103,18 +103,18 @@ module retire
     begin
         if(rob_incr_tail_ptr)
         begin
-            tail_ptr <= tail_ptr + 1;
+            tail_ptr <= (tail_ptr == ROB_DEPTH-1) ? 'd1 : tail_ptr + 1;
         end
 
         if(res_st_retire_en_buf)
         begin
-            head_ptr <= head_ptr + 1;
+            head_ptr <= (head_ptr == ROB_DEPTH-1) ? 'd1 : head_ptr + 1;
         end
 
         if(rst)
         begin
-            head_ptr <= 'd0;
-            tail_ptr <= 'd0;
+            head_ptr <= 'd1;
+            tail_ptr <= 'd1;
         end
     end
 
@@ -131,7 +131,7 @@ module retire
         busy_table_wr_data = 1'b0;
 
         res_st_retire_en_buf = rob_rd1_out.state[1] && rob_rd1_out.state[0];
-        res_st_retire_rob_addr = rob_rd1_out.dest;
+        res_st_retire_rob_addr = head_ptr;
         res_st_retire_value = rob_rd1_out.value;
 
         rob_wr2_en = rob_rd1_out.state[1] && rob_rd1_out.state[0];

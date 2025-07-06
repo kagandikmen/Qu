@@ -1,6 +1,6 @@
 // Decode stage of the instruction pipeline
 // Created:     2025-06-27
-// Modified:    2025-07-04
+// Modified:    2025-07-07
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -97,13 +97,13 @@ module decode
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LT;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD3_OPD4;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLTU : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LTU;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD3_OPD4;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_XOR  : 
                 begin

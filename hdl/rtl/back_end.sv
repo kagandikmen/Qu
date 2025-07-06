@@ -1,6 +1,6 @@
 // Top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    2025-07-06
+// Modified:    2025-07-07
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -107,7 +107,7 @@ module back_end
 
     assign execute_op_in = fifo_sh_ex_data_out;
 
-    assign fifo_ex_rt_rd_en = !fifo_sh_ex_empty_out;
+    assign fifo_ex_rt_rd_en = !fifo_ex_rt_empty_out;
     assign fifo_ex_rt_wr_en = execute_op_out[0];
     assign fifo_ex_rt_data_in = {execute_value_out, execute_op_out};
 
