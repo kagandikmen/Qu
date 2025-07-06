@@ -74,6 +74,8 @@ module qu_core
     res_st_cell_t res_st_rd3_out;
     res_st_addr_t res_st_rd4_addr_in;
     res_st_cell_t res_st_rd4_out;
+    logic res_st_retire_en;
+    res_st_addr_t res_st_retire_addr_in;
 
     logic [PHY_RF_ADDR_WIDTH-1:0] rf_rs1_addr_in;
     logic [PHY_RF_ADDR_WIDTH-1:0] rf_rs2_addr_in;
@@ -105,6 +107,8 @@ module qu_core
     assign res_st_rd2_addr_in = back_end_res_st_rd2_addr_out;
     assign res_st_rd3_addr_in = back_end_res_st_rd3_addr_out;
     assign res_st_rd4_addr_in = back_end_res_st_rd4_addr_out;
+    assign res_st_retire_en = 1'b0;
+    assign res_st_retire_addr_in = 'd0;
 
     assign rf_rs1_addr_in = front_end_rf_rs1_addr_out;
     assign rf_rs2_addr_in = front_end_rf_rs2_addr_out;
@@ -171,7 +175,9 @@ module qu_core
         .rd3_addr(res_st_rd3_addr_in),
         .rd3_out(res_st_rd3_out),
         .rd4_addr(res_st_rd4_addr_in),
-        .rd4_out(res_st_rd4_out)
+        .rd4_out(res_st_rd4_out),
+        .retire_en(res_st_retire_en),
+        .retire_addr(res_st_retire_addr_in)
     );
 
     rf #(
