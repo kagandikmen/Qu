@@ -1,6 +1,6 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-07-05
+// Modified:    2025-07-06
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -197,6 +197,9 @@ package qu_common;
         opcode_t opcode;
     } uj_instr_t;
 
+    typedef logic [PHY_RF_ADDR_WIDTH-1:0] phy_rf_addr_t;
+    typedef logic [31:0] phy_rf_data_t;
+
     parameter logic [1:0] ROB_STATE_EMPTY = 2'b00;
     parameter logic [1:0] ROB_STATE_RETIRED = 2'b01;
     parameter logic [1:0] ROB_STATE_EXECUTE = 2'b10;
@@ -206,7 +209,7 @@ package qu_common;
 
     typedef struct packed {
         logic [31:0] value;
-        logic [PHY_RF_ADDR_WIDTH-1:0] target_phy_reg;
+        logic [PHY_RF_ADDR_WIDTH-1:0] dest;
         logic [1:0] state;
     } rob_cell_t;
 
@@ -217,11 +220,12 @@ package qu_common;
 
     typedef struct packed {
         rob_addr_t rob_addr;
+        phy_rf_addr_t dest;
         res_st_adata_t a;
         res_st_vdata_t vk;
         res_st_vdata_t vj;
-        res_st_addr_t qk;
-        res_st_addr_t qj;
+        rob_addr_t qk;
+        rob_addr_t qj;
         res_st_op_t op;
         logic busy;
     } res_st_cell_t;
