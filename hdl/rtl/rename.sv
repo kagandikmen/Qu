@@ -1,6 +1,6 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-07-05
+// Modified:    2025-07-07
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -44,15 +44,15 @@ module rename
         output  logic rob_incr_tail_ptr
     );
 
-    res_st_addr_t wr_ptr;
+    res_st_addr_t res_st_wr_ptr;
     res_st_cell_t data_out_buf;
-    res_st_addr_t [PHY_RF_DEPTH-1:0] qi_list;
+    rob_addr_t [PHY_RF_DEPTH-1:0] qi_list;
     logic uop_valid;
 
     assign uop_valid = uop_in.uop_ic.optype[0];
 
     assign res_st_wr_en_out = uop_valid;
-    assign res_st_wr_addr_out = wr_ptr;
+    assign res_st_wr_addr_out = res_st_wr_ptr;
     assign res_st_data_out = data_out_buf;
 
     assign rob_incr_tail_ptr = uop_valid;
@@ -90,6 +90,7 @@ module rename
         end
 
         data_out_buf.rob_addr = rob_tail_ptr;
+        data_out_buf.dest = uop_in.uop_ic.rd;
         data_out_buf.a = 'd0;
         data_out_buf.op = uop_in[RES_ST_OP_WIDTH-1:0];
         data_out_buf.busy = 1'b1;
@@ -100,12 +101,12 @@ module rename
         if(rst)
         begin
             qi_list <= '{default: 'b0};
-            wr_ptr <= 'b0;
+            res_st_wr_ptr <= 'b0;
         end
         else if(uop_valid)
         begin
-            qi_list[uop_in.uop_ic.rd] <= res_st_wr_addr_out;
-            wr_ptr <= wr_ptr + 1;
+            qi_list[uop_in.uop_ic.rd] <= rob_tail_ptr;
+            res_st_wr_ptr <= res_st_wr_ptr + 1;
         end
     end
 

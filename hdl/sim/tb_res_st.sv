@@ -1,6 +1,6 @@
 // Testbench for the reservation station
 // Created:     2025-06-30
-// Modified:    2025-07-06
+// Modified:    2025-07-07
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -39,7 +39,8 @@ module tb_res_st
     res_st_cell_t rd4_out;
 
     logic retire_en;
-    res_st_addr_t retire_addr;
+    rob_addr_t retire_addr;
+    phy_rf_data_t retire_value;
 
     res_st #(
         .RES_ST_DEPTH(RES_ST_DEPTH)
@@ -58,7 +59,8 @@ module tb_res_st
         .rd4_addr(rd4_addr),
         .rd4_out(rd4_out),
         .retire_en(retire_en),
-        .retire_addr(retire_addr)
+        .retire_addr(retire_addr),
+        .retire_value(retire_value)
     );
 
     always #5   clk = ~clk;
@@ -76,6 +78,7 @@ module tb_res_st
         rd4_addr <= 'b0;
         retire_en <= 1'b0;
         retire_addr <= 'd0;
+        retire_value <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -116,6 +119,7 @@ module tb_res_st
         @(posedge clk);
         retire_en <= 1'b1;
         retire_addr <= 'd2;
+        retire_value <= 'd12;
 
         @(posedge clk);
         retire_en <= 1'b0;

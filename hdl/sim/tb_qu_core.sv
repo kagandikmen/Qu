@@ -1,6 +1,6 @@
 // The Qu Processor CPU core testbench
 // Created:     2025-06-27
-// Modified:    2025-07-03
+// Modified:    2025-07-07
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -21,9 +21,9 @@ module tb_qu_core
 
     localparam INSTR_WIDTH = QU_INSTR_WIDTH;
     localparam PC_WIDTH = QU_PC_WIDTH;
-    localparam FIFO_IF_ID_DEPTH = 4;
-    localparam FIFO_ID_MP_DEPTH = 4;
-    localparam FIFO_MP_RN_DEPTH = 4;
+    localparam FIFO_IF_ID_DEPTH = 16;
+    localparam FIFO_ID_MP_DEPTH = 16;
+    localparam FIFO_MP_RN_DEPTH = 16;
     
     logic clk;
     logic rst;
@@ -38,10 +38,6 @@ module tb_qu_core
     logic id_stall;
     logic mp_stall;
     logic rn_stall;
-
-    logic rf_wr_en;
-    logic [PHY_RF_ADDR_WIDTH-1:0] rf_rd_addr;
-    logic [31:0] rf_data_in;
 
     logic schedule_en;
 
@@ -64,9 +60,6 @@ module tb_qu_core
         .id_stall(id_stall),
         .mp_stall(mp_stall),
         .rn_stall(rn_stall),
-        .rf_wr_en(rf_wr_en),
-        .rf_rd_addr(rf_rd_addr),
-        .rf_data_in(rf_data_in),
         .schedule_en(schedule_en)
     );
 
@@ -85,9 +78,6 @@ module tb_qu_core
         id_stall <= 1'b0;
         mp_stall <= 1'b0;
         rn_stall <= 1'b0;
-        rf_wr_en <= 1'b0;
-        rf_rd_addr <= 'd0;
-        rf_data_in <= 'd0;
         schedule_en <= 1'b0;
 
         @(posedge clk);
@@ -96,29 +86,26 @@ module tb_qu_core
         repeat(5) @(posedge clk);
         rst <= 1'b0;
 
-        repeat(4) @(posedge clk);
-        id_stall <= 1'b1;
+        // repeat(4) @(posedge clk);
+        // id_stall <= 1'b1;
 
-        repeat(4) @(posedge clk);
-        id_stall <= 1'b0;
+        // repeat(4) @(posedge clk);
+        // id_stall <= 1'b0;
 
-        repeat(4) @(posedge clk);
-        mp_stall <= 1'b1;
+        // repeat(4) @(posedge clk);
+        // mp_stall <= 1'b1;
 
-        repeat(4) @(posedge clk);
-        mp_stall <= 1'b0;
+        // repeat(4) @(posedge clk);
+        // mp_stall <= 1'b0;
 
-        repeat(4) @(posedge clk);
-        rn_stall <= 1'b1;
+        // repeat(4) @(posedge clk);
+        // rn_stall <= 1'b1;
 
-        repeat(4) @(posedge clk);
-        rn_stall <= 1'b0;
+        // repeat(4) @(posedge clk);
+        // rn_stall <= 1'b0;
 
         repeat(20) @(posedge clk);
         schedule_en <= 1'b1;
-
-        repeat(20) @(posedge clk);
-        schedule_en <= 1'b0;
 
         #200;
         $finish;
