@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-06
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -69,13 +69,14 @@ module front_end
     logic [PC_WIDTH-1:0] fetch_pc_out;
 
     logic fifo_if_id_rd_en_in;
-    logic [INSTR_WIDTH-1:0] fifo_if_id_data_out;
+    logic [(INSTR_WIDTH+QU_PC_WIDTH)-1:0] fifo_if_id_data_out;
     logic fifo_if_id_wr_en_in;
-    logic [INSTR_WIDTH-1:0] fifo_if_id_data_in;
+    logic [(INSTR_WIDTH+QU_PC_WIDTH)-1:0] fifo_if_id_data_in;
     logic fifo_if_id_empty_out;
     logic fifo_if_id_full_out;
 
     logic [INSTR_WIDTH-1:0] decode_instr_in;
+    logic [QU_PC_WIDTH-1:0] decode_pc_in;
     logic decode_nop_out;
     logic decode_invalid_out;
     uop_t decode_uop_out;
@@ -144,7 +145,7 @@ module front_end
     );
 
     fifo #(
-        .FIFO_WIDTH(INSTR_WIDTH),
+        .FIFO_WIDTH(INSTR_WIDTH+QU_PC_WIDTH),
         .FIFO_DEPTH(FIFO_IF_ID_DEPTH)
     ) qu_fifo_if_id (
         .clk(clk),
@@ -163,6 +164,7 @@ module front_end
         .INSTR_WIDTH(INSTR_WIDTH)
     ) qu_decode (
         .instr_in(decode_instr_in),
+        .pc_in(decode_pc_in),
         .nop(decode_nop_out),
         .invalid(decode_invalid_out),
         .uop_out(decode_uop_out)
@@ -262,9 +264,10 @@ module front_end
     
     assign fifo_if_id_rd_en_in = !stall && !id_stall && !fifo_if_id_empty_out && id_en;
     assign fifo_if_id_wr_en_in = !fetch_stall_in && if_en;
-    assign fifo_if_id_data_in = fetch_instr_out;
+    assign fifo_if_id_data_in = {fetch_pc_out, fetch_instr_out};
     
-    assign decode_instr_in = fifo_if_id_data_out;
+    assign decode_instr_in = fifo_if_id_data_out[INSTR_WIDTH-1:0];
+    assign decode_pc_in = fifo_if_id_data_out[(INSTR_WIDTH+QU_PC_WIDTH)-1:INSTR_WIDTH];
     assign decode_proper_out = !decode_invalid_out && !decode_nop_out;
 
     assign fifo_id_mp_rd_en_in = !stall && !mp_stall && !fifo_id_mp_empty_out;

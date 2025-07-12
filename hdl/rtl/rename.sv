@@ -1,6 +1,6 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-07-12
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -98,6 +98,7 @@ module rename
             data_out_buf.a = 'd0;
         end
 
+        data_out_buf.pc = uop_in.uop_ic.pc;
         data_out_buf.rob_addr = rob_tail_ptr;
         data_out_buf.dest = uop_in.uop_ic.rd;
         data_out_buf.op = uop_in[RES_ST_OP_WIDTH-1:0];

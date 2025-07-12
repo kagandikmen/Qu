@@ -1,6 +1,6 @@
 // Map stage of The Qu Processor
 // Created:     2025-06-29
-// Modified:    2025-07-12
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -141,6 +141,7 @@ module map
         uop_out_buf.uop_ic.rs2_valid = uop_in.uop_ic.rs2_valid;
         uop_out_buf.uop_ic.imm_valid = uop_in.uop_ic.imm_valid;
         uop_out_buf.uop_ic.imm = uop_in.uop_ic.imm;
+        uop_out_buf.uop_ic.pc = uop_in.uop_ic.pc;
 
         //
         // full signal logic

@@ -1,6 +1,6 @@
 // Fetch stage of the instruction pipeline
 // Created:     2025-06-24
-// Modified:    2025-06-24
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -8,6 +8,10 @@
 
 `ifndef QU_FETCH
 `define QU_FETCH
+
+`include "../lib/qu_common.svh"
+
+import qu_common::*;
 
 module fetch
     #(
@@ -31,7 +35,8 @@ module fetch
     );
 
     logic pc_override;
-    logic [PC_WIDTH-1:0] pc_ctr_pc_out;
+    pc_t pc_current_pc_out;
+    pc_t pc_next_pc_out;
     logic [INSTR_WIDTH-1:0] pmem_douta;
 
 
@@ -45,7 +50,7 @@ module fetch
         .RAM_PERFORMANCE("LOW_LATENCY"),
         .INIT_FILE(PMEM_INIT_FILE)
     ) qu_pmem (
-        .addra(pc_ctr_pc_out),
+        .addra({2'b0, pc_next_pc_out[PC_WIDTH-1:2]}),
         .dina(),
         .clka(clk),
         .wea(),
@@ -63,7 +68,7 @@ module fetch
 
     pc_ctr #(
         .PC_WIDTH(PC_WIDTH),
-        .PC_INC(1),
+        .PC_INC(4),
         .PC_RESET_VAL(PC_RESET_VAL)
     ) qu_pc_ctr (
         .clk(clk),
@@ -71,11 +76,12 @@ module fetch
         .en(!stall),
         .pc_override(pc_override),
         .pc_in(pc_override_in),
-        .pc_out(pc_ctr_pc_out)
+        .current_pc(pc_current_pc_out),
+        .next_pc(pc_next_pc_out)
     );
 
     assign pc_override = branch | jump | exception;
-    assign pc = pc_ctr_pc_out;
+    assign pc = pc_current_pc_out;
 
 endmodule
 

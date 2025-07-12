@@ -1,6 +1,6 @@
 // Decode stage of the instruction pipeline
 // Created:     2025-06-27
-// Modified:    2025-07-12
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -21,6 +21,7 @@ module decode
         parameter UOP_WIDTH = 60
     )(
         input logic [INSTR_WIDTH-1:0] instr_in,
+        input pc_t pc_in,
 
         output logic nop,
         output logic invalid,
@@ -66,6 +67,7 @@ module decode
     always_comb
     begin
         uop_out_buf = 'b0;
+        uop_out_buf.uop_ic.pc = pc_in;
 
         if(opcode == R_OPCODE)
         begin
