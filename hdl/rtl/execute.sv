@@ -1,6 +1,6 @@
 // Execute stage of The Qu Processor
 // Created:     2025-07-04
-// Modified:    
+// Modified:    2025-07-12
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -33,10 +33,10 @@ module execute
     assign op_out = op_in;
     assign value_out = alu_result_out;
 
-    assign op_in_optype = op_in.op[2:0];
-    assign op_in_alu_cu_input_sel = op_in.op[3];
-    assign op_in_alu_subunit_res_sel = op_in.op[5:4];
-    assign op_in_alu_subunit_op_sel = op_in.op[9:6];
+    assign op_in_optype = op_in.op.optype;
+    assign op_in_alu_cu_input_sel = op_in.op.alu_cu_input_sel;
+    assign op_in_alu_subunit_res_sel = op_in.op.alu_subunit_res_sel;
+    assign op_in_alu_subunit_op_sel = op_in.op.alu_subunit_op_sel;
 
     alu #(
         .OPERAND_LENGTH(32)

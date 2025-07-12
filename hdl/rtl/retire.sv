@@ -1,6 +1,6 @@
 // Retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    2025-07-07
+// Modified:    2025-07-12
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -67,7 +67,7 @@ module retire
 
     logic res_st_retire_en_buf;
 
-    assign op_in_valid = op_in.op[0];
+    assign op_in_valid = op_in.op.optype[0];
 
     assign head_ptr_padded[$bits(rob_addr_t)] = 1'b0;
     assign head_ptr_padded[$bits(rob_addr_t)-1:0] = head_ptr;
