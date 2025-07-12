@@ -1,6 +1,6 @@
 // Decode stage of the instruction pipeline
 // Created:     2025-06-27
-// Modified:    2025-07-07
+// Modified:    2025-07-12
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -8,6 +8,9 @@
 
 `ifndef QU_DECODE
 `define QU_DECODE
+
+`include "../lib/qu_common.svh"
+`include "../lib/qu_uop.svh"
 
 import qu_common::*;
 import qu_uop::*;
@@ -130,6 +133,74 @@ module decode
                     uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_AND  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_AND;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+            endcase
+            uop_out_buf.uop_ic.optype = OPTYPE_INT;
+        end
+        else if(opcode == I_OPCODE)
+        begin
+            uop_out_buf.uop_ic.imm = imm12;
+            uop_out_buf.uop_ic.imm_valid = IMM_VALID;
+            uop_out_buf.uop_ic.rs2 = 'd0;
+            uop_out_buf.uop_ic.rs2_valid = RS2_INVALID;
+            uop_out_buf.uop_ic.rs1 = rs1;
+            uop_out_buf.uop_ic.rs1_valid = RS1_VALID;
+            uop_out_buf.uop_ic.rd = rd;
+            uop_out_buf.uop_ic.rd_valid = RD_VALID;
+            case(funct3)
+                FUNCT3_ADDI  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_SLLI  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SLL_SLLI;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_SLTI  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LT;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_SLTIU : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LTU;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_XORI  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_XOR;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_SRLI  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRL_SRLI;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_SRAI  : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRA_SRAI;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_ORI   : 
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_OR;
+                    uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
+                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+                end
+                FUNCT3_ANDI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_AND;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
