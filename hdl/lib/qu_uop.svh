@@ -1,6 +1,6 @@
 // Micro-op library for The Qu Processor
 // Created:     2025-06-28
-// Modified:    2025-07-05
+// Modified:    2025-07-12
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -41,6 +41,11 @@ package qu_uop;
 
     parameter logic IMM_VALID   = 1'b1;
     parameter logic IMM_INVALID = 1'b0;
+
+    //  ALU input selection
+
+    parameter logic ALU_INPUT_SEL_R_I = 3'b000;
+    parameter logic ALU_INPUT_SEL_B = 3'b001;
 
     //  luftALU parameters
 
@@ -86,6 +91,7 @@ package qu_uop;
         logic [3:0] alu_subunit_op_sel;
         logic [1:0] alu_subunit_res_sel;
         logic alu_cu_input_sel;
+        logic [2:0] alu_input_sel;
         logic [2:0] optype;
     } uop_ic_t;
     
@@ -99,7 +105,7 @@ package qu_uop;
         logic rs2_valid;
         logic rs1_valid;
         logic rd_valid;
-        logic [3:0] ignore;
+        logic [6:0] ignore;
         logic [2:0] funct3;
         logic [2:0] optype;
     } uop_ldst_t; 

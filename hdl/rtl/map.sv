@@ -1,6 +1,6 @@
 // Map stage of The Qu Processor
 // Created:     2025-06-29
-// Modified:    2025-07-04
+// Modified:    2025-07-12
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -132,6 +132,7 @@ module map
         //
 
         uop_out_buf.uop_ic.optype = uop_in.uop_ic.optype;
+        uop_out_buf.uop_ic.alu_input_sel = uop_in.uop_ic.alu_input_sel;
         uop_out_buf.uop_ic.alu_cu_input_sel = uop_in.uop_ic.alu_cu_input_sel;
         uop_out_buf.uop_ic.alu_subunit_res_sel = uop_in.uop_ic.alu_subunit_res_sel;
         uop_out_buf.uop_ic.alu_subunit_op_sel = uop_in.uop_ic.alu_subunit_op_sel;

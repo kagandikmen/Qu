@@ -30,6 +30,8 @@ module execute
 
     logic [31:0] alu_opd1;
     logic [31:0] alu_opd2;
+    logic [31:0] alu_opd3;
+    logic [31:0] alu_opd4;
     logic [31:0] alu_result_out;
 
     assign op_out = op_in;
@@ -40,20 +42,38 @@ module execute
     assign op_in_alu_subunit_res_sel = op_in.op.alu_subunit_res_sel;
     assign op_in_alu_subunit_op_sel = op_in.op.alu_subunit_op_sel;
 
-    assign alu_opd1 = (op_in.op.rs1_valid) ? op_in.vj
-                    : 'd0;
+    always_comb
+    begin
+        case(op_in.op.alu_input_sel)
+            ALU_INPUT_SEL_R_I:
+            begin
+                alu_opd1 = (op_in.op.rs1_valid) ? op_in.vj
+                         : 'd0;
+        
+                alu_opd2 = (op_in.op.rs2_valid) ? op_in.vk
+                         : (op_in.op.imm_valid) ? op_in.a
+                         : 'd0;
+                
+                alu_opd3 = 'd0;
+                alu_opd4 = 'd0;
+            end
+            default:
+            begin
+                alu_opd1 = 'd0;
+                alu_opd2 = 'd0;
+                alu_opd3 = 'd0;
+                alu_opd4 = 'd0;
+            end
+        endcase
+    end
     
-    assign alu_opd2 = (op_in.op.rs2_valid) ? op_in.vk
-                    : (op_in.op.imm_valid) ? op_in.a
-                    : 'd0;
-
     alu #(
         .OPERAND_LENGTH(32)
     ) qu_alu (
         .opd1(alu_opd1),
         .opd2(alu_opd2),
-        .opd3(),
-        .opd4(),
+        .opd3(alu_opd3),
+        .opd4(alu_opd4),
         .cu_input_sel(op_in_alu_cu_input_sel),
         .subunit_res_sel(op_in_alu_subunit_res_sel),
         .subunit_op_sel(op_in_alu_subunit_op_sel),

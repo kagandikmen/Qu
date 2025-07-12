@@ -20,7 +20,7 @@ package qu_common;
     parameter int QU_PC_RESET_VAL = 0;
 
     parameter int RES_ST_DEPTH = 32;
-    parameter int RES_ST_OP_WIDTH = 14;
+    parameter int RES_ST_OP_WIDTH = 17;
     parameter int RES_ST_ADDR_WIDTH = $clog2(RES_ST_DEPTH);
     parameter int RES_ST_VDATA_WIDTH = 32;
     parameter int RES_ST_ADATA_WIDTH = 12;
@@ -225,6 +225,7 @@ package qu_common;
         logic [3:0] alu_subunit_op_sel;
         logic [1:0] alu_subunit_res_sel;
         logic alu_cu_input_sel;
+        logic [2:0] alu_input_sel;
         logic [2:0] optype;
     } res_st_op_t;
 

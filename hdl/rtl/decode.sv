@@ -139,6 +139,7 @@ module decode
                     uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
             endcase
+            uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_R_I;
             uop_out_buf.uop_ic.optype = OPTYPE_INT;
         end
         else if(opcode == I_OPCODE)
@@ -207,6 +208,7 @@ module decode
                     uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
             endcase
+            uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_R_I;
             uop_out_buf.uop_ic.optype = OPTYPE_INT;
         end
     end
