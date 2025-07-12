@@ -14,7 +14,7 @@ The Qu Processor is a superscalar, out-of-order, 32 bit RISC-V CPU built in Syst
 
 ## Status
 
-All stages are fully implemented and tested for R-type instructions.
+All stages are fully implemented and tested for R & I-type instructions.
 
 ### Next Steps
 
