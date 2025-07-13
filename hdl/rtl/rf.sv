@@ -1,6 +1,6 @@
 // Register file of The Qu Processor
 // Created:     2025-06-28
-// Modified:    2025-06-30
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -37,6 +37,9 @@ module rf
         begin
             rf[rd_addr] <= data_in;
         end
+
+        // register 0 is always zero
+        rf[0] <= 'd0;
 
         // reset logic
         if(rst)
