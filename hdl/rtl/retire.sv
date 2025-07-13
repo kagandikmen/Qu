@@ -1,6 +1,6 @@
 // Retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    2025-07-12
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -22,6 +22,7 @@ module retire
 
         // FIFO interface
         input   phy_rf_data_t value_in,
+        input   logic comp_result_in,
         input   res_st_cell_t op_in,
 
         // register file interface

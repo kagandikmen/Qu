@@ -100,7 +100,12 @@ module rename
 
         data_out_buf.pc = uop_in.uop_ic.pc;
         data_out_buf.rob_addr = rob_tail_ptr;
-        data_out_buf.dest = uop_in.uop_ic.rd;
+        
+        if(uop_in.uop_ic.rd_valid)
+            data_out_buf.dest = uop_in.uop_ic.rd;
+        else
+            data_out_buf.dest = 'd0;
+
         data_out_buf.op = uop_in[RES_ST_OP_WIDTH-1:0];
         data_out_buf.busy = 1'b1;
     end
@@ -114,7 +119,9 @@ module rename
         end
         else if(uop_valid)
         begin
-            qi_list[uop_in.uop_ic.rd] <= rob_tail_ptr;
+            if(uop_in.uop_ic.rd_valid)
+                qi_list[uop_in.uop_ic.rd] <= rob_tail_ptr;
+            
             res_st_wr_ptr <= res_st_wr_ptr + 1;
         end
     end

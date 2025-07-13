@@ -1,6 +1,6 @@
 // Execute stage testbench
 // Created:     2025-07-04
-// Modified:    
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -19,11 +19,13 @@ module tb_execute
 
     res_st_cell_t op_in;
     logic [31:0] value_out;
+    logic comp_result;
     res_st_cell_t op_out;
 
     execute dut (
         .op_in(op_in),
         .value_out(value_out),
+        .comp_result(comp_result),
         .op_out(op_out)
     );
 

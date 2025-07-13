@@ -87,7 +87,7 @@ module map
         end
 
         //
-        // rename logicqi_list
+        // rename logic
         //
 
         // rs2
@@ -164,7 +164,7 @@ module map
         // busy table logic
         //
 
-        busy_table_wr_en = uop_in.uop_ic.optype[0];
+        busy_table_wr_en = uop_in.uop_ic.optype[0] && uop_in.uop_ic.rd_valid;
         busy_table_wr_addr = uop_out_buf.uop_ic.rd;
         busy_table_data_out = 1'b1;
     end
@@ -181,24 +181,24 @@ module map
 
             for(int i=0; i<LOG_RF_DEPTH; i=i+1)
             begin
-                rename_table[i] <= 1'b0;
+                rename_table[i] <= 'b0;
             end
         end
         else if(en)
         begin
-            if(rename_executed[2])
+            if(rename_executed[2] && uop_in.uop_ic.rs2_valid)
             begin
                 rename_table[rs2_in] <= next_to_assign[2];
                 phyreg_renamed[next_to_assign[2]] <= 1'b1;
             end
 
-            if(rename_executed[1])
+            if(rename_executed[1] && uop_in.uop_ic.rs1_valid)
             begin
                 rename_table[rs1_in] <= next_to_assign[1];
                 phyreg_renamed[next_to_assign[1]] <= 1'b1;
             end
             
-            if(rename_executed[0])
+            if(rename_executed[0] && uop_in.uop_ic.rd_valid)
             begin
                 rename_table[rd_in]  <= next_to_assign[0];
                 phyreg_renamed[next_to_assign[0]] <= 1'b1;

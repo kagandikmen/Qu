@@ -1,6 +1,6 @@
 // Execute stage of The Qu Processor
 // Created:     2025-07-04
-// Modified:    2025-07-12
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -20,6 +20,7 @@ module execute
         input   res_st_cell_t op_in,
 
         output  [31:0] value_out,
+        output  logic comp_result,
         output  res_st_cell_t op_out
     );
 
@@ -33,9 +34,11 @@ module execute
     logic [31:0] alu_opd3;
     logic [31:0] alu_opd4;
     logic [31:0] alu_result_out;
+    logic [31:0] alu_comp_result_out;
 
     assign op_out = op_in;
     assign value_out = alu_result_out;
+    assign comp_result = alu_comp_result_out[0];
 
     assign op_in_optype = op_in.op.optype;
     assign op_in_alu_cu_input_sel = op_in.op.alu_cu_input_sel;
@@ -56,6 +59,13 @@ module execute
                 
                 alu_opd3 = 'd0;
                 alu_opd4 = 'd0;
+            end
+            ALU_INPUT_SEL_B:
+            begin
+                alu_opd1 = op_in.pc;
+                alu_opd2 = op_in.a;
+                alu_opd3 = op_in.vj;
+                alu_opd4 = op_in.vk;
             end
             default:
             begin
@@ -78,7 +88,7 @@ module execute
         .subunit_res_sel(op_in_alu_subunit_res_sel),
         .subunit_op_sel(op_in_alu_subunit_op_sel),
         .alu_result(alu_result_out),
-        .comp_result()
+        .comp_result(alu_comp_result_out)
     );
 
 endmodule

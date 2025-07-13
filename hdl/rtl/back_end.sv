@@ -1,6 +1,6 @@
 // Top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    2025-07-07
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -72,16 +72,18 @@ module back_end
 
     res_st_cell_t execute_op_in;
     logic [31:0] execute_value_out;
+    logic execute_comp_result_out;
     res_st_cell_t execute_op_out;
 
     logic fifo_ex_rt_rd_en;
-    logic [$bits(res_st_cell_t)+32-1:0] fifo_ex_rt_data_out;
+    logic [$bits(res_st_cell_t)+32+1-1:0] fifo_ex_rt_data_out;
     logic fifo_ex_rt_wr_en;
-    logic [$bits(res_st_cell_t)+32-1:0] fifo_ex_rt_data_in;
+    logic [$bits(res_st_cell_t)+32+1-1:0] fifo_ex_rt_data_in;
     logic fifo_ex_rt_empty_out;
     logic fifo_ex_rt_full_out;
 
     logic [31:0] retire_value_in;
+    logic retire_comp_result_in;
     res_st_cell_t retire_op_in;
     logic phy_rf_rf_wr_en_out;
     phy_rf_addr_t retire_phy_rf_wr_addr_out;
@@ -109,9 +111,10 @@ module back_end
 
     assign fifo_ex_rt_rd_en = !fifo_ex_rt_empty_out;
     assign fifo_ex_rt_wr_en = execute_op_out[0];
-    assign fifo_ex_rt_data_in = {execute_value_out, execute_op_out};
+    assign fifo_ex_rt_data_in = {execute_comp_result_out, execute_value_out, execute_op_out};
 
-    assign retire_value_in = fifo_ex_rt_data_out[($bits(fifo_ex_rt_data_out)-1) -: 32];
+    assign retire_value_in = fifo_ex_rt_data_out[($bits(fifo_ex_rt_data_out)-2) -: 32];
+    assign retire_comp_result_in = fifo_ex_rt_data_out[$bits(fifo_ex_rt_data_out)-1];
     assign retire_op_in = fifo_ex_rt_data_out[$bits(res_st_cell_t)-1:0];
     assign retire_rob_incr_tail_ptr_in = rob_incr_tail_ptr;
 
@@ -166,11 +169,12 @@ module back_end
     execute qu_execute (
         .op_in(execute_op_in),
         .value_out(execute_value_out),
+        .comp_result(execute_comp_result_out),
         .op_out(execute_op_out)
     );
 
     fifo #(
-        .FIFO_WIDTH($bits(res_st_cell_t)+32),
+        .FIFO_WIDTH($bits(res_st_cell_t)+32+1),
         .FIFO_DEPTH(4)
     ) qu_fifo_ex_rt (
         .clk(clk),
@@ -189,6 +193,7 @@ module back_end
         .clk(clk),
         .rst(rst),
         .value_in(retire_value_in),
+        .comp_result_in(retire_comp_result_in),
         .op_in(retire_op_in),
         .phy_rf_wr_en(retire_phy_rf_wr_en_out),
         .phy_rf_wr_addr(retire_phy_rf_wr_addr_out),

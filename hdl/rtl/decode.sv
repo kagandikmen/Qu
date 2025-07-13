@@ -84,63 +84,54 @@ module decode
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SUB  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SUBTRACTION;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLL  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SLL_SLLI;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLT  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LT;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLTU : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LTU;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_XOR  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_XOR;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SRL  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRL_SRLI;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SRA  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRA_SRAI;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_OR   : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_OR;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_AND  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_AND;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
             endcase
+            uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
             uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_R_I;
             uop_out_buf.uop_ic.optype = OPTYPE_INT;
         end
@@ -159,59 +150,92 @@ module decode
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLLI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SLL_SLLI;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLTI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LT;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SLTIU : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LTU;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_COMP;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_XORI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_XOR;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SRLI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRL_SRLI;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_SRAI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_SRA_SRAI;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_SHIFT;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_ORI   : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_OR;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
                 FUNCT3_ANDI  : 
                 begin
                     uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_AND;
                     uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_LOGIC;
-                    uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
                 end
             endcase
+            uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
             uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_R_I;
             uop_out_buf.uop_ic.optype = OPTYPE_INT;
+        end
+        else if(opcode == B_OPCODE)
+        begin
+            uop_out_buf.uop_ic.imm = imm13;
+            uop_out_buf.uop_ic.imm_valid = IMM_VALID;
+            uop_out_buf.uop_ic.rs2 = rs2;
+            uop_out_buf.uop_ic.rs2_valid = RS2_VALID;
+            uop_out_buf.uop_ic.rs1 = rs1;
+            uop_out_buf.uop_ic.rs1_valid = RS1_VALID;
+            uop_out_buf.uop_ic.rd = 'd0;
+            uop_out_buf.uop_ic.rd_valid = RD_INVALID;
+            case(funct3)
+                FUNCT3_BEQ:
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_EQ;
+                end
+                FUNCT3_BNE:
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_NE;
+                end
+                FUNCT3_BLT:
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LT;
+                end
+                FUNCT3_BGE:
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_GE;
+                end
+                FUNCT3_BLTU:
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_LTU;
+                end
+                FUNCT3_BGEU:
+                begin
+                    uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_IS_GEU;
+                end
+            endcase
+            uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+            uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD3_OPD4;
+            uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_B;
+            uop_out_buf.uop_ic.optype = OPTYPE_BRANCH;
         end
     end
 

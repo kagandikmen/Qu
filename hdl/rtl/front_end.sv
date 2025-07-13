@@ -288,7 +288,7 @@ module front_end
     assign busy_table_wr2_in = busy_table_wr_data;
 
     assign fifo_mp_rn_rd_en_in = !stall && !rn_stall && !fifo_mp_rn_empty_out && !rob_full;
-    assign fifo_mp_rn_wr_en_in = busy_table_wr1_en_in;   // whatever is enabling wr_en of busy table should enable the fifo too
+    assign fifo_mp_rn_wr_en_in = map_uop_out.uop_ic.optype[0];
     assign fifo_mp_rn_data_in = map_uop_out;
 
     assign rename_uop_in = fifo_mp_rn_data_out;

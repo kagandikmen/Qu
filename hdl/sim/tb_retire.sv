@@ -1,6 +1,6 @@
 // Testbench for the retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -21,6 +21,7 @@ module tb_retire
     logic rst;
 
     phy_rf_data_t value_in;
+    logic comp_result_in;
     res_st_cell_t op_in;
 
     logic phy_rf_wr_en;
@@ -42,6 +43,7 @@ module tb_retire
         .clk(clk),
         .rst(rst),
         .value_in(value_in),
+        .comp_result_in(comp_result_in),
         .op_in(op_in),
         .phy_rf_wr_en(phy_rf_wr_en),
         .phy_rf_wr_addr(phy_rf_wr_addr),
@@ -64,6 +66,7 @@ module tb_retire
         clk <= 1'b0;
         rst <= 1'b0;
         value_in <= 'd15;
+        comp_result_in <= 'b0;
         op_in <= 'b0;
         rob_incr_tail_ptr <= 1'b1;
 
