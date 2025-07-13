@@ -20,16 +20,17 @@ package qu_uop;
     // configuration parameters
     //
 
-    parameter int UOP_WIDTH = 82;
+    parameter int UOP_WIDTH = 83;
 
     //
     //  micro-op encoding parameters
     //
 
-    parameter logic [2:0] OPTYPE_INT        = 3'b001;
-    parameter logic [2:0] OPTYPE_CONT       = 3'b011;
-    parameter logic [2:0] OPTYPE_LOAD       = 3'b101;
-    parameter logic [2:0] OPTYPE_STORE      = 3'b111;
+    parameter logic [3:0] OPTYPE_INT        = 4'b0001;
+    parameter logic [3:0] OPTYPE_BRANCH     = 4'b0011;
+    parameter logic [3:0] OPTYPE_CONT       = 4'b0111;
+    parameter logic [3:0] OPTYPE_LOAD       = 4'b1001;
+    parameter logic [3:0] OPTYPE_STORE      = 4'b0101;
 
     parameter logic RD_VALID    = 1'b1;
     parameter logic RD_INVALID  = 1'b0;
@@ -94,7 +95,7 @@ package qu_uop;
         logic [1:0] alu_subunit_res_sel;
         logic alu_cu_input_sel;
         logic [2:0] alu_input_sel;
-        logic [2:0] optype;
+        logic [3:0] optype;
     } uop_ic_t;
     
     // uop_ldst_t: load & store
@@ -110,7 +111,7 @@ package qu_uop;
         logic rd_valid;
         logic [6:0] ignore;
         logic [2:0] funct3;
-        logic [2:0] optype;
+        logic [3:0] optype;
     } uop_ldst_t; 
 
     typedef union packed {
