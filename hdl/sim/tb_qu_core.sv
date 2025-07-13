@@ -1,6 +1,6 @@
 // The Qu Processor CPU core testbench
 // Created:     2025-06-27
-// Modified:    2025-07-07
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -28,11 +28,7 @@ module tb_qu_core
     logic clk;
     logic rst;
     
-    logic branch;
-    logic jump;
-    logic exception;
     logic stall;
-    logic [PC_WIDTH-1:0] pc_override;
 
     logic if_stall;
     logic id_stall;
@@ -51,11 +47,7 @@ module tb_qu_core
     ) dut (
         .clk(clk),
         .rst(rst),
-        .branch(branch),
-        .jump(jump),
-        .exception(exception),
         .stall(stall),
-        .pc_override(pc_override),
         .if_stall(if_stall),
         .id_stall(id_stall),
         .mp_stall(mp_stall),
@@ -69,11 +61,7 @@ module tb_qu_core
     begin
         clk <= 1'b0;
         rst <= 1'b0;
-        branch <= 1'b0;
-        jump <= 1'b0;
-        exception <= 1'b0;
         stall <= 1'b0;
-        pc_override <= 'd0;
         if_stall <= 1'b0;
         id_stall <= 1'b0;
         mp_stall <= 1'b0;

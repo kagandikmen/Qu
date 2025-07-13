@@ -39,6 +39,9 @@ module tb_retire
     rob_addr_t res_st_retire_rob_addr;
     phy_rf_data_t res_st_retire_value;
 
+    logic mispredicted_branch;
+    pc_t pc_to_jump;
+
     retire dut (
         .clk(clk),
         .rst(rst),
@@ -56,7 +59,9 @@ module tb_retire
         .rob_full(rob_full),
         .res_st_retire_en(res_st_retire_en),
         .res_st_retire_rob_addr(res_st_retire_rob_addr),
-        .res_st_retire_value(res_st_retire_value)
+        .res_st_retire_value(res_st_retire_value),
+        .mispredicted_branch(mispredicted_branch),
+        .pc_to_jump(pc_to_jump)
     );
 
     always #5   clk = ~clk;

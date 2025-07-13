@@ -212,6 +212,7 @@ package qu_common;
     typedef struct packed {
         logic [31:0] value;
         logic [PHY_RF_ADDR_WIDTH-1:0] dest;
+        logic mispredicted_branch;
         logic [1:0] state;
     } rob_cell_t;
 

@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    2025-07-07
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -27,11 +27,7 @@ module qu_core
         input   logic clk,
         input   logic rst,
         
-        input   logic branch,
-        input   logic jump,
-        input   logic exception,
         input   logic stall,
-        input   logic [PC_WIDTH-1:0] pc_override,
 
         input   logic if_stall,
         input   logic id_stall,
@@ -46,6 +42,11 @@ module qu_core
 
     logic front_end_if_en;
     logic front_end_id_en;
+    logic front_end_branch_in;
+    logic front_end_jump_in;
+    logic front_end_exception_in;
+    logic front_end_stall_in;
+    pc_t front_end_pc_override_in;
     logic front_end_busy_table_wr_en_in;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_busy_table_wr_addr_in;
     logic front_end_busy_table_wr_data_in;
@@ -103,9 +104,16 @@ module qu_core
     rob_addr_t back_end_rob_tail_ptr_out;
     logic back_end_rob_incr_tail_ptr_in;
     logic back_end_rob_full_out;
+    logic back_end_mispredicted_branch_out;
+    pc_t back_end_pc_to_jump_out;
 
     assign front_end_if_en = startup_ctrl_if_en_out;
     assign front_end_id_en = startup_ctrl_if_en_out;
+    assign front_end_branch_in = back_end_mispredicted_branch_out;
+    assign front_end_jump_in = 'b0;
+    assign front_end_exception_in = 'b0;
+    assign front_end_stall_in = stall;
+    assign front_end_pc_override_in = back_end_pc_to_jump_out;
     assign front_end_rf_rs1_data_in = rf_rs1_data_out;
     assign front_end_rf_rs2_data_in = rf_rs2_data_out;
     assign front_end_busy_table_wr_en_in = back_end_busy_table_wr_en_out;
@@ -156,11 +164,11 @@ module qu_core
         .rst(rst),
         .if_en(front_end_if_en),
         .id_en(front_end_id_en),
-        .branch(branch),
-        .jump(jump),
-        .exception(exception),
-        .stall(stall),
-        .pc_override(pc_override),
+        .branch(front_end_branch_in),
+        .jump(front_end_jump_in),
+        .exception(front_end_exception_in),
+        .stall(front_end_stall_in),
+        .pc_override(front_end_pc_override_in),
         .if_stall(if_stall),
         .id_stall(id_stall),
         .mp_stall(mp_stall),
@@ -184,7 +192,7 @@ module qu_core
         .RES_ST_DEPTH(RES_ST_DEPTH)
     ) qu_res_st (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | back_end_mispredicted_branch_out),
         .wr_en(res_st_wr_en_in),
         .wr_addr(res_st_wr_addr_in),
         .wr_in(res_st_wr_in),
@@ -239,7 +247,9 @@ module qu_core
         .busy_table_wr_data(back_end_busy_table_wr_data_out),
         .rob_tail_ptr(back_end_rob_tail_ptr_out),
         .rob_incr_tail_ptr(back_end_rob_incr_tail_ptr_in),
-        .rob_full(back_end_rob_full_out)
+        .rob_full(back_end_rob_full_out),
+        .mispredicted_branch(back_end_mispredicted_branch_out),
+        .pc_to_jump(back_end_pc_to_jump_out)
     );
 
 endmodule

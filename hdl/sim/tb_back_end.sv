@@ -1,6 +1,6 @@
 // Testbench for the top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    2025-07-06
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -40,6 +40,9 @@ module tb_back_end
     logic rob_incr_tail_ptr;
     logic rob_full;
 
+    logic mispredicted_branch;
+    pc_t pc_to_jump;
+
     back_end dut (
         .clk(clk),
         .rst(rst),
@@ -63,7 +66,9 @@ module tb_back_end
         .busy_table_wr_data(busy_table_wr_data),
         .rob_tail_ptr(rob_tail_ptr),
         .rob_incr_tail_ptr(rob_incr_tail_ptr),
-        .rob_full(rob_full)
+        .rob_full(rob_full),
+        .mispredicted_branch(mispredicted_branch),
+        .pc_to_jump(pc_to_jump)
     );
 
     always #5   clk = ~clk;

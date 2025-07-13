@@ -41,7 +41,11 @@ module retire
         // reservation station interface
         output  logic res_st_retire_en,
         output  rob_addr_t res_st_retire_rob_addr,
-        output  phy_rf_data_t res_st_retire_value
+        output  phy_rf_data_t res_st_retire_value,
+
+        // mispredicted branch
+        output  logic mispredicted_branch,
+        output  pc_t pc_to_jump
     );
 
     rob_addr_t head_ptr;
@@ -78,6 +82,10 @@ module retire
     assign rob_wr1_en = op_in_valid;
     assign rob_wr1_addr = op_in.rob_addr;
     assign rob_wr1_in.value = value_in;
+
+    // Currently, all branches are assumed not taken. This will be improved later.
+    assign rob_wr1_in.mispredicted_branch = (op_in.op.optype == OPTYPE_BRANCH) && comp_result_in;
+    
     assign rob_wr1_in.dest = op_in.dest;
     assign rob_wr1_in.state = ROB_STATE_PENDING;
 
@@ -123,19 +131,22 @@ module retire
     begin
         rob_rd1_addr = head_ptr;
 
-        phy_rf_wr_en = rob_rd1_out.state[1] && rob_rd1_out.state[0];
+        mispredicted_branch = rob_rd1_out.mispredicted_branch;
+        pc_to_jump = rob_rd1_out.value;
+
+        phy_rf_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING);
         phy_rf_wr_addr = rob_rd1_out.dest;
         phy_rf_wr_data = rob_rd1_out.value;
 
-        busy_table_wr_en = rob_rd1_out.state[1] && rob_rd1_out.state[0];
+        busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING);
         busy_table_wr_addr = rob_rd1_out.dest;
         busy_table_wr_data = 1'b0;
 
-        res_st_retire_en_buf = rob_rd1_out.state[1] && rob_rd1_out.state[0];
+        res_st_retire_en_buf = (rob_rd1_out.state == ROB_STATE_PENDING);
         res_st_retire_rob_addr = head_ptr;
         res_st_retire_value = rob_rd1_out.value;
 
-        rob_wr2_en = rob_rd1_out.state[1] && rob_rd1_out.state[0];
+        rob_wr2_en = (rob_rd1_out.state == ROB_STATE_PENDING);
         rob_wr2_addr = head_ptr;
         rob_wr2_in = rob_rd1_out;
         rob_wr2_in.state = ROB_STATE_RETIRED;

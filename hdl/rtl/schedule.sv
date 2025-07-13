@@ -1,6 +1,6 @@
 // Schedule stage of The Qu Processor
 // Created:     2025-07-03
-// Modified:    
+// Modified:    2025-07-13
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -53,25 +53,25 @@ module schedule
         res_st_rd3_addr = rd_ptr + 2;
         res_st_rd4_addr = rd_ptr + 3;
 
-        if(!issued_list[0] && res_st_rd1_in.qj == 0 && res_st_rd1_in.qk == 0)
+        if(res_st_rd1_in.op.optype[0] && !issued_list[0] && res_st_rd1_in.qj == 0 && res_st_rd1_in.qk == 0)
         begin
             fifo_wr_en_buf = 1'b1;
             op_out = res_st_rd1_in;
             issuing_list[0] = 1'b1;
         end
-        else if(!issued_list[1] && res_st_rd2_in.qj == 0 && res_st_rd2_in.qk == 0)
+        else if(res_st_rd2_in.op.optype[0] && !issued_list[1] && res_st_rd2_in.qj == 0 && res_st_rd2_in.qk == 0)
         begin
             fifo_wr_en_buf = 1'b1;
             op_out = res_st_rd2_in;
             issuing_list[1] = 1'b1;
         end
-        else if(!issued_list[2] && res_st_rd3_in.qj == 0 && res_st_rd3_in.qk == 0)
+        else if(res_st_rd3_in.op.optype[0] && !issued_list[2] && res_st_rd3_in.qj == 0 && res_st_rd3_in.qk == 0)
         begin
             fifo_wr_en_buf = 1'b1;
             op_out = res_st_rd3_in;
             issuing_list[2] = 1'b1;
         end
-        else if(!issued_list[3] && res_st_rd4_in.qj == 0 && res_st_rd4_in.qk == 0)
+        else if(res_st_rd4_in.op.optype[0] && !issued_list[3] && res_st_rd4_in.qj == 0 && res_st_rd4_in.qk == 0)
         begin
             fifo_wr_en_buf = 1'b1;
             op_out = res_st_rd4_in;

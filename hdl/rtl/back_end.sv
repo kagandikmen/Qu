@@ -49,7 +49,10 @@ module back_end
         // rename stage interface
         output  rob_addr_t rob_tail_ptr,
         input   logic rob_incr_tail_ptr,
-        output  logic rob_full
+        output  logic rob_full,
+
+        output  logic mispredicted_branch,
+        output  pc_t pc_to_jump
     );
 
     res_st_addr_t schedule_res_st_rd1_addr_out;
@@ -97,6 +100,8 @@ module back_end
     logic retire_res_st_retire_en_out;
     rob_addr_t retire_res_st_retire_rob_addr_out;
     phy_rf_data_t retire_res_st_retire_value_out;
+    logic retire_mispredicted_branch_out;
+    pc_t retire_pc_to_jump_out;
 
     assign schedule_res_st_rd1_in = res_st_rd1_in;
     assign schedule_res_st_rd2_in = res_st_rd2_in;
@@ -134,9 +139,12 @@ module back_end
     assign rob_tail_ptr = retire_rob_tail_ptr_out;
     assign rob_full = retire_rob_full_out;
 
+    assign mispredicted_branch = retire_mispredicted_branch_out;
+    assign pc_to_jump = retire_pc_to_jump_out;
+
     schedule qu_schedule (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | retire_mispredicted_branch_out),
         .en(schedule_en),
         .res_st_rd1_addr(schedule_res_st_rd1_addr_out),
         .res_st_rd1_in(schedule_res_st_rd1_in),
@@ -155,7 +163,7 @@ module back_end
         .FIFO_DEPTH(4)
     ) qu_fifo_sh_ex (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | retire_mispredicted_branch_out),
         .rd_en(fifo_sh_ex_rd_en),
         .data_out(fifo_sh_ex_data_out),
         .wr_en(fifo_sh_ex_wr_en),
@@ -178,7 +186,7 @@ module back_end
         .FIFO_DEPTH(4)
     ) qu_fifo_ex_rt (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | retire_mispredicted_branch_out),
         .rd_en(fifo_ex_rt_rd_en),
         .data_out(fifo_ex_rt_data_out),
         .wr_en(fifo_ex_rt_wr_en),
@@ -191,7 +199,7 @@ module back_end
 
     retire qu_retire (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | retire_mispredicted_branch_out),
         .value_in(retire_value_in),
         .comp_result_in(retire_comp_result_in),
         .op_in(retire_op_in),
@@ -206,7 +214,9 @@ module back_end
         .rob_full(retire_rob_full_out),
         .res_st_retire_en(retire_res_st_retire_en_out),
         .res_st_retire_rob_addr(retire_res_st_retire_rob_addr_out),
-        .res_st_retire_value(retire_res_st_retire_value_out)
+        .res_st_retire_value(retire_res_st_retire_value_out),
+        .mispredicted_branch(retire_mispredicted_branch_out),
+        .pc_to_jump(retire_pc_to_jump_out)
     );
 
 endmodule

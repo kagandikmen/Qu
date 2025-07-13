@@ -149,7 +149,7 @@ module front_end
         .FIFO_DEPTH(FIFO_IF_ID_DEPTH)
     ) qu_fifo_if_id (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | branch),
         .rd_en(fifo_if_id_rd_en_in),
         .data_out(fifo_if_id_data_out),
         .wr_en(fifo_if_id_wr_en_in),
@@ -175,7 +175,7 @@ module front_end
         .FIFO_DEPTH(FIFO_ID_MP_DEPTH)
     ) qu_fifo_id_mp (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | branch),
         .rd_en(fifo_id_mp_rd_en_in),
         .data_out(fifo_id_mp_data_out),
         .wr_en(fifo_id_mp_wr_en_in),
@@ -205,7 +205,7 @@ module front_end
         .PHY_RF_DEPTH(PHY_RF_DEPTH)
     ) qu_busy_table (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | branch),
         .rd1_addr(busy_table_rd1_addr_in),        
         .rd1_out(busy_table_rd1_out),       
         .rd2_addr(busy_table_rd2_addr_in),        
@@ -223,7 +223,7 @@ module front_end
         .FIFO_DEPTH(FIFO_MP_RN_DEPTH)
     ) qu_fifo_mp_rn (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | branch),
         .rd_en(fifo_mp_rn_rd_en_in),
         .data_out(fifo_mp_rn_data_out),
         .wr_en(fifo_mp_rn_wr_en_in),
@@ -236,7 +236,7 @@ module front_end
 
     rename #() qu_rename (
         .clk(clk),
-        .rst(rst),
+        .rst(rst | branch),
         .uop_in(rename_uop_in),
         .busy_table_rd1_addr(rename_busy_table_rd1_addr_out),
         .busy_table_data1_in(rename_busy_table_data1_in),
