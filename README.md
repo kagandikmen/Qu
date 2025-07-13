@@ -10,11 +10,11 @@
   <img src="docs/qu_banner_light.svg" alt="The Qu Processor README Top Banner" />
 </picture><br /><br />
 
-The Qu Processor is a superscalar, out-of-order, 32 bit RISC-V CPU built in SystemVerilog.
+The Qu Processor is a 32-bit RISC-V CPU designed in SystemVerilog with a superscalar, out-of-order, and speculative execution pipeline.
 
 ## Status
 
-All stages are fully implemented and tested for R & I-type instructions.
+All stages are fully implemented and tested for R, I & B-type instructions. The pipeline now supports speculative execution.
 
 ### Next Steps
 
@@ -22,7 +22,6 @@ All stages are fully implemented and tested for R & I-type instructions.
 - 🚧 ISA extensions Zicsri and Zifencei
 - 🚧 Full verification and compliance tests
 - 🚧 Branch prediction
-- 🚧 Speculation
 
 ## Contributing
 
