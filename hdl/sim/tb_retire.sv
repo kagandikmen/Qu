@@ -1,6 +1,6 @@
 // Testbench for the retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -42,6 +42,11 @@ module tb_retire
     logic mispredicted_branch;
     pc_t pc_to_jump;
 
+    logic dmem_wr_en_out;
+    logic dmem_rd_en_out;
+    logic [31:0] dmem_addr_out;
+    logic [31:0] dmem_data_out;
+
     retire dut (
         .clk(clk),
         .rst(rst),
@@ -61,7 +66,11 @@ module tb_retire
         .res_st_retire_rob_addr(res_st_retire_rob_addr),
         .res_st_retire_value(res_st_retire_value),
         .mispredicted_branch(mispredicted_branch),
-        .pc_to_jump(pc_to_jump)
+        .pc_to_jump(pc_to_jump),
+        .dmem_wr_en_out(dmem_wr_en_out),
+        .dmem_rd_en_out(dmem_rd_en_out),
+        .dmem_addr_out(dmem_addr_out),
+        .dmem_data_out(dmem_data_out)
     );
 
     always #5   clk = ~clk;

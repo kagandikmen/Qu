@@ -19,12 +19,12 @@ module execute
     #()(
         input   res_st_cell_t op_in,
 
-        output  [31:0] value_out,
+        output  logic [31:0] value_out,
         output  logic comp_result,
         output  res_st_cell_t op_out
     );
 
-    logic [2:0] op_in_optype;
+    logic [3:0] op_in_optype;
     logic op_in_alu_cu_input_sel;
     logic [1:0] op_in_alu_subunit_res_sel;
     logic [3:0] op_in_alu_subunit_op_sel;
@@ -36,8 +36,12 @@ module execute
     logic [31:0] alu_result_out;
     logic [31:0] alu_comp_result_out;
 
+    logic [31:0] ldst_unit_opd1;
+    logic [31:0] ldst_unit_opd2;
+    logic [31:0] ldst_unit_addr_out;
+
     assign op_out = op_in;
-    assign value_out = alu_result_out;
+    assign value_out = (op_in.op.optype == OPTYPE_LOAD || op_in.op.optype == OPTYPE_STORE) ? ldst_unit_addr_out : alu_result_out;
     assign comp_result = alu_comp_result_out[0];
 
     assign op_in_optype = op_in.op.optype;
@@ -47,6 +51,10 @@ module execute
 
     always_comb
     begin
+
+        ldst_unit_opd1 = op_in.vj;
+        ldst_unit_opd2 = op_in.a;
+
         case(op_in.op.alu_input_sel)
             ALU_INPUT_SEL_R_I:
             begin
@@ -89,6 +97,12 @@ module execute
         .subunit_op_sel(op_in_alu_subunit_op_sel),
         .alu_result(alu_result_out),
         .comp_result(alu_comp_result_out)
+    );
+
+    ldst_unit qu_ldst_unit (
+        .opd1(ldst_unit_opd1),
+        .opd2(ldst_unit_opd2),
+        .addr_out(ldst_unit_addr_out)
     );
 
 endmodule

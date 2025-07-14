@@ -1,6 +1,6 @@
-// Single-Port Read-First RAM Module (for Program Memory)
+// Single-Port Read-First RAM Module
 // Created:     2025-06-24
-// Modified:    
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT

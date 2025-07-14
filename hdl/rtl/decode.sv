@@ -1,6 +1,6 @@
 // Decode stage of the instruction pipeline
 // Created:     2025-06-27
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -236,6 +236,34 @@ module decode
             uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD3_OPD4;
             uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_B;
             uop_out_buf.uop_ic.optype = OPTYPE_BRANCH;
+        end
+        else if(opcode == LOAD_OPCODE)
+        begin
+            uop_out_buf.uop_ldst.imm = imm12;
+            uop_out_buf.uop_ldst.imm_valid = IMM_VALID;
+            uop_out_buf.uop_ldst.rs2 = 'd0;
+            uop_out_buf.uop_ldst.rs2_valid = RS2_INVALID;
+            uop_out_buf.uop_ldst.rs1 = rs1;
+            uop_out_buf.uop_ldst.rs1_valid = RS1_VALID;
+            uop_out_buf.uop_ldst.rd = rd;
+            uop_out_buf.uop_ldst.rd_valid = RD_VALID;
+            uop_out_buf.uop_ldst.ignore = 'd0;
+            uop_out_buf.uop_ldst.funct3 = funct3;
+            uop_out_buf.uop_ldst.optype = OPTYPE_LOAD;
+        end
+        else if(opcode == S_OPCODE)
+        begin
+            uop_out_buf.uop_ldst.imm = imm13;
+            uop_out_buf.uop_ldst.imm_valid = IMM_VALID;
+            uop_out_buf.uop_ldst.rs2 = rs2;
+            uop_out_buf.uop_ldst.rs2_valid = RS2_VALID;
+            uop_out_buf.uop_ldst.rs1 = rs1;
+            uop_out_buf.uop_ldst.rs1_valid = RS1_VALID;
+            uop_out_buf.uop_ldst.rd = 'd0;
+            uop_out_buf.uop_ldst.rd_valid = RD_INVALID;
+            uop_out_buf.uop_ldst.ignore = 'd0;
+            uop_out_buf.uop_ldst.funct3 = funct3;
+            uop_out_buf.uop_ldst.optype = OPTYPE_STORE;
         end
     end
 

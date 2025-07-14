@@ -14,7 +14,7 @@ The Qu Processor is a 32-bit RISC-V CPU designed in SystemVerilog with a supersc
 
 ## Status
 
-All stages are fully implemented and tested for R, I & B-type instructions. The pipeline now supports speculative execution.
+All stages are fully implemented and tested for R, I, B & S-type instructions. The pipeline now supports speculative execution.
 
 ### Next Steps
 

@@ -1,6 +1,6 @@
 // Retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -45,7 +45,12 @@ module retire
 
         // mispredicted branch
         output  logic mispredicted_branch,
-        output  pc_t pc_to_jump
+        output  pc_t pc_to_jump,
+
+        output  logic dmem_wr_en_out,
+        output  logic dmem_rd_en_out,
+        output  logic [31:0] dmem_addr_out,
+        output  logic [31:0] dmem_data_out
     );
 
     rob_addr_t head_ptr;
@@ -71,6 +76,10 @@ module retire
     logic op_in_valid;
 
     logic res_st_retire_en_buf;
+    logic dmem_wr_en_out_buf;
+    logic dmem_rd_en_out_buf;
+    logic [31:0] dmem_addr_out_buf;
+    logic [31:0] dmem_data_out_buf;
 
     assign op_in_valid = op_in.op.optype[0];
 
@@ -81,17 +90,24 @@ module retire
 
     assign rob_wr1_en = op_in_valid;
     assign rob_wr1_addr = op_in.rob_addr;
-    assign rob_wr1_in.value = value_in;
+    assign rob_wr1_in.value = (op_in.op.optype == OPTYPE_STORE) ? op_in.vk : value_in;
 
     // Currently, all branches are assumed not taken. This will be improved later.
     assign rob_wr1_in.mispredicted_branch = (op_in.op.optype == OPTYPE_BRANCH) && comp_result_in;
     
-    assign rob_wr1_in.dest = op_in.dest;
+    assign rob_wr1_in.store = (op_in.op.optype == OPTYPE_STORE);
+    assign rob_wr1_in.load = (op_in.op.optype == OPTYPE_LOAD);
+    assign rob_wr1_in.dest = (op_in.op.optype == OPTYPE_STORE) ? value_in : {'b0, op_in.dest};
     assign rob_wr1_in.state = ROB_STATE_PENDING;
 
     assign rob_tail_ptr = tail_ptr;
     assign res_st_retire_en = res_st_retire_en_buf;
     assign rob_full = (tail_ptr_padded + 1 == head_ptr_padded);
+
+    assign dmem_wr_en_out = dmem_wr_en_out_buf;
+    assign dmem_rd_en_out = dmem_rd_en_out_buf;
+    assign dmem_addr_out = dmem_addr_out_buf;
+    assign dmem_data_out = dmem_data_out_buf;
 
     rob qu_rob (
         .clk(clk),
@@ -134,12 +150,17 @@ module retire
         mispredicted_branch = rob_rd1_out.mispredicted_branch;
         pc_to_jump = rob_rd1_out.value;
 
-        phy_rf_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING);
-        phy_rf_wr_addr = rob_rd1_out.dest;
+        dmem_wr_en_out_buf = rob_rd1_out.store;
+        dmem_rd_en_out_buf = rob_rd1_out.load;
+        dmem_addr_out_buf = rob_rd1_out.store ? rob_rd1_out.dest.dmem_dest : rob_rd1_out.value;
+        dmem_data_out_buf = rob_rd1_out.value;
+        
+        phy_rf_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && !rob_rd1_out.store);
+        phy_rf_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         phy_rf_wr_data = rob_rd1_out.value;
 
-        busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING);
-        busy_table_wr_addr = rob_rd1_out.dest;
+        busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && !rob_rd1_out.store);
+        busy_table_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         busy_table_wr_data = 1'b0;
 
         res_st_retire_en_buf = (rob_rd1_out.state == ROB_STATE_PENDING);

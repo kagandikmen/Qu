@@ -1,6 +1,6 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -210,8 +210,20 @@ package qu_common;
     typedef logic [ROB_ADDR_WIDTH-1:0] rob_addr_t;
 
     typedef struct packed {
+        logic [31:$bits(phy_rf_addr_t)] padding;
+        phy_rf_addr_t dest;
+    } phy_rf_addr_padded_t;
+
+    typedef union packed {
+        phy_rf_addr_padded_t phy_rf_padded_dest;
+        logic [31:0] dmem_dest;
+    } dest_t;
+
+    typedef struct packed {
         logic [31:0] value;
-        logic [PHY_RF_ADDR_WIDTH-1:0] dest;
+        dest_t dest;
+        logic store;
+        logic load;
         logic mispredicted_branch;
         logic [1:0] state;
     } rob_cell_t;

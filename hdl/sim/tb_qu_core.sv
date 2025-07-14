@@ -1,6 +1,6 @@
 // The Qu Processor CPU core testbench
 // Created:     2025-06-27
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -16,7 +16,8 @@ import qu_uop::*;
 
 module tb_qu_core
     #(
-        parameter PMEM_INIT_FILE = "test.hex"
+        parameter PMEM_INIT_FILE = "test.hex",
+        parameter DMEM_INIT_FILE = ""
     )();
 
     localparam INSTR_WIDTH = QU_INSTR_WIDTH;

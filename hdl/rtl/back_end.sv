@@ -1,6 +1,6 @@
 // Top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -52,7 +52,13 @@ module back_end
         output  logic rob_full,
 
         output  logic mispredicted_branch,
-        output  pc_t pc_to_jump
+        output  pc_t pc_to_jump,
+
+        // data memory interface
+        output  logic dmem_wr_en,
+        output  logic dmem_rd_en,
+        output  logic [31:0] dmem_addr,
+        output  logic [31:0] dmem_data_out
     );
 
     res_st_addr_t schedule_res_st_rd1_addr_out;
@@ -102,6 +108,10 @@ module back_end
     phy_rf_data_t retire_res_st_retire_value_out;
     logic retire_mispredicted_branch_out;
     pc_t retire_pc_to_jump_out;
+    logic retire_dmem_wr_en_out;
+    logic retire_dmem_rd_en_out;
+    logic [31:0] retire_dmem_addr_out;
+    logic [31:0] retire_dmem_data_out;
 
     assign schedule_res_st_rd1_in = res_st_rd1_in;
     assign schedule_res_st_rd2_in = res_st_rd2_in;
@@ -141,6 +151,10 @@ module back_end
 
     assign mispredicted_branch = retire_mispredicted_branch_out;
     assign pc_to_jump = retire_pc_to_jump_out;
+    assign dmem_wr_en = retire_dmem_wr_en_out;
+    assign dmem_rd_en = retire_dmem_rd_en_out;
+    assign dmem_addr = retire_dmem_addr_out;
+    assign dmem_data_out = retire_dmem_data_out;
 
     schedule qu_schedule (
         .clk(clk),
@@ -216,7 +230,11 @@ module back_end
         .res_st_retire_rob_addr(retire_res_st_retire_rob_addr_out),
         .res_st_retire_value(retire_res_st_retire_value_out),
         .mispredicted_branch(retire_mispredicted_branch_out),
-        .pc_to_jump(retire_pc_to_jump_out)
+        .pc_to_jump(retire_pc_to_jump_out),
+        .dmem_wr_en_out(retire_dmem_wr_en_out),
+        .dmem_rd_en_out(retire_dmem_rd_en_out),
+        .dmem_addr_out(retire_dmem_addr_out),
+        .dmem_data_out(retire_dmem_data_out)
     );
 
 endmodule

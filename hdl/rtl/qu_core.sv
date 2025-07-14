@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -18,6 +18,7 @@ import qu_uop::*;
 module qu_core
     #(
         parameter PMEM_INIT_FILE = "",
+        parameter DMEM_INIT_FILE = "",
         parameter INSTR_WIDTH = QU_INSTR_WIDTH,
         parameter PC_WIDTH = QU_PC_WIDTH,
         parameter FIFO_IF_ID_DEPTH = 12,
@@ -36,6 +37,8 @@ module qu_core
 
         input   logic schedule_en
     );
+
+    localparam DMEM_DEPTH = 1024;
 
     logic startup_ctrl_if_en_out;
     logic startup_ctrl_id_en_out;
@@ -84,6 +87,12 @@ module qu_core
     phy_rf_addr_t rf_rd_addr;
     phy_rf_data_t rf_data_in;
 
+    logic [$clog2(DMEM_DEPTH)-1:0] dmem_addra_in;
+    logic [31:0] dmem_dina_in;
+    logic dmem_wea_in;
+    logic dmem_ena_in;
+    logic [31:0] dmem_douta_out;
+
     res_st_addr_t back_end_res_st_rd1_addr_out;
     res_st_cell_t back_end_res_st_rd1_in;
     res_st_addr_t back_end_res_st_rd2_addr_out;
@@ -106,6 +115,13 @@ module qu_core
     logic back_end_rob_full_out;
     logic back_end_mispredicted_branch_out;
     pc_t back_end_pc_to_jump_out;
+    logic back_end_dmem_wr_en_out;
+    logic back_end_dmem_rd_en_out;
+    logic [31:0] back_end_dmem_addr_out;
+    logic [31:0] back_end_dmem_data_out;
+
+    logic ld_en_buf;
+    phy_rf_addr_t phy_rf_wr_addr_buf;
 
     assign front_end_if_en = startup_ctrl_if_en_out;
     assign front_end_id_en = startup_ctrl_if_en_out;
@@ -135,15 +151,26 @@ module qu_core
 
     assign rf_rs1_addr_in = front_end_rf_rs1_addr_out;
     assign rf_rs2_addr_in = front_end_rf_rs2_addr_out;
-    assign rf_wr_en = back_end_phy_rf_wr_en_out;
-    assign rf_rd_addr = back_end_phy_rf_wr_addr_out;
-    assign rf_data_in = back_end_phy_rf_wr_data_out;
+    assign rf_wr_en = ld_en_buf | back_end_phy_rf_wr_en_out;
+    assign rf_rd_addr = ld_en_buf ? phy_rf_wr_addr_buf : back_end_phy_rf_wr_addr_out;
+    assign rf_data_in = ld_en_buf ? dmem_douta_out : back_end_phy_rf_wr_data_out;
+
+    assign dmem_addra_in = back_end_dmem_addr_out;
+    assign dmem_dina_in = back_end_dmem_data_out;
+    assign dmem_wea_in = back_end_dmem_wr_en_out;
+    assign dmem_ena_in = back_end_dmem_wr_en_out | back_end_dmem_rd_en_out;
 
     assign back_end_res_st_rd1_in = res_st_rd1_out;
     assign back_end_res_st_rd2_in = res_st_rd2_out;
     assign back_end_res_st_rd3_in = res_st_rd3_out;
     assign back_end_res_st_rd4_in = res_st_rd4_out;
     assign back_end_rob_incr_tail_ptr_in = front_end_rob_incr_tail_ptr_out;
+
+    always_ff @(posedge clk)
+    begin
+        ld_en_buf <= back_end_dmem_rd_en_out;
+        phy_rf_wr_addr_buf <= back_end_phy_rf_wr_addr_out;
+    end
 
     startup_ctrl qu_startup_ctrl (
         .clk(clk),
@@ -224,6 +251,22 @@ module qu_core
         .data_in(rf_data_in)
     );
 
+    ram_sp_rf #(
+        .RAM_WIDTH(32),
+        .RAM_DEPTH(DMEM_DEPTH),
+        .RAM_PERFORMANCE("LOW_LATENCY"),
+        .INIT_FILE(DMEM_INIT_FILE)
+    ) qu_dmem (
+        .addra(dmem_addra_in),
+        .dina(dmem_dina_in),
+        .clka(clk),
+        .wea(dmem_wea_in),
+        .ena(dmem_ena_in),
+        .rsta(rst),     // output reset, does not affect memory contents
+        .regcea(1'b1),
+        .douta(dmem_douta_out)
+    );
+
     back_end qu_back_end (
         .clk(clk),
         .rst(rst),
@@ -249,7 +292,11 @@ module qu_core
         .rob_incr_tail_ptr(back_end_rob_incr_tail_ptr_in),
         .rob_full(back_end_rob_full_out),
         .mispredicted_branch(back_end_mispredicted_branch_out),
-        .pc_to_jump(back_end_pc_to_jump_out)
+        .pc_to_jump(back_end_pc_to_jump_out),
+        .dmem_wr_en(back_end_dmem_wr_en_out),
+        .dmem_rd_en(back_end_dmem_rd_en_out),
+        .dmem_addr(back_end_dmem_addr_out),
+        .dmem_data_out(back_end_dmem_data_out)
     );
 
 endmodule
