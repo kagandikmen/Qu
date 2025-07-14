@@ -48,6 +48,8 @@ module tb_retire
     logic dmem_rd_en_out;
     logic [31:0] dmem_addr_out;
     logic [31:0] dmem_data_out;
+    logic dmem_valid_in;
+    logic [31:0] dmem_data_in;
 
     retire dut (
         .clk(clk),
@@ -58,7 +60,7 @@ module tb_retire
         .phy_rf_wr_en(phy_rf_wr_en),
         .phy_rf_wr_addr(phy_rf_wr_addr),
         .phy_rf_wr_data(phy_rf_wr_data),
-        .phy_renamed_free_reg_addr(phy_renamed_free_reg_addr),
+        .phyreg_renamed_free_reg_addr(phyreg_renamed_free_reg_addr),
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
         .busy_table_wr_data(busy_table_wr_data),
@@ -73,7 +75,9 @@ module tb_retire
         .dmem_wr_en_out(dmem_wr_en_out),
         .dmem_rd_en_out(dmem_rd_en_out),
         .dmem_addr_out(dmem_addr_out),
-        .dmem_data_out(dmem_data_out)
+        .dmem_data_out(dmem_data_out),
+        .dmem_valid_in(dmem_valid_in),
+        .dmem_data_in(dmem_data_in)
     );
 
     always #5   clk = ~clk;
@@ -86,6 +90,8 @@ module tb_retire
         comp_result_in <= 'b0;
         op_in <= 'b0;
         rob_incr_tail_ptr <= 1'b1;
+        dmem_valid_in <= 1'b0;
+        dmem_data_in <= 'd4;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -94,7 +100,7 @@ module tb_retire
         rst <= 1'b0;
         
         op_in.busy <= 1'b1;
-        op_in.op <= 14'b011;
+        op_in.op <= 'b011;
         op_in.qj <= 'd0;
         op_in.qk <= 'd0;
         op_in.vj <= 'd5;
@@ -105,7 +111,7 @@ module tb_retire
 
         @(posedge clk);
         op_in.busy <= 1'b1;
-        op_in.op <= 14'b011;
+        op_in.op <= 'b011;
         op_in.qj <= 'd0;
         op_in.qk <= 'd3;
         op_in.vj <= 'd8;
@@ -115,7 +121,7 @@ module tb_retire
         op_in.rob_addr <= 'd2;
 
         @(posedge clk);
-        op_in.op <= 14'b0;
+        op_in.op <= 'b0;
 
         #200;
         $finish;

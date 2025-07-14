@@ -1,6 +1,6 @@
 // Double-Port Read-First RAM Module
 // Created:     2025-07-14
-// Modified:    
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -31,6 +31,8 @@ module ram_dp_rf #(
   input rstb,                            // Port B output reset (does not affect memory contents)
   input regcea,                          // Port A output register enable
   input regceb,                          // Port B output register enable
+  output valida,                         // Port A output valid flag
+  output validb,                         // Port B output valid flag
   output [(NB_COL*COL_WIDTH)-1:0] douta, // Port A RAM output data
   output [(NB_COL*COL_WIDTH)-1:0] doutb  // Port B RAM output data
 );
@@ -38,6 +40,9 @@ module ram_dp_rf #(
   reg [(NB_COL*COL_WIDTH)-1:0] BRAM [RAM_DEPTH-1:0];
   reg [(NB_COL*COL_WIDTH)-1:0] ram_data_a = {(NB_COL*COL_WIDTH){1'b0}};
   reg [(NB_COL*COL_WIDTH)-1:0] ram_data_b = {(NB_COL*COL_WIDTH){1'b0}};
+
+  reg valid_reg_a;
+  reg valid_reg_b;
 
   // The following code either initializes the memory values to a specified file or to all zeros to match hardware
   generate
@@ -55,11 +60,17 @@ module ram_dp_rf #(
   always @(posedge clka)
     if (ena) begin
       ram_data_a <= BRAM[addra];
+      valid_reg_a <= 1'b1;
+    end else begin
+      valid_reg_a <= 1'b0;
     end
 
   always @(posedge clka)
     if (enb) begin
       ram_data_b <= BRAM[addrb];
+      valid_reg_b <= 1'b1;
+    end else begin
+      valid_reg_b <= 1'b0;
     end
 
   generate
@@ -83,6 +94,8 @@ end
       // The following is a 1 clock cycle read latency at the cost of a longer clock-to-out timing
        assign douta = ram_data_a;
        assign doutb = ram_data_b;
+       assign valida = valid_reg_a;
+       assign validb = valid_reg_b;
 
     end else begin: output_register
 
@@ -91,20 +104,53 @@ end
       reg [(NB_COL*COL_WIDTH)-1:0] douta_reg = {(NB_COL*COL_WIDTH){1'b0}};
       reg [(NB_COL*COL_WIDTH)-1:0] doutb_reg = {(NB_COL*COL_WIDTH){1'b0}};
 
+      reg valid_reg_temp_a = 0;
+      reg valid_reg_temp_b = 0;
+
+      reg valida_buf = 0;
+      reg validb_buf = 0;
+
       always @(posedge clka)
+        if (ena)
+          valid_reg_temp_a <= 1'b1;
+        else
+          valid_reg_temp_a <= 1'b0;
+
+      always @(posedge clka) begin
         if (rsta)
           douta_reg <= {(NB_COL*COL_WIDTH){1'b0}};
         else if (regcea)
           douta_reg <= ram_data_a;
 
+        if (regcea)
+          valida_buf <= valid_reg_temp_a;
+        else
+          valida_buf <= 1'b0;
+      end
+
       always @(posedge clka)
+        if (enb)
+          valid_reg_temp_b <= 1'b1;
+        else
+          valid_reg_temp_b <= 1'b0;
+
+      always @(posedge clka) begin
         if (rstb)
           doutb_reg <= {(NB_COL*COL_WIDTH){1'b0}};
         else if (regceb)
           doutb_reg <= ram_data_b;
 
+        if (regceb)
+          validb_buf <= valid_reg_temp_b;
+        else
+          validb_buf <= 1'b0;
+      end
+
       assign douta = douta_reg;
       assign doutb = doutb_reg;
+
+      assign valida = valida_buf;
+      assign validb = validb_buf;
 
     end
   endgenerate

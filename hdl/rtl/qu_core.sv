@@ -98,6 +98,7 @@ module qu_core
     logic [31:0] dmem_din_in;
     logic dmem_wr_en;
     logic dmem_en_in;
+    logic dmem_valid_out;
     logic [31:0] dmem_dout_out;
 
     res_st_addr_t back_end_res_st_rd1_addr_out;
@@ -127,9 +128,8 @@ module qu_core
     logic back_end_dmem_rd_en_out;
     logic [31:0] back_end_dmem_addr_out;
     logic [31:0] back_end_dmem_data_out;
-
-    logic ld_en_buf;
-    phy_rf_addr_t phy_rf_wr_addr_buf;
+    logic back_end_dmem_valid_in;
+    logic [31:0] back_end_dmem_data_in;
 
     assign pmem_addr_in = {2'b0, front_end_next_pc_out[PC_WIDTH-1:2]};
     assign pmem_en_in = !stall;
@@ -164,9 +164,9 @@ module qu_core
 
     assign rf_rs1_addr_in = front_end_rf_rs1_addr_out;
     assign rf_rs2_addr_in = front_end_rf_rs2_addr_out;
-    assign rf_wr_en = ld_en_buf | back_end_phy_rf_wr_en_out;
-    assign rf_rd_addr = ld_en_buf ? phy_rf_wr_addr_buf : back_end_phy_rf_wr_addr_out;
-    assign rf_data_in = ld_en_buf ? dmem_dout_out : back_end_phy_rf_wr_data_out;
+    assign rf_wr_en = back_end_phy_rf_wr_en_out;
+    assign rf_rd_addr = back_end_phy_rf_wr_addr_out;
+    assign rf_data_in = back_end_phy_rf_wr_data_out;
 
     assign dmem_addr_in = back_end_dmem_addr_out;
     assign dmem_din_in = back_end_dmem_data_out;
@@ -178,12 +178,8 @@ module qu_core
     assign back_end_res_st_rd3_in = res_st_rd3_out;
     assign back_end_res_st_rd4_in = res_st_rd4_out;
     assign back_end_rob_incr_tail_ptr_in = front_end_rob_incr_tail_ptr_out;
-
-    always_ff @(posedge clk)
-    begin
-        ld_en_buf <= back_end_dmem_rd_en_out;
-        phy_rf_wr_addr_buf <= back_end_phy_rf_wr_addr_out;
-    end
+    assign back_end_dmem_valid_in = dmem_valid_out;
+    assign back_end_dmem_data_in = dmem_dout_out;
 
     startup_ctrl qu_startup_ctrl (
         .clk(clk),
@@ -296,7 +292,9 @@ module qu_core
         .dmem_wr_en(back_end_dmem_wr_en_out),
         .dmem_rd_en(back_end_dmem_rd_en_out),
         .dmem_addr(back_end_dmem_addr_out),
-        .dmem_data_out(back_end_dmem_data_out)
+        .dmem_data_out(back_end_dmem_data_out),
+        .dmem_valid_in(back_end_dmem_valid_in),
+        .dmem_data_in(back_end_dmem_data_in)
     );
 
     // a: pmem, b: dmem
@@ -320,6 +318,8 @@ module qu_core
         .rstb(rst),
         .regcea(1'b1),
         .regceb(1'b1),
+        .valida(),
+        .validb(dmem_valid_out),
         .douta(pmem_dout_out),
         .doutb(dmem_dout_out)
     );

@@ -61,7 +61,9 @@ module back_end
         output  logic dmem_wr_en,
         output  logic dmem_rd_en,
         output  logic [31:0] dmem_addr,
-        output  logic [31:0] dmem_data_out
+        output  logic [31:0] dmem_data_out,
+        input   logic dmem_valid_in,
+        input   logic [31:0] dmem_data_in
     );
 
     res_st_addr_t schedule_res_st_rd1_addr_out;
@@ -100,6 +102,7 @@ module back_end
     logic phy_rf_rf_wr_en_out;
     phy_rf_addr_t retire_phy_rf_wr_addr_out;
     phy_rf_data_t retire_phy_rf_wr_data_out;
+    phy_rf_addr_t retire_phyreg_renamed_free_reg_addr_out;
     logic retire_busy_table_wr_en_out;
     phy_rf_addr_t retire_busy_table_wr_addr_out;
     logic retire_busy_table_wr_data_out;
@@ -115,7 +118,8 @@ module back_end
     logic retire_dmem_rd_en_out;
     logic [31:0] retire_dmem_addr_out;
     logic [31:0] retire_dmem_data_out;
-    phy_rf_addr_t retire_phyreg_renamed_free_reg_addr_out;
+    logic retire_dmem_valid_in;
+    logic [31:0] retire_dmem_data_in;
 
     assign schedule_res_st_rd1_in = res_st_rd1_in;
     assign schedule_res_st_rd2_in = res_st_rd2_in;
@@ -136,6 +140,8 @@ module back_end
     assign retire_comp_result_in = fifo_ex_rt_data_out[$bits(fifo_ex_rt_data_out)-1];
     assign retire_op_in = fifo_ex_rt_data_out[$bits(res_st_cell_t)-1:0];
     assign retire_rob_incr_tail_ptr_in = rob_incr_tail_ptr;
+    assign retire_dmem_valid_in = dmem_valid_in;
+    assign retire_dmem_data_in = dmem_data_in;
 
     assign res_st_rd1_addr = schedule_res_st_rd1_addr_out;
     assign res_st_rd2_addr = schedule_res_st_rd2_addr_out;
@@ -225,6 +231,7 @@ module back_end
         .phy_rf_wr_en(retire_phy_rf_wr_en_out),
         .phy_rf_wr_addr(retire_phy_rf_wr_addr_out),
         .phy_rf_wr_data(retire_phy_rf_wr_data_out),
+        .phyreg_renamed_free_reg_addr(retire_phyreg_renamed_free_reg_addr_out),
         .busy_table_wr_en(retire_busy_table_wr_en_out),
         .busy_table_wr_addr(retire_busy_table_wr_addr_out),
         .busy_table_wr_data(retire_busy_table_wr_data_out),
@@ -240,7 +247,8 @@ module back_end
         .dmem_rd_en_out(retire_dmem_rd_en_out),
         .dmem_addr_out(retire_dmem_addr_out),
         .dmem_data_out(retire_dmem_data_out),
-        .phyreg_renamed_free_reg_addr(retire_phyreg_renamed_free_reg_addr_out)
+        .dmem_valid_in(retire_dmem_valid_in),
+        .dmem_data_in(retire_dmem_data_in)
     );
 
 endmodule

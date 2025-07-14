@@ -53,7 +53,9 @@ module retire
         output  logic dmem_wr_en_out,
         output  logic dmem_rd_en_out,
         output  logic [31:0] dmem_addr_out,
-        output  logic [31:0] dmem_data_out
+        output  logic [31:0] dmem_data_out,
+        input   logic dmem_valid_in,
+        input   logic [31:0] dmem_data_in
     );
 
     rob_addr_t head_ptr;
@@ -123,9 +125,9 @@ module retire
         .wr1_en(rob_wr1_en),
         .wr1_addr(rob_wr1_addr),
         .wr1_in(rob_wr1_in),
-        .wr2_en(rob_wr2_en),
-        .wr2_addr(rob_wr2_addr),
-        .wr2_in(rob_wr2_in),
+        .wr2_en(1'b0),
+        .wr2_addr(),
+        .wr2_in(),
         .rd1_addr(rob_rd1_addr),
         .rd1_out(rob_rd1_out),
         .rd2_addr(rob_rd2_addr),
@@ -155,32 +157,67 @@ module retire
     begin
         rob_rd1_addr = head_ptr;
 
-        mispredicted_branch = rob_rd1_out.mispredicted_branch;
+        if(rob_rd1_out.state == ROB_STATE_PENDING)
+        begin
+            if(rob_rd1_out.load && dmem_valid_in)
+            begin
+                mispredicted_branch = rob_rd1_out.mispredicted_branch;
+                dmem_wr_en_out_buf = rob_rd1_out.store;
+                dmem_rd_en_out_buf = 1'b0;
+                phy_rf_wr_en = 1'b1;
+                busy_table_wr_en = 1'b1;
+                phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
+                res_st_retire_en_buf = 1'b1;
+                phy_rf_wr_data = dmem_data_in;
+            end
+            else if(rob_rd1_out.load && !dmem_valid_in)
+            begin
+                mispredicted_branch = rob_rd1_out.mispredicted_branch;
+                dmem_wr_en_out_buf = rob_rd1_out.store;
+                dmem_rd_en_out_buf = 1'b1;
+                phy_rf_wr_en = 1'b0;
+                busy_table_wr_en = 1'b0;
+                phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
+                res_st_retire_en_buf = 1'b0;
+                phy_rf_wr_data = 'd0;
+            end
+            else
+            begin
+                mispredicted_branch = rob_rd1_out.mispredicted_branch;
+                dmem_wr_en_out_buf = rob_rd1_out.store;
+                dmem_rd_en_out_buf = rob_rd1_out.load;
+                phy_rf_wr_en = (rob_rd1_out.dest != 'd0);
+                busy_table_wr_en = (rob_rd1_out.dest != 'd0);
+                phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
+                res_st_retire_en_buf = (rob_rd1_out.dest != 'd0); 
+                phy_rf_wr_data = rob_rd1_out.value;
+            end
+        end
+        else
+        begin
+            mispredicted_branch = 'b0;
+            dmem_wr_en_out_buf = 'b0;
+            dmem_rd_en_out_buf = 'b0;
+            phy_rf_wr_en = 'b0;
+            busy_table_wr_en = 'b0;
+            phyreg_renamed_free_reg_addr_buf = 'b0;
+            res_st_retire_en_buf = 'b0;
+            phy_rf_wr_data = rob_rd1_out.value;
+        end
+
         pc_to_jump = rob_rd1_out.value;
 
-        dmem_wr_en_out_buf = rob_rd1_out.store;
-        dmem_rd_en_out_buf = rob_rd1_out.load;
         dmem_addr_out_buf = rob_rd1_out.store ? rob_rd1_out.dest.dmem_dest : rob_rd1_out.value;
         dmem_data_out_buf = rob_rd1_out.value;
         
-        phy_rf_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && rob_rd1_out.dest != 'd0);
         phy_rf_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
-        phy_rf_wr_data = rob_rd1_out.value;
 
-        busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && rob_rd1_out.dest != 'd0);
         busy_table_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         busy_table_wr_data = 1'b0;
 
-        phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
-
-        res_st_retire_en_buf = (rob_rd1_out.state == ROB_STATE_PENDING && rob_rd1_out.dest != 'd0);
         res_st_retire_rob_addr = head_ptr;
         res_st_retire_value = rob_rd1_out.value;
 
-        rob_wr2_en = (rob_rd1_out.state == ROB_STATE_PENDING);
-        rob_wr2_addr = head_ptr;
-        rob_wr2_in = rob_rd1_out;
-        rob_wr2_in.state = ROB_STATE_RETIRED;
     end
 
 endmodule

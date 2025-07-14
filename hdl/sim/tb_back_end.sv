@@ -49,6 +49,8 @@ module tb_back_end
     logic dmem_rd_en;
     logic [31:0] dmem_addr;
     logic [31:0] dmem_data_out;
+    logic dmem_valid_in;
+    logic [31:0] dmem_data_in;
 
     back_end dut (
         .clk(clk),
@@ -80,7 +82,9 @@ module tb_back_end
         .dmem_wr_en(dmem_wr_en),
         .dmem_rd_en(dmem_rd_en),
         .dmem_addr(dmem_addr),
-        .dmem_data_out(dmem_data_out)
+        .dmem_data_out(dmem_data_out),
+        .dmem_valid_in(dmem_valid_in),
+        .dmem_data_in(dmem_data_in)
     );
 
     always #5   clk = ~clk;
@@ -91,11 +95,13 @@ module tb_back_end
         rst <= 1'b0;
         schedule_en <= 1'b1;
         rob_incr_tail_ptr <= 1'b1;
+        dmem_valid_in <= 1'b1;
+        dmem_data_in <= 'd4;
 
         res_st_rd1_in.rob_addr <= 2'd0;
         res_st_rd1_in.dest <= 'd4;
         res_st_rd1_in.busy <= 1'b1;
-        res_st_rd1_in.op <= 14'd1;
+        res_st_rd1_in.op <= 'd1;
         res_st_rd1_in.qj <= 'd0;
         res_st_rd1_in.qk <= 'd0;
         res_st_rd1_in.vj <= 'd11;
@@ -105,7 +111,7 @@ module tb_back_end
         res_st_rd2_in.rob_addr <= 2'd1;
         res_st_rd2_in.dest <= 'd5;
         res_st_rd2_in.busy <= 1'b1;
-        res_st_rd2_in.op <= 14'd3;
+        res_st_rd2_in.op <= 'd3;
         res_st_rd2_in.qj <= 'd0;
         res_st_rd2_in.qk <= 'd0;
         res_st_rd2_in.vj <= 'd21;
@@ -115,7 +121,7 @@ module tb_back_end
         res_st_rd3_in.rob_addr <= 2'd2;
         res_st_rd3_in.dest <= 'd6;
         res_st_rd3_in.busy <= 1'b1;
-        res_st_rd3_in.op <= 14'd5;
+        res_st_rd3_in.op <= 'd5;
         res_st_rd3_in.qj <= 'd0;
         res_st_rd3_in.qk <= 'd0;
         res_st_rd3_in.vj <= 'd31;
@@ -125,7 +131,7 @@ module tb_back_end
         res_st_rd4_in.rob_addr <= 2'd3;
         res_st_rd4_in.dest <= 'd7;
         res_st_rd4_in.busy <= 1'b1;
-        res_st_rd4_in.op <= 14'd7;
+        res_st_rd4_in.op <= 'd7;
         res_st_rd4_in.qj <= 'd0;
         res_st_rd4_in.qk <= 'd0;
         res_st_rd4_in.vj <= 'd41;
@@ -142,7 +148,7 @@ module tb_back_end
         res_st_rd1_in.rob_addr <= 2'd0;
         res_st_rd1_in.dest <= 'd4;
         res_st_rd1_in.busy <= 1'b1;
-        res_st_rd1_in.op <= 14'd1;
+        res_st_rd1_in.op <= 'd1;
         res_st_rd1_in.qj <= 'd0;
         res_st_rd1_in.qk <= 'd0;
         res_st_rd1_in.vj <= 'd11;
@@ -152,7 +158,7 @@ module tb_back_end
         res_st_rd2_in.rob_addr <= 2'd1;
         res_st_rd2_in.dest <= 'd5;
         res_st_rd2_in.busy <= 1'b1;
-        res_st_rd2_in.op <= 14'd3;
+        res_st_rd2_in.op <= 'd3;
         res_st_rd2_in.qj <= 'd1;
         res_st_rd2_in.qk <= 'd0;
         res_st_rd2_in.vj <= 'd21;
@@ -162,7 +168,7 @@ module tb_back_end
         res_st_rd3_in.rob_addr <= 2'd2;
         res_st_rd3_in.dest <= 'd6;
         res_st_rd3_in.busy <= 1'b1;
-        res_st_rd3_in.op <= 14'd5;
+        res_st_rd3_in.op <= 'd5;
         res_st_rd3_in.qj <= 'd0;
         res_st_rd3_in.qk <= 'd0;
         res_st_rd3_in.vj <= 'd31;
@@ -172,7 +178,7 @@ module tb_back_end
         res_st_rd4_in.rob_addr <= 2'd3;
         res_st_rd4_in.dest <= 'd7;
         res_st_rd4_in.busy <= 1'b1;
-        res_st_rd4_in.op <= 14'd7;
+        res_st_rd4_in.op <= 'd7;
         res_st_rd4_in.qj <= 'd0;
         res_st_rd4_in.qk <= 'd0;
         res_st_rd4_in.vj <= 'd41;
