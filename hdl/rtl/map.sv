@@ -1,6 +1,6 @@
 // Map stage of The Qu Processor
 // Created:     2025-06-29
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -91,7 +91,7 @@ module map
         //
 
         // rs2
-        if(rename_table[rs2_in] == 'b0)
+        if(rs2_in != 'b0 && rename_table[rs2_in] == 'b0)
         begin
             if(rs1_in == rs2_in)
             begin
@@ -112,7 +112,7 @@ module map
         end
 
         // rs1
-        if(rename_table[rs1_in] == 'b0)
+        if(rs1_in != 'b0 && rename_table[rs1_in] == 'b0)
         begin
             uop_out_buf.uop_ic.rs1 = next_to_assign[1];
             rename_executed[1] = 1'b1;
