@@ -163,17 +163,17 @@ module retire
         dmem_addr_out_buf = rob_rd1_out.store ? rob_rd1_out.dest.dmem_dest : rob_rd1_out.value;
         dmem_data_out_buf = rob_rd1_out.value;
         
-        phy_rf_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && !rob_rd1_out.store);
+        phy_rf_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && rob_rd1_out.dest != 'd0);
         phy_rf_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         phy_rf_wr_data = rob_rd1_out.value;
 
-        busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && !rob_rd1_out.store);
+        busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && rob_rd1_out.dest != 'd0);
         busy_table_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         busy_table_wr_data = 1'b0;
 
         phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
 
-        res_st_retire_en_buf = (rob_rd1_out.state == ROB_STATE_PENDING);
+        res_st_retire_en_buf = (rob_rd1_out.state == ROB_STATE_PENDING && rob_rd1_out.dest != 'd0);
         res_st_retire_rob_addr = head_ptr;
         res_st_retire_value = rob_rd1_out.value;
 
