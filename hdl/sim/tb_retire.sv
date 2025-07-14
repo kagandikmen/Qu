@@ -28,6 +28,8 @@ module tb_retire
     phy_rf_addr_t phy_rf_wr_addr;
     phy_rf_data_t phy_rf_wr_data;
 
+    phy_rf_addr_t phyreg_renamed_free_reg_addr;
+
     logic busy_table_wr_en;
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr;
     logic busy_table_wr_data;
@@ -56,6 +58,7 @@ module tb_retire
         .phy_rf_wr_en(phy_rf_wr_en),
         .phy_rf_wr_addr(phy_rf_wr_addr),
         .phy_rf_wr_data(phy_rf_wr_data),
+        .phy_renamed_free_reg_addr(phy_renamed_free_reg_addr),
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
         .busy_table_wr_data(busy_table_wr_data),

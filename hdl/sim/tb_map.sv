@@ -1,6 +1,6 @@
 // Map stage testbench
 // Created:     2025-06-29
-// Modified:    2025-07-04
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -33,6 +33,8 @@ module tb_map
     logic [$clog2(PHY_RF_DEPTH)-1:0] busy_table_wr_addr;
     logic busy_table_data_out;
 
+    phy_rf_addr_t phyreg_renamed_free_reg_addr_in;
+
     map #(
         .LOG_RF_DEPTH(LOG_RF_DEPTH),
         .PHY_RF_DEPTH(PHY_RF_DEPTH)
@@ -45,7 +47,8 @@ module tb_map
         .full(full),
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
-        .busy_table_data_out(busy_table_data_out)
+        .busy_table_data_out(busy_table_data_out),
+        .phyreg_renamed_free_reg_addr_in(phyreg_renamed_free_reg_addr_in)
     );
 
     always #5   clk = ~clk;
@@ -56,6 +59,7 @@ module tb_map
         rst <= 1'b0;
         en <= 1'b1;
         uop_in.uop_ic <= '{default: 'b0};
+        phyreg_renamed_free_reg_addr_in <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -158,6 +162,12 @@ module tb_map
         uop_in.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
         uop_in.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
         uop_in.uop_ic.optype = OPTYPE_INT;
+
+        @(posedge clk);
+        phyreg_renamed_free_reg_addr_in <= 'd2;
+
+        @(posedge clk);
+        phyreg_renamed_free_reg_addr_in <= 'd0;
 
         repeat(6) @(posedge clk);
         en <= 1'b0;

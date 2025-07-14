@@ -68,6 +68,7 @@ module decode
     begin
         uop_out_buf = 'b0;
         uop_out_buf.uop_ic.pc = pc_in;
+        uop_out_buf.uop_ic.phyreg_old = 'd0;
 
         if(opcode == R_OPCODE)
         begin

@@ -46,6 +46,9 @@ module back_end
         output  phy_rf_addr_t busy_table_wr_addr,
         output  logic busy_table_wr_data,
 
+        // map stage interface
+        output  phy_rf_addr_t phyreg_renamed_free_reg_addr,
+
         // rename stage interface
         output  rob_addr_t rob_tail_ptr,
         input   logic rob_incr_tail_ptr,
@@ -112,6 +115,7 @@ module back_end
     logic retire_dmem_rd_en_out;
     logic [31:0] retire_dmem_addr_out;
     logic [31:0] retire_dmem_data_out;
+    phy_rf_addr_t retire_phyreg_renamed_free_reg_addr_out;
 
     assign schedule_res_st_rd1_in = res_st_rd1_in;
     assign schedule_res_st_rd2_in = res_st_rd2_in;
@@ -149,6 +153,7 @@ module back_end
     assign rob_tail_ptr = retire_rob_tail_ptr_out;
     assign rob_full = retire_rob_full_out;
 
+    assign phyreg_renamed_free_reg_addr = retire_phyreg_renamed_free_reg_addr_out;
     assign mispredicted_branch = retire_mispredicted_branch_out;
     assign pc_to_jump = retire_pc_to_jump_out;
     assign dmem_wr_en = retire_dmem_wr_en_out;
@@ -234,7 +239,8 @@ module back_end
         .dmem_wr_en_out(retire_dmem_wr_en_out),
         .dmem_rd_en_out(retire_dmem_rd_en_out),
         .dmem_addr_out(retire_dmem_addr_out),
-        .dmem_data_out(retire_dmem_data_out)
+        .dmem_data_out(retire_dmem_data_out),
+        .phyreg_renamed_free_reg_addr(retire_phyreg_renamed_free_reg_addr_out)
     );
 
 endmodule

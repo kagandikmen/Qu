@@ -56,6 +56,7 @@ module qu_core
     logic front_end_busy_table_wr_en_in;
     pc_t front_end_next_pc_out;
     logic [INSTR_WIDTH-1:0] front_end_instr_in;
+    phy_rf_addr_t front_end_phyreg_renamed_free_reg_addr_in;
 
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_busy_table_wr_addr_in;
     logic front_end_busy_table_wr_data_in;
@@ -116,6 +117,7 @@ module qu_core
     logic back_end_busy_table_wr_en_out;
     phy_rf_addr_t back_end_busy_table_wr_addr_out;
     logic back_end_busy_table_wr_data_out;
+    phy_rf_addr_t back_end_phyreg_renamed_free_reg_addr_out;
     rob_addr_t back_end_rob_tail_ptr_out;
     logic back_end_rob_incr_tail_ptr_in;
     logic back_end_rob_full_out;
@@ -145,6 +147,7 @@ module qu_core
     assign front_end_busy_table_wr_en_in = back_end_busy_table_wr_en_out;
     assign front_end_busy_table_wr_addr_in = back_end_busy_table_wr_addr_out;
     assign front_end_busy_table_wr_data_in = back_end_busy_table_wr_data_out;
+    assign front_end_phyreg_renamed_free_reg_addr_in = back_end_phyreg_renamed_free_reg_addr_out;
     assign front_end_rob_tail_ptr_in = back_end_rob_tail_ptr_out;
     assign front_end_rob_full_in = back_end_rob_full_out;
 
@@ -214,6 +217,7 @@ module qu_core
         .busy_table_wr_en(front_end_busy_table_wr_en_in),
         .busy_table_wr_addr(front_end_busy_table_wr_addr_in),
         .busy_table_wr_data(front_end_busy_table_wr_data_in),
+        .phyreg_renamed_free_reg_addr(front_end_phyreg_renamed_free_reg_addr_in),
         .rob_tail_ptr(front_end_rob_tail_ptr_in),
         .rob_incr_tail_ptr(front_end_rob_incr_tail_ptr_out),
         .rf_rs1_addr(front_end_rf_rs1_addr_out),
@@ -283,6 +287,7 @@ module qu_core
         .busy_table_wr_en(back_end_busy_table_wr_en_out),
         .busy_table_wr_addr(back_end_busy_table_wr_addr_out),
         .busy_table_wr_data(back_end_busy_table_wr_data_out),
+        .phyreg_renamed_free_reg_addr(back_end_phyreg_renamed_free_reg_addr_out),
         .rob_tail_ptr(back_end_rob_tail_ptr_out),
         .rob_incr_tail_ptr(back_end_rob_incr_tail_ptr_in),
         .rob_full(back_end_rob_full_out),

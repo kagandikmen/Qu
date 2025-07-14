@@ -30,6 +30,9 @@ module retire
         output  phy_rf_addr_t phy_rf_wr_addr,
         output  phy_rf_data_t phy_rf_wr_data,
 
+        // map stage interface
+        output  phy_rf_addr_t phyreg_renamed_free_reg_addr,
+
         // rename stage interface
         output  logic busy_table_wr_en,
         output  logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr,
@@ -81,6 +84,8 @@ module retire
     logic [31:0] dmem_addr_out_buf;
     logic [31:0] dmem_data_out_buf;
 
+    phy_rf_addr_t phyreg_renamed_free_reg_addr_buf;
+
     assign op_in_valid = op_in.op.optype[0];
 
     assign head_ptr_padded[$bits(rob_addr_t)] = 1'b0;
@@ -95,6 +100,7 @@ module retire
     // Currently, all branches are assumed not taken. This will be improved later.
     assign rob_wr1_in.mispredicted_branch = (op_in.op.optype == OPTYPE_BRANCH) && comp_result_in;
     
+    assign rob_wr1_in.phyreg_old = op_in.phyreg_old;
     assign rob_wr1_in.store = (op_in.op.optype == OPTYPE_STORE);
     assign rob_wr1_in.load = (op_in.op.optype == OPTYPE_LOAD);
     assign rob_wr1_in.dest = (op_in.op.optype == OPTYPE_STORE) ? value_in : {'b0, op_in.dest};
@@ -108,6 +114,8 @@ module retire
     assign dmem_rd_en_out = dmem_rd_en_out_buf;
     assign dmem_addr_out = dmem_addr_out_buf;
     assign dmem_data_out = dmem_data_out_buf;
+
+    assign phyreg_renamed_free_reg_addr = phyreg_renamed_free_reg_addr_buf;
 
     rob qu_rob (
         .clk(clk),
@@ -162,6 +170,8 @@ module retire
         busy_table_wr_en = (rob_rd1_out.state == ROB_STATE_PENDING && !rob_rd1_out.store);
         busy_table_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         busy_table_wr_data = 1'b0;
+
+        phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
 
         res_st_retire_en_buf = (rob_rd1_out.state == ROB_STATE_PENDING);
         res_st_retire_rob_addr = head_ptr;

@@ -36,6 +36,8 @@ module tb_back_end
     phy_rf_addr_t busy_table_wr_addr;
     logic busy_table_wr_data;
 
+    phy_rf_addr_t phyreg_renamed_free_reg_addr;
+
     rob_addr_t rob_tail_ptr;
     logic rob_incr_tail_ptr;
     logic rob_full;
@@ -69,6 +71,7 @@ module tb_back_end
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
         .busy_table_wr_data(busy_table_wr_data),
+        .phyreg_renamed_free_reg_addr(phyreg_renamed_free_reg_addr),
         .rob_tail_ptr(rob_tail_ptr),
         .rob_incr_tail_ptr(rob_incr_tail_ptr),
         .rob_full(rob_full),

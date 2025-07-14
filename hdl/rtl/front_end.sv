@@ -47,6 +47,7 @@ module front_end
         input   logic busy_table_wr_en,
         input   logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr,
         input   logic busy_table_wr_data,
+        input   phy_rf_addr_t phyreg_renamed_free_reg_addr,
         input   rob_addr_t rob_tail_ptr,
         output  logic rob_incr_tail_ptr,
         input   logic rob_full,
@@ -102,6 +103,7 @@ module front_end
     logic [PHY_RF_ADDR_WIDTH-1:0] map_busy_table_wr_addr_out;
     logic map_busy_table_data_out;
     logic map_uop_data_in_proper;
+    phy_rf_addr_t map_phyreg_renamed_free_reg_addr_in;
 
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_rd1_addr_in;
     logic busy_table_rd1_out;
@@ -204,7 +206,8 @@ module front_end
         .full(map_full_out),
         .busy_table_wr_en(map_busy_table_wr_en_out),
         .busy_table_wr_addr(map_busy_table_wr_addr_out),
-        .busy_table_data_out(map_busy_table_data_out)
+        .busy_table_data_out(map_busy_table_data_out),
+        .phyreg_renamed_free_reg_addr_in(map_phyreg_renamed_free_reg_addr_in)
     );
     
     busy_table #(
@@ -285,6 +288,7 @@ module front_end
     assign map_uop_data_in_proper = fifo_id_mp_data_out[0];
     assign map_en = !stall && !mp_stall && map_uop_data_in_proper && !rst;
     assign map_uop_in = fifo_id_mp_data_out;
+    assign map_phyreg_renamed_free_reg_addr_in = phyreg_renamed_free_reg_addr;
 
     assign busy_table_rd1_addr_in = rename_busy_table_rd1_addr_out;
     assign busy_table_rd2_addr_in = rename_busy_table_rd2_addr_out;
