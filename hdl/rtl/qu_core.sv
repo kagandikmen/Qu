@@ -17,8 +17,7 @@ import qu_uop::*;
 
 module qu_core
     #(
-        parameter PMEM_INIT_FILE = "",
-        parameter DMEM_INIT_FILE = "",
+        parameter MEM_INIT_FILE = "",
         parameter INSTR_WIDTH = QU_INSTR_WIDTH,
         parameter PC_WIDTH = QU_PC_WIDTH,
         parameter FIFO_IF_ID_DEPTH = 12,
@@ -38,14 +37,14 @@ module qu_core
         input   logic schedule_en
     );
 
-    localparam DMEM_DEPTH = 1024;
+    localparam DMEM_DEPTH = 2**PC_WIDTH;
 
     logic startup_ctrl_if_en_out;
     logic startup_ctrl_id_en_out;
 
-    pc_t pmem_addra_in;
-    logic pmem_ena_in;
-    logic [INSTR_WIDTH-1:0] pmem_douta_out;
+    pc_t pmem_addr_in;
+    logic pmem_en_in;
+    logic [INSTR_WIDTH-1:0] pmem_dout_out;
 
     logic front_end_if_en;
     logic front_end_id_en;
@@ -94,11 +93,11 @@ module qu_core
     phy_rf_addr_t rf_rd_addr;
     phy_rf_data_t rf_data_in;
 
-    logic [$clog2(DMEM_DEPTH)-1:0] dmem_addra_in;
-    logic [31:0] dmem_dina_in;
-    logic dmem_wea_in;
-    logic dmem_ena_in;
-    logic [31:0] dmem_douta_out;
+    logic [$clog2(DMEM_DEPTH)-1:0] dmem_addr_in;
+    logic [31:0] dmem_din_in;
+    logic dmem_wr_en;
+    logic dmem_en_in;
+    logic [31:0] dmem_dout_out;
 
     res_st_addr_t back_end_res_st_rd1_addr_out;
     res_st_cell_t back_end_res_st_rd1_in;
@@ -130,8 +129,8 @@ module qu_core
     logic ld_en_buf;
     phy_rf_addr_t phy_rf_wr_addr_buf;
 
-    assign pmem_addra_in = {2'b0, front_end_next_pc_out[PC_WIDTH-1:2]};
-    assign pmem_ena_in = !stall;
+    assign pmem_addr_in = {2'b0, front_end_next_pc_out[PC_WIDTH-1:2]};
+    assign pmem_en_in = !stall;
 
     assign front_end_if_en = startup_ctrl_if_en_out;
     assign front_end_id_en = startup_ctrl_if_en_out;
@@ -139,7 +138,7 @@ module qu_core
     assign front_end_jump_in = 'b0;
     assign front_end_exception_in = 'b0;
     assign front_end_stall_in = stall;
-    assign front_end_instr_in = pmem_douta_out;
+    assign front_end_instr_in = pmem_dout_out;
     assign front_end_pc_override_in = back_end_pc_to_jump_out;
     assign front_end_rf_rs1_data_in = rf_rs1_data_out;
     assign front_end_rf_rs2_data_in = rf_rs2_data_out;
@@ -164,12 +163,12 @@ module qu_core
     assign rf_rs2_addr_in = front_end_rf_rs2_addr_out;
     assign rf_wr_en = ld_en_buf | back_end_phy_rf_wr_en_out;
     assign rf_rd_addr = ld_en_buf ? phy_rf_wr_addr_buf : back_end_phy_rf_wr_addr_out;
-    assign rf_data_in = ld_en_buf ? dmem_douta_out : back_end_phy_rf_wr_data_out;
+    assign rf_data_in = ld_en_buf ? dmem_dout_out : back_end_phy_rf_wr_data_out;
 
-    assign dmem_addra_in = back_end_dmem_addr_out;
-    assign dmem_dina_in = back_end_dmem_data_out;
-    assign dmem_wea_in = back_end_dmem_wr_en_out;
-    assign dmem_ena_in = back_end_dmem_wr_en_out | back_end_dmem_rd_en_out;
+    assign dmem_addr_in = back_end_dmem_addr_out;
+    assign dmem_din_in = back_end_dmem_data_out;
+    assign dmem_wr_en = back_end_dmem_wr_en_out;
+    assign dmem_en_in = back_end_dmem_wr_en_out | back_end_dmem_rd_en_out;
 
     assign back_end_res_st_rd1_in = res_st_rd1_out;
     assign back_end_res_st_rd2_in = res_st_rd2_out;
@@ -188,22 +187,6 @@ module qu_core
         .rst(rst),
         .if_en(startup_ctrl_if_en_out),
         .id_en(startup_ctrl_id_en_out)
-    );
-
-    ram_sp_rf #(
-        .RAM_WIDTH(INSTR_WIDTH),
-        .RAM_DEPTH(2**PC_WIDTH),
-        .RAM_PERFORMANCE("LOW_LATENCY"),
-        .INIT_FILE(PMEM_INIT_FILE)
-    ) qu_pmem (
-        .addra(pmem_addra_in),
-        .dina(),
-        .clka(clk),
-        .wea(),
-        .ena(pmem_ena_in),
-        .rsta(),
-        .regcea(),
-        .douta(pmem_douta_out)
     );
 
     front_end #(
@@ -279,22 +262,6 @@ module qu_core
         .data_in(rf_data_in)
     );
 
-    ram_sp_rf #(
-        .RAM_WIDTH(32),
-        .RAM_DEPTH(DMEM_DEPTH),
-        .RAM_PERFORMANCE("LOW_LATENCY"),
-        .INIT_FILE(DMEM_INIT_FILE)
-    ) qu_dmem (
-        .addra(dmem_addra_in),
-        .dina(dmem_dina_in),
-        .clka(clk),
-        .wea(dmem_wea_in),
-        .ena(dmem_ena_in),
-        .rsta(rst),     // output reset, does not affect memory contents
-        .regcea(1'b1),
-        .douta(dmem_douta_out)
-    );
-
     back_end qu_back_end (
         .clk(clk),
         .rst(rst),
@@ -325,6 +292,31 @@ module qu_core
         .dmem_rd_en(back_end_dmem_rd_en_out),
         .dmem_addr(back_end_dmem_addr_out),
         .dmem_data_out(back_end_dmem_data_out)
+    );
+
+    // a: pmem, b: dmem
+    ram_dp_rf #(
+        .NB_COL(1),
+        .COL_WIDTH(32),
+        .RAM_DEPTH(2**PC_WIDTH),
+        .RAM_PERFORMANCE("LOW_LATENCY"),
+        .INIT_FILE(MEM_INIT_FILE)
+    ) qu_mem (
+        .addra(pmem_addr_in),
+        .addrb(dmem_addr_in),
+        .dina(),
+        .dinb(dmem_din_in),
+        .clka(clk),
+        .wea(4'b0),
+        .web(dmem_wr_en),
+        .ena(pmem_en_in),
+        .enb(dmem_en_in),
+        .rsta(rst),
+        .rstb(rst),
+        .regcea(1'b1),
+        .regceb(1'b1),
+        .douta(pmem_dout_out),
+        .doutb(dmem_dout_out)
     );
 
 endmodule

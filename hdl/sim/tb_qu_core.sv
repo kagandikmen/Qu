@@ -16,8 +16,7 @@ import qu_uop::*;
 
 module tb_qu_core
     #(
-        parameter PMEM_INIT_FILE = "test.hex",
-        parameter DMEM_INIT_FILE = ""
+        parameter MEM_INIT_FILE = "test.hex"
     )();
 
     localparam INSTR_WIDTH = QU_INSTR_WIDTH;
@@ -39,7 +38,7 @@ module tb_qu_core
     logic schedule_en;
 
     qu_core #(
-        .PMEM_INIT_FILE(PMEM_INIT_FILE),
+        .MEM_INIT_FILE(MEM_INIT_FILE),
         .INSTR_WIDTH(INSTR_WIDTH),
         .PC_WIDTH(PC_WIDTH),
         .FIFO_IF_ID_DEPTH(FIFO_IF_ID_DEPTH),
