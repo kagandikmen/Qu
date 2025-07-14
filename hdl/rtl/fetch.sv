@@ -1,6 +1,6 @@
 // Fetch stage of the instruction pipeline
 // Created:     2025-06-24
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -16,51 +16,35 @@ import qu_common::*;
 module fetch
     #(
         parameter INSTR_WIDTH = 32,
-        parameter PMEM_INIT_FILE = "",
         parameter PC_WIDTH = 12,
         parameter PC_RESET_VAL = 0
     )(
-        input logic clk,
-        input logic rst,
+        input   logic clk,
+        input   logic rst,
 
-        input logic branch,
-        input logic jump,
-        input logic exception,
-        input logic stall,
+        input   logic branch,
+        input   logic jump,
+        input   logic exception,
+        input   logic stall,
 
-        input logic [PC_WIDTH-1:0] pc_override_in,
+        input   pc_t pc_override_in,
 
-        output logic [INSTR_WIDTH-1:0] instr,
-        output logic [PC_WIDTH-1:0] pc
+        input   logic [INSTR_WIDTH-1:0] instr_in,
+        output  logic [INSTR_WIDTH-1:0] instr_out,
+
+        output  pc_t pc,
+        output  pc_t next_pc
     );
 
     logic pc_override;
     pc_t pc_current_pc_out;
     pc_t pc_next_pc_out;
-    logic [INSTR_WIDTH-1:0] pmem_douta;
 
+    assign pc_override = branch | jump | exception;
+    assign pc = pc_current_pc_out;
+    assign next_pc = pc_next_pc_out;
 
-    //
-    //  program memory
-    //
-
-    ram_sp_rf #(
-        .RAM_WIDTH(INSTR_WIDTH),
-        .RAM_DEPTH(2**PC_WIDTH),
-        .RAM_PERFORMANCE("LOW_LATENCY"),
-        .INIT_FILE(PMEM_INIT_FILE)
-    ) qu_pmem (
-        .addra({2'b0, pc_next_pc_out[PC_WIDTH-1:2]}),
-        .dina(),
-        .clka(clk),
-        .wea(),
-        .ena(!stall),
-        .rsta(),
-        .regcea(),
-        .douta(pmem_douta)
-    );
-
-    assign instr = pmem_douta;
+    assign instr_out = instr_in;
 
     //
     //  pc counter
@@ -80,8 +64,7 @@ module fetch
         .next_pc(pc_next_pc_out)
     );
 
-    assign pc_override = branch | jump | exception;
-    assign pc = pc_current_pc_out;
+    // TODO: Branch prediction
 
 endmodule
 

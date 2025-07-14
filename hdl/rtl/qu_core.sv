@@ -43,6 +43,10 @@ module qu_core
     logic startup_ctrl_if_en_out;
     logic startup_ctrl_id_en_out;
 
+    pc_t pmem_addra_in;
+    logic pmem_ena_in;
+    logic [INSTR_WIDTH-1:0] pmem_douta_out;
+
     logic front_end_if_en;
     logic front_end_id_en;
     logic front_end_branch_in;
@@ -51,6 +55,9 @@ module qu_core
     logic front_end_stall_in;
     pc_t front_end_pc_override_in;
     logic front_end_busy_table_wr_en_in;
+    pc_t front_end_next_pc_out;
+    logic [INSTR_WIDTH-1:0] front_end_instr_in;
+
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_busy_table_wr_addr_in;
     logic front_end_busy_table_wr_data_in;
     rob_addr_t front_end_rob_tail_ptr_in;
@@ -123,12 +130,16 @@ module qu_core
     logic ld_en_buf;
     phy_rf_addr_t phy_rf_wr_addr_buf;
 
+    assign pmem_addra_in = {2'b0, front_end_next_pc_out[PC_WIDTH-1:2]};
+    assign pmem_ena_in = !stall;
+
     assign front_end_if_en = startup_ctrl_if_en_out;
     assign front_end_id_en = startup_ctrl_if_en_out;
     assign front_end_branch_in = back_end_mispredicted_branch_out;
     assign front_end_jump_in = 'b0;
     assign front_end_exception_in = 'b0;
     assign front_end_stall_in = stall;
+    assign front_end_instr_in = pmem_douta_out;
     assign front_end_pc_override_in = back_end_pc_to_jump_out;
     assign front_end_rf_rs1_data_in = rf_rs1_data_out;
     assign front_end_rf_rs2_data_in = rf_rs2_data_out;
@@ -179,8 +190,23 @@ module qu_core
         .id_en(startup_ctrl_id_en_out)
     );
 
+    ram_sp_rf #(
+        .RAM_WIDTH(INSTR_WIDTH),
+        .RAM_DEPTH(2**PC_WIDTH),
+        .RAM_PERFORMANCE("LOW_LATENCY"),
+        .INIT_FILE(PMEM_INIT_FILE)
+    ) qu_pmem (
+        .addra(pmem_addra_in),
+        .dina(),
+        .clka(clk),
+        .wea(),
+        .ena(pmem_ena_in),
+        .rsta(),
+        .regcea(),
+        .douta(pmem_douta_out)
+    );
+
     front_end #(
-        .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .INSTR_WIDTH(INSTR_WIDTH),
         .PC_WIDTH(PC_WIDTH),
         .FIFO_IF_ID_DEPTH(FIFO_IF_ID_DEPTH),
@@ -200,6 +226,8 @@ module qu_core
         .id_stall(id_stall),
         .mp_stall(mp_stall),
         .rn_stall(rn_stall),
+        .next_pc(front_end_next_pc_out),
+        .instr(front_end_instr_in),
         .busy_table_wr_en(front_end_busy_table_wr_en_in),
         .busy_table_wr_addr(front_end_busy_table_wr_addr_in),
         .busy_table_wr_data(front_end_busy_table_wr_data_in),

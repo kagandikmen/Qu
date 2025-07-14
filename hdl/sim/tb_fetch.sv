@@ -1,6 +1,6 @@
 // Fetch stage testbench
 // Created:     2025-06-24
-// Modified:    2025-06-24
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -8,10 +8,12 @@
 
 `timescale 1ns/1ps
 
+`include "../lib/qu_common.svh"
+
+import qu_common::*;
+
 module tb_fetch
-    #(
-        parameter PMEM_INIT_FILE = "test.hex"
-    )();
+    #()();
 
     localparam INSTR_WIDTH = 32;
     localparam PC_WIDTH = 12;
@@ -25,14 +27,16 @@ module tb_fetch
     logic exception;
     logic stall;
     
-    logic [PC_WIDTH-1:0] pc_override_in;
+    pc_t pc_override_in;
     
-    logic [INSTR_WIDTH-1:0] instr;
-    logic [PC_WIDTH-1:0] pc;
+    logic [INSTR_WIDTH-1:0] instr_in;
+    logic [INSTR_WIDTH-1:0] instr_out;
+
+    pc_t pc;
+    pc_t next_pc;
 
     fetch #(
         .INSTR_WIDTH(INSTR_WIDTH),
-        .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .PC_WIDTH(PC_WIDTH),
         .PC_RESET_VAL(PC_RESET_VAL)
     ) dut (
@@ -43,8 +47,10 @@ module tb_fetch
         .exception(exception),
         .stall(stall),
         .pc_override_in(pc_override_in),
-        .instr(instr),
-        .pc(pc)
+        .instr_in(instr_in),
+        .instr_out(instr_out),
+        .pc(pc),
+        .next_pc(next_pc)
     );
 
     always #5   clk = ~clk;
@@ -58,12 +64,14 @@ module tb_fetch
         exception <= 1'b0;
         stall <= 1'b0;
         pc_override_in <= 'd0;
+        instr_in <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;
 
         repeat(2) @(posedge clk);
         rst <= 1'b0;
+        instr_in <= get_encoding_r_instr(FUNCT3_ADD, 'd3, 'd4, 'd5);
 
         repeat(10) @(posedge clk);
         jump <= 1'b1;

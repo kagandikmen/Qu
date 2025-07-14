@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-13
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -17,7 +17,6 @@ import qu_uop::*;
 
 module front_end
     #(
-        parameter PMEM_INIT_FILE = "",
         parameter INSTR_WIDTH = QU_INSTR_WIDTH,
         parameter PC_WIDTH = QU_PC_WIDTH,
         parameter FIFO_IF_ID_DEPTH = 12,
@@ -39,6 +38,10 @@ module front_end
         input   logic id_stall,
         input   logic mp_stall,
         input   logic rn_stall,
+
+        // program memory interface
+        output  pc_t next_pc,
+        input   logic [INSTR_WIDTH-1:0] instr,
 
         // retire stage interface (back-end)
         input   logic busy_table_wr_en,
@@ -64,9 +67,11 @@ module front_end
     logic fetch_jump_in;
     logic fetch_exception_in;
     logic fetch_stall_in;
-    logic [PC_WIDTH-1:0] fetch_pc_override_in;
+    pc_t fetch_pc_override_in;
+    logic [INSTR_WIDTH-1:0] fetch_instr_in;
     logic [INSTR_WIDTH-1:0] fetch_instr_out;
-    logic [PC_WIDTH-1:0] fetch_pc_out;
+    pc_t fetch_pc_out;
+    pc_t fetch_next_pc_out;
 
     logic fifo_if_id_rd_en_in;
     logic [(INSTR_WIDTH+QU_PC_WIDTH)-1:0] fifo_if_id_data_out;
@@ -129,7 +134,6 @@ module front_end
 
     fetch #(
         .INSTR_WIDTH(INSTR_WIDTH),
-        .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .PC_WIDTH(PC_WIDTH),
         .PC_RESET_VAL(QU_PC_RESET_VAL)
     ) qu_fetch (
@@ -140,8 +144,10 @@ module front_end
         .exception(fetch_exception_in),
         .stall(fetch_stall_in),
         .pc_override_in(fetch_pc_override_in),
-        .instr(fetch_instr_out),
-        .pc(fetch_pc_out)
+        .instr_in(fetch_instr_in),
+        .instr_out(fetch_instr_out),
+        .pc(fetch_pc_out),
+        .next_pc(fetch_next_pc_out)
     );
 
     fifo #(
@@ -253,6 +259,7 @@ module front_end
         .rob_incr_tail_ptr(rob_incr_tail_ptr)
     );
 
+    assign next_pc = fetch_next_pc_out;
     assign rf_rs1_addr = rename_phy_rf_rs1_addr_out;
     assign rf_rs2_addr = rename_phy_rf_rs2_addr_out;
 
@@ -261,6 +268,7 @@ module front_end
     assign fetch_exception_in = exception;
     assign fetch_stall_in = stall || if_stall || fifo_if_id_full_out;
     assign fetch_pc_override_in = pc_override;
+    assign fetch_instr_in = instr;
     
     assign fifo_if_id_rd_en_in = !stall && !id_stall && !fifo_if_id_empty_out && id_en;
     assign fifo_if_id_wr_en_in = !fetch_stall_in && if_en;

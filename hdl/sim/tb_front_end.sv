@@ -1,6 +1,6 @@
 // Testbench for the top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-06
+// Modified:    2025-07-14
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -15,9 +15,7 @@ import qu_common::*;
 import qu_uop::*;
 
 module tb_front_end
-    #(
-        parameter PMEM_INIT_FILE = "test.hex"
-    )();
+    #()();
 
     localparam INSTR_WIDTH = QU_INSTR_WIDTH;
     localparam PC_WIDTH = QU_PC_WIDTH;
@@ -42,6 +40,9 @@ module tb_front_end
     logic mp_stall;
     logic rn_stall;
 
+    pc_t next_pc;
+    logic [INSTR_WIDTH-1:0] instr;
+
     logic busy_table_wr_en;
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr;
     logic busy_table_wr_data;
@@ -59,7 +60,6 @@ module tb_front_end
     res_st_cell_t res_st_data_out;
 
     front_end #(
-        .PMEM_INIT_FILE(PMEM_INIT_FILE),
         .INSTR_WIDTH(INSTR_WIDTH),
         .PC_WIDTH(PC_WIDTH),
         .FIFO_IF_ID_DEPTH(FIFO_IF_ID_DEPTH),
@@ -79,6 +79,8 @@ module tb_front_end
         .id_stall(id_stall),
         .mp_stall(mp_stall),
         .rn_stall(rn_stall),
+        .next_pc(next_pc),
+        .instr(instr),
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
         .busy_table_wr_data(busy_table_wr_data),
@@ -117,6 +119,7 @@ module tb_front_end
         id_stall <= 1'b0;
         mp_stall <= 1'b0;
         rn_stall <= 1'b0;
+        instr <= 'd0;
         busy_table_wr_en <= 1'b0;
         busy_table_wr_addr <= 'd0;
         busy_table_wr_data <= 1'b0;
@@ -131,8 +134,10 @@ module tb_front_end
 
         @(posedge clk);
         if_en <= 1'b1;
+        instr <= get_encoding_r_instr(FUNCT3_ADD, 'd3, 'd4, 'd5);
 
         @(posedge clk);
+        instr <= get_encoding_i_instr(FUNCT3_ADDI, 'd4, 'd3, 'd20);
         id_en <= 1'b1;
 
         #200;
