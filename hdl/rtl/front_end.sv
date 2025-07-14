@@ -281,7 +281,7 @@ module front_end
     assign decode_pc_in = fifo_if_id_data_out[(INSTR_WIDTH+QU_PC_WIDTH)-1:INSTR_WIDTH];
     assign decode_proper_out = !decode_invalid_out && !decode_nop_out;
 
-    assign fifo_id_mp_rd_en_in = !stall && !mp_stall && !fifo_id_mp_empty_out;
+    assign fifo_id_mp_rd_en_in = !stall && !mp_stall && !fifo_id_mp_empty_out && !map_full_out;
     assign fifo_id_mp_wr_en_in = !stall && decode_proper_out;
     assign fifo_id_mp_data_in = decode_uop_out;
 
