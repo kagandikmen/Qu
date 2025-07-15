@@ -1,6 +1,6 @@
 // Testbench for the schedule module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -30,8 +30,11 @@ module tb_schedule
     res_st_addr_t res_st_rd4_addr;
     res_st_cell_t res_st_rd4_in;
 
-    logic fifo_wr_en;
-    res_st_cell_t op_out;
+    logic fifo_wr1_en;
+    logic fifo_wr2_en;
+
+    res_st_cell_t op1_out;
+    res_st_cell_t op2_out;
 
     schedule dut (
         .clk(clk),
@@ -45,8 +48,10 @@ module tb_schedule
         .res_st_rd3_in(res_st_rd3_in),
         .res_st_rd4_addr(res_st_rd4_addr),
         .res_st_rd4_in(res_st_rd4_in),
-        .fifo_wr_en(fifo_wr_en),
-        .op_out(op_out)
+        .fifo_wr1_en(fifo_wr1_en),
+        .fifo_wr2_en(fifo_wr2_en),
+        .op1_out(op1_out),
+        .op2_out(op2_out)
     );
 
     always #5   clk = ~clk;

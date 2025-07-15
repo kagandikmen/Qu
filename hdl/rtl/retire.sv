@@ -21,9 +21,11 @@ module retire
         input   logic rst,
 
         // FIFO interface
-        input   phy_rf_data_t value_in,
+        input   phy_rf_data_t value1_in,
+        input   phy_rf_data_t value2_in,
         input   logic comp_result_in,
-        input   res_st_cell_t op_in,
+        input   res_st_cell_t op1_in,
+        input   res_st_cell_t op2_in,
 
         // register file interface
         output  logic phy_rf_wr_en,
@@ -73,13 +75,18 @@ module retire
     rob_addr_t rob_wr2_addr;
     rob_cell_t rob_wr2_in;
 
+    logic rob_wr3_en;
+    rob_addr_t rob_wr3_addr;
+    rob_cell_t rob_wr3_in;
+
     rob_addr_t rob_rd1_addr;
     rob_cell_t rob_rd1_out;
 
     rob_addr_t rob_rd2_addr;
     rob_cell_t rob_rd2_out;
 
-    logic op_in_valid;
+    logic op1_in_valid;
+    logic op2_in_valid;
 
     logic retire_en_buf;
     logic [3:0] dmem_wr_en_out_buf;
@@ -89,24 +96,36 @@ module retire
 
     phy_rf_addr_t phyreg_renamed_free_reg_addr_buf;
 
-    assign op_in_valid = op_in.op.optype[0];
+    assign op1_in_valid = op1_in.op.optype[0];
+    assign op2_in_valid = op2_in.op.optype[0];
 
-    assign rob_wr1_en = op_in_valid;
-    assign rob_wr1_addr = op_in.rob_addr;
-    assign rob_wr1_in.value = (op_in.op.optype == OPTYPE_STORE) ? op_in.vk : 
-                              (op_in.op.optype == OPTYPE_CONT) ? op_in.pc+4 :
-                              value_in;
+    assign rob_wr1_en = op1_in_valid;
+    assign rob_wr1_addr = op1_in.rob_addr;
+    assign rob_wr1_in.value = (op1_in.op.optype == OPTYPE_CONT) ? op1_in.pc+4 :
+                              value1_in;
 
     // Currently, all branches are assumed not taken. This will be improved later.
-    assign rob_wr1_in.mispredicted_branch = ((op_in.op.optype == OPTYPE_BRANCH) && comp_result_in) || (op_in.op.optype == OPTYPE_CONT);
-    assign rob_wr1_in.pc_new = value_in[QU_PC_WIDTH-1:0];
+    assign rob_wr1_in.mispredicted_branch = ((op1_in.op.optype == OPTYPE_BRANCH) && comp_result_in) || (op1_in.op.optype == OPTYPE_CONT);
+    assign rob_wr1_in.pc_new = value1_in[QU_PC_WIDTH-1:0];
 
-    assign rob_wr1_in.phyreg_old = op_in.phyreg_old;
-    assign rob_wr1_in.store = (op_in.op.optype == OPTYPE_STORE);
-    assign rob_wr1_in.load = (op_in.op.optype == OPTYPE_LOAD);
-    assign rob_wr1_in.ldst_funct3 = op_in.op.alu_input_sel;
-    assign rob_wr1_in.dest = (op_in.op.optype == OPTYPE_STORE) ? value_in : {'b0, op_in.dest};
+    assign rob_wr1_in.phyreg_old = op1_in.phyreg_old;
+    assign rob_wr1_in.store = 1'b0;
+    assign rob_wr1_in.load = 1'b0;
+    assign rob_wr1_in.ldst_funct3 = 3'b000;
+    assign rob_wr1_in.dest = {'b0, op1_in.dest};
     assign rob_wr1_in.state = ROB_STATE_PENDING;
+
+    assign rob_wr2_en = op2_in_valid;
+    assign rob_wr2_addr = op2_in.rob_addr;
+    assign rob_wr2_in.value = (op2_in.op.optype == OPTYPE_STORE) ? op2_in.vk : value2_in;
+    assign rob_wr2_in.mispredicted_branch = 1'b0;
+    assign rob_wr2_in.pc_new = 'b0;
+    assign rob_wr2_in.phyreg_old = op2_in.phyreg_old;
+    assign rob_wr2_in.store = (op2_in.op.optype == OPTYPE_STORE);
+    assign rob_wr2_in.load = (op2_in.op.optype == OPTYPE_LOAD);
+    assign rob_wr2_in.ldst_funct3 = op2_in.op.alu_input_sel;
+    assign rob_wr2_in.dest = (op2_in.op.optype == OPTYPE_STORE) ? value2_in : {'b0, op2_in.dest};
+    assign rob_wr2_in.state = ROB_STATE_PENDING;
 
     assign rob_tail_ptr = tail_ptr;
     assign retire_en = retire_en_buf;
@@ -131,6 +150,9 @@ module retire
         .wr2_en(rob_wr2_en),
         .wr2_addr(rob_wr2_addr),
         .wr2_in(rob_wr2_in),
+        .wr3_en(rob_wr3_en),
+        .wr3_addr(rob_wr3_addr),
+        .wr3_in(rob_wr3_in),
         .rd1_addr(rob_rd1_addr),
         .rd1_out(rob_rd1_out),
         .rd2_addr(rob_rd2_addr),
@@ -179,8 +201,12 @@ module retire
                         dmem_wr_en_out_buf = 4'b0000;
                 endcase
             end
+            else
+            begin
+                dmem_wr_en_out_buf = 4'b0000;
+            end
 
-            if(rob_rd1_out.load && dmem_valid_in && dmem_valid_addr_in == rob_rd1_out.dest.dmem_dest)
+            if(rob_rd1_out.load && dmem_valid_in && dmem_valid_addr_in == rob_rd1_out.value)
             begin
                 dmem_rd_en_out_buf = 1'b0;
                 phy_rf_wr_en = 1'b1;
@@ -203,7 +229,7 @@ module retire
                 endcase
                 
             end
-            else if(rob_rd1_out.load && !dmem_valid_in)
+            else if(rob_rd1_out.load && !(dmem_valid_in && dmem_valid_addr_in == rob_rd1_out.value))
             begin
                 dmem_rd_en_out_buf = 1'b1;
                 phy_rf_wr_en = 1'b0;
@@ -245,10 +271,10 @@ module retire
         retire_rob_addr = head_ptr;
         retire_value = rob_rd1_out.value;
 
-        rob_wr2_en = (rob_rd1_out.state == ROB_STATE_PENDING && retire_en_buf);
-        rob_wr2_addr = head_ptr;
-        rob_wr2_in = rob_rd1_out;
-        rob_wr2_in.state = ROB_STATE_RETIRED;
+        rob_wr3_en = (rob_rd1_out.state == ROB_STATE_PENDING && retire_en_buf);
+        rob_wr3_addr = head_ptr;
+        rob_wr3_in = rob_rd1_out;
+        rob_wr3_in.state = ROB_STATE_RETIRED;
     end
 
 endmodule

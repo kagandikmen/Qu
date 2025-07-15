@@ -17,17 +17,22 @@ import qu_uop::*;
 
 module execute
     #()(
-        input   res_st_cell_t op_in,
+        input   res_st_cell_t op1_in,
+        input   res_st_cell_t op2_in,
 
-        output  logic [31:0] value_out,
+        output  logic [31:0] value1_out,
+        output  logic [31:0] value2_out,
+
         output  logic comp_result,
-        output  res_st_cell_t op_out
+
+        output  res_st_cell_t op1_out,
+        output  res_st_cell_t op2_out
     );
 
-    logic [3:0] op_in_optype;
-    logic op_in_alu_cu_input_sel;
-    logic [1:0] op_in_alu_subunit_res_sel;
-    logic [3:0] op_in_alu_subunit_op_sel;
+    logic [3:0] op1_in_optype;
+    logic op1_in_alu_cu_input_sel;
+    logic [1:0] op1_in_alu_subunit_res_sel;
+    logic [3:0] op1_in_alu_subunit_op_sel;
 
     logic [31:0] alu_opd1;
     logic [31:0] alu_opd2;
@@ -40,29 +45,32 @@ module execute
     logic [31:0] ldst_unit_opd2;
     logic [31:0] ldst_unit_addr_out;
 
-    assign op_out = op_in;
-    assign value_out = (op_in.op.optype == OPTYPE_LOAD || op_in.op.optype == OPTYPE_STORE) ? ldst_unit_addr_out : alu_result_out;
+    assign op1_out = op1_in;
+    assign value1_out = alu_result_out;
     assign comp_result = alu_comp_result_out[0];
 
-    assign op_in_optype = op_in.op.optype;
-    assign op_in_alu_cu_input_sel = op_in.op.alu_cu_input_sel;
-    assign op_in_alu_subunit_res_sel = op_in.op.alu_subunit_res_sel;
-    assign op_in_alu_subunit_op_sel = op_in.op.alu_subunit_op_sel;
+    assign op2_out = op2_in;
+    assign value2_out = ldst_unit_addr_out;
+
+    assign op1_in_optype = op1_in.op.optype;
+    assign op1_in_alu_cu_input_sel = op1_in.op.alu_cu_input_sel;
+    assign op1_in_alu_subunit_res_sel = op1_in.op.alu_subunit_res_sel;
+    assign op1_in_alu_subunit_op_sel = op1_in.op.alu_subunit_op_sel;
 
     always_comb
     begin
 
-        ldst_unit_opd1 = op_in.vj;
-        ldst_unit_opd2 = op_in.a;
+        ldst_unit_opd1 = op2_in.vj;
+        ldst_unit_opd2 = op2_in.a;
 
-        case(op_in.op.alu_input_sel)
+        case(op1_in.op.alu_input_sel)
             ALU_INPUT_SEL_R_I:
             begin
-                alu_opd1 = (op_in.op.rs1_valid) ? op_in.vj
+                alu_opd1 = (op1_in.op.rs1_valid) ? op1_in.vj
                          : 'd0;
         
-                alu_opd2 = (op_in.op.rs2_valid) ? op_in.vk
-                         : (op_in.op.imm_valid) ? op_in.a
+                alu_opd2 = (op1_in.op.rs2_valid) ? op1_in.vk
+                         : (op1_in.op.imm_valid) ? op1_in.a
                          : 'd0;
                 
                 alu_opd3 = 'd0;
@@ -70,36 +78,36 @@ module execute
             end
             ALU_INPUT_SEL_B:
             begin
-                alu_opd1 = op_in.pc;
-                alu_opd2 = op_in.a;
-                alu_opd3 = op_in.vj;
-                alu_opd4 = op_in.vk;
+                alu_opd1 = op1_in.pc;
+                alu_opd2 = op1_in.a;
+                alu_opd3 = op1_in.vj;
+                alu_opd4 = op1_in.vk;
             end
             ALU_INPUT_SEL_JAL:
             begin
-                alu_opd1 = op_in.pc;
-                alu_opd2 = op_in.a;
+                alu_opd1 = op1_in.pc;
+                alu_opd2 = op1_in.a;
                 alu_opd3 = 'd0;
                 alu_opd4 = 'd0;
             end
             ALU_INPUT_SEL_JALR:
             begin
-                alu_opd1 = op_in.vj;
-                alu_opd2 = op_in.a;
+                alu_opd1 = op1_in.vj;
+                alu_opd2 = op1_in.a;
                 alu_opd3 = 'd0;
                 alu_opd4 = 'd0;
             end
             ALU_INPUT_SEL_LUI:
             begin
-                alu_opd1 = op_in.a;
+                alu_opd1 = op1_in.a;
                 alu_opd2 = 'd0;
                 alu_opd3 = 'd0;
                 alu_opd4 = 'd0;
             end
             ALU_INPUT_SEL_AUIPC:
             begin
-                alu_opd1 = op_in.pc;
-                alu_opd2 = op_in.a;
+                alu_opd1 = op1_in.pc;
+                alu_opd2 = op1_in.a;
                 alu_opd3 = 'd0;
                 alu_opd4 = 'd0;
             end
@@ -120,9 +128,9 @@ module execute
         .opd2(alu_opd2),
         .opd3(alu_opd3),
         .opd4(alu_opd4),
-        .cu_input_sel(op_in_alu_cu_input_sel),
-        .subunit_res_sel(op_in_alu_subunit_res_sel),
-        .subunit_op_sel(op_in_alu_subunit_op_sel),
+        .cu_input_sel(op1_in_alu_cu_input_sel),
+        .subunit_res_sel(op1_in_alu_subunit_res_sel),
+        .subunit_op_sel(op1_in_alu_subunit_op_sel),
         .alu_result(alu_result_out),
         .comp_result(alu_comp_result_out)
     );

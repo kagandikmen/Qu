@@ -1,6 +1,6 @@
 // Testbench of the reorder buffer
 // Created:     2025-07-05
-// Modified:    
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -26,6 +26,10 @@ module tb_rob
     rob_addr_t wr2_addr;
     rob_cell_t wr2_in;
 
+    logic wr3_en;
+    rob_addr_t wr3_addr;
+    rob_cell_t wr3_in;
+
     rob_addr_t rd1_addr;
     rob_cell_t rd1_out;
 
@@ -41,6 +45,9 @@ module tb_rob
         .wr2_en(wr2_en),
         .wr2_addr(wr2_addr),
         .wr2_in(wr2_in),
+        .wr3_en(wr3_en),
+        .wr3_addr(wr3_addr),
+        .wr3_in(wr3_in),
         .rd1_addr(rd1_addr),
         .rd1_out(rd1_out),
         .rd2_addr(rd2_addr),
@@ -59,6 +66,9 @@ module tb_rob
         wr2_en <= 1'b0;
         wr2_addr <= 'd0;
         wr2_in <= 'd0;
+        wr3_en <= 1'b0;
+        wr3_addr <= 'd0;
+        wr3_in <= 'd0;
         rd1_addr <= 'd0;
         rd2_addr <= 'd0;
 
@@ -102,6 +112,12 @@ module tb_rob
 
         @(posedge clk);
         wr1_en <= 1'b0;
+        wr3_en <= 1'b1;
+        wr3_addr <= 'd5;
+        wr3_in <= 'd10;
+
+        @(posedge clk);
+        wr3_en <= 1'b0;
 
         #100;
         $finish;

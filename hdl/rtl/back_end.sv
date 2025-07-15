@@ -75,31 +75,52 @@ module back_end
     res_st_cell_t schedule_res_st_rd3_in;
     res_st_addr_t schedule_res_st_rd4_addr_out;
     res_st_cell_t schedule_res_st_rd4_in;
-    logic schedule_fifo_wr_en_out;
-    res_st_cell_t schedule_op_out;
+    logic schedule_fifo_wr1_en_out;
+    logic schedule_fifo_wr2_en_out;
+    res_st_cell_t schedule_op1_out;
+    res_st_cell_t schedule_op2_out;
 
-    logic fifo_sh_ex_rd_en;
-    res_st_cell_t fifo_sh_ex_data_out;
-    logic fifo_sh_ex_wr_en;
-    res_st_cell_t fifo_sh_ex_data_in;
-    logic fifo_sh_ex_empty_out;
-    logic fifo_sh_ex_full_out;
+    logic fifo1_sh_ex_rd_en;
+    res_st_cell_t fifo1_sh_ex_data_out;
+    logic fifo1_sh_ex_wr_en;
+    res_st_cell_t fifo1_sh_ex_data_in;
+    logic fifo1_sh_ex_empty_out;
+    logic fifo1_sh_ex_full_out;
 
-    res_st_cell_t execute_op_in;
-    logic [31:0] execute_value_out;
+    logic fifo2_sh_ex_rd_en;
+    res_st_cell_t fifo2_sh_ex_data_out;
+    logic fifo2_sh_ex_wr_en;
+    res_st_cell_t fifo2_sh_ex_data_in;
+    logic fifo2_sh_ex_empty_out;
+    logic fifo2_sh_ex_full_out;
+
+    res_st_cell_t execute_op1_in;
+    res_st_cell_t execute_op2_in;
+    logic [31:0] execute_value1_out;
+    logic [31:0] execute_value2_out;
     logic execute_comp_result_out;
-    res_st_cell_t execute_op_out;
+    res_st_cell_t execute_op1_out;
+    res_st_cell_t execute_op2_out;
 
-    logic fifo_ex_rt_rd_en;
-    logic [$bits(res_st_cell_t)+32+1-1:0] fifo_ex_rt_data_out;
-    logic fifo_ex_rt_wr_en;
-    logic [$bits(res_st_cell_t)+32+1-1:0] fifo_ex_rt_data_in;
-    logic fifo_ex_rt_empty_out;
-    logic fifo_ex_rt_full_out;
+    logic fifo1_ex_rt_rd_en;
+    logic [$bits(res_st_cell_t)+32+1-1:0] fifo1_ex_rt_data_out;
+    logic fifo1_ex_rt_wr_en;
+    logic [$bits(res_st_cell_t)+32+1-1:0] fifo1_ex_rt_data_in;
+    logic fifo1_ex_rt_empty_out;
+    logic fifo1_ex_rt_full_out;
 
-    logic [31:0] retire_value_in;
+    logic fifo2_ex_rt_rd_en;
+    logic [$bits(res_st_cell_t)+32+1-1:0] fifo2_ex_rt_data_out;
+    logic fifo2_ex_rt_wr_en;
+    logic [$bits(res_st_cell_t)+32+1-1:0] fifo2_ex_rt_data_in;
+    logic fifo2_ex_rt_empty_out;
+    logic fifo2_ex_rt_full_out;
+
+    logic [31:0] retire_value1_in;
+    logic [31:0] retire_value2_in;
     logic retire_comp_result_in;
-    res_st_cell_t retire_op_in;
+    res_st_cell_t retire_op1_in;
+    res_st_cell_t retire_op2_in;
     logic phy_rf_rf_wr_en_out;
     phy_rf_addr_t retire_phy_rf_wr_addr_out;
     phy_rf_data_t retire_phy_rf_wr_data_out;
@@ -128,19 +149,30 @@ module back_end
     assign schedule_res_st_rd3_in = res_st_rd3_in;
     assign schedule_res_st_rd4_in = res_st_rd4_in;
 
-    assign fifo_sh_ex_rd_en = !fifo_sh_ex_empty_out;
-    assign fifo_sh_ex_wr_en = schedule_fifo_wr_en_out;
-    assign fifo_sh_ex_data_in = schedule_op_out;
+    assign fifo1_sh_ex_rd_en = !fifo1_sh_ex_empty_out;
+    assign fifo1_sh_ex_wr_en = schedule_fifo_wr1_en_out;
+    assign fifo1_sh_ex_data_in = schedule_op1_out;
 
-    assign execute_op_in = fifo_sh_ex_data_out;
+    assign fifo2_sh_ex_rd_en = !fifo2_sh_ex_empty_out;
+    assign fifo2_sh_ex_wr_en = schedule_fifo_wr2_en_out;
+    assign fifo2_sh_ex_data_in = schedule_op2_out;
 
-    assign fifo_ex_rt_rd_en = !fifo_ex_rt_empty_out;
-    assign fifo_ex_rt_wr_en = execute_op_out[0];
-    assign fifo_ex_rt_data_in = {execute_comp_result_out, execute_value_out, execute_op_out};
+    assign execute_op1_in = fifo1_sh_ex_data_out;
+    assign execute_op2_in = fifo2_sh_ex_data_out;
 
-    assign retire_value_in = fifo_ex_rt_data_out[($bits(fifo_ex_rt_data_out)-2) -: 32];
-    assign retire_comp_result_in = fifo_ex_rt_data_out[$bits(fifo_ex_rt_data_out)-1];
-    assign retire_op_in = fifo_ex_rt_data_out[$bits(res_st_cell_t)-1:0];
+    assign fifo1_ex_rt_rd_en = !fifo1_ex_rt_empty_out;
+    assign fifo1_ex_rt_wr_en = execute_op1_out[0];
+    assign fifo1_ex_rt_data_in = {execute_comp_result_out, execute_value1_out, execute_op1_out};
+
+    assign fifo2_ex_rt_rd_en = !fifo2_ex_rt_empty_out;
+    assign fifo2_ex_rt_wr_en = execute_op2_out[0];
+    assign fifo2_ex_rt_data_in = {1'b0, execute_value2_out, execute_op2_out};
+
+    assign retire_value1_in = fifo1_ex_rt_data_out[($bits(fifo1_ex_rt_data_out)-2) -: 32];
+    assign retire_value2_in = fifo2_ex_rt_data_out[($bits(fifo1_ex_rt_data_out)-2) -: 32];
+    assign retire_comp_result_in = fifo1_ex_rt_data_out[$bits(fifo1_ex_rt_data_out)-1];
+    assign retire_op1_in = fifo1_ex_rt_data_out[$bits(res_st_cell_t)-1:0];
+    assign retire_op2_in = fifo2_ex_rt_data_out[$bits(res_st_cell_t)-1:0];
     assign retire_rob_incr_tail_ptr_in = rob_incr_tail_ptr;
     assign retire_dmem_valid_in = dmem_valid_in;
     assign retire_dmem_valid_addr_in = dmem_valid_addr_in;
@@ -182,55 +214,94 @@ module back_end
         .res_st_rd3_in(schedule_res_st_rd3_in),
         .res_st_rd4_addr(schedule_res_st_rd4_addr_out),
         .res_st_rd4_in(schedule_res_st_rd4_in),
-        .fifo_wr_en(schedule_fifo_wr_en_out),
-        .op_out(schedule_op_out)
+        .fifo_wr1_en(schedule_fifo_wr1_en_out),
+        .fifo_wr2_en(schedule_fifo_wr2_en_out),
+        .op1_out(schedule_op1_out),
+        .op2_out(schedule_op2_out)
     );
 
     fifo #(
         .FIFO_WIDTH($bits(res_st_cell_t)),
         .FIFO_DEPTH(4)
-    ) qu_fifo_sh_ex (
+    ) qu_fifo1_sh_ex (
         .clk(clk),
         .rst(rst | retire_mispredicted_branch_out),
-        .rd_en(fifo_sh_ex_rd_en),
-        .data_out(fifo_sh_ex_data_out),
-        .wr_en(fifo_sh_ex_wr_en),
-        .data_in(fifo_sh_ex_data_in),
-        .empty(fifo_sh_ex_empty_out),
+        .rd_en(fifo1_sh_ex_rd_en),
+        .data_out(fifo1_sh_ex_data_out),
+        .wr_en(fifo1_sh_ex_wr_en),
+        .data_in(fifo1_sh_ex_data_in),
+        .empty(fifo1_sh_ex_empty_out),
         .almost_empty(),
-        .full(fifo_sh_ex_full_out),
+        .full(fifo1_sh_ex_full_out),
+        .almost_full()
+    );
+
+    fifo #(
+        .FIFO_WIDTH($bits(res_st_cell_t)),
+        .FIFO_DEPTH(4)
+    ) qu_fifo2_sh_ex (
+        .clk(clk),
+        .rst(rst | retire_mispredicted_branch_out),
+        .rd_en(fifo2_sh_ex_rd_en),
+        .data_out(fifo2_sh_ex_data_out),
+        .wr_en(fifo2_sh_ex_wr_en),
+        .data_in(fifo2_sh_ex_data_in),
+        .empty(fifo2_sh_ex_empty_out),
+        .almost_empty(),
+        .full(fifo2_sh_ex_full_out),
         .almost_full()
     );
 
     execute qu_execute (
-        .op_in(execute_op_in),
-        .value_out(execute_value_out),
+        .op1_in(execute_op1_in),
+        .op2_in(execute_op2_in),
+        .value1_out(execute_value1_out),
+        .value2_out(execute_value2_out),
         .comp_result(execute_comp_result_out),
-        .op_out(execute_op_out)
+        .op1_out(execute_op1_out),
+        .op2_out(execute_op2_out)
     );
 
     fifo #(
         .FIFO_WIDTH($bits(res_st_cell_t)+32+1),
         .FIFO_DEPTH(4)
-    ) qu_fifo_ex_rt (
+    ) qu_fifo1_ex_rt (
         .clk(clk),
         .rst(rst | retire_mispredicted_branch_out),
-        .rd_en(fifo_ex_rt_rd_en),
-        .data_out(fifo_ex_rt_data_out),
-        .wr_en(fifo_ex_rt_wr_en),
-        .data_in(fifo_ex_rt_data_in),
-        .empty(fifo_ex_rt_empty_out),
+        .rd_en(fifo1_ex_rt_rd_en),
+        .data_out(fifo1_ex_rt_data_out),
+        .wr_en(fifo1_ex_rt_wr_en),
+        .data_in(fifo1_ex_rt_data_in),
+        .empty(fifo1_ex_rt_empty_out),
         .almost_empty(),
-        .full(fifo_ex_rt_full_out),
+        .full(fifo1_ex_rt_full_out),
+        .almost_full()
+    );
+
+    fifo #(
+        .FIFO_WIDTH($bits(res_st_cell_t)+32+1),
+        .FIFO_DEPTH(4)
+    ) qu_fifo2_ex_rt (
+        .clk(clk),
+        .rst(rst | retire_mispredicted_branch_out),
+        .rd_en(fifo2_ex_rt_rd_en),
+        .data_out(fifo2_ex_rt_data_out),
+        .wr_en(fifo2_ex_rt_wr_en),
+        .data_in(fifo2_ex_rt_data_in),
+        .empty(fifo2_ex_rt_empty_out),
+        .almost_empty(),
+        .full(fifo2_ex_rt_full_out),
         .almost_full()
     );
 
     retire qu_retire (
         .clk(clk),
         .rst(rst | retire_mispredicted_branch_out),
-        .value_in(retire_value_in),
+        .value1_in(retire_value1_in),
+        .value2_in(retire_value2_in),
         .comp_result_in(retire_comp_result_in),
-        .op_in(retire_op_in),
+        .op1_in(retire_op1_in),
+        .op2_in(retire_op2_in),
         .phy_rf_wr_en(retire_phy_rf_wr_en_out),
         .phy_rf_wr_addr(retire_phy_rf_wr_addr_out),
         .phy_rf_wr_data(retire_phy_rf_wr_data_out),

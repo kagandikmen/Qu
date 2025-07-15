@@ -25,7 +25,7 @@ package qu_uop;
     parameter logic [3:0] OPTYPE_BRANCH     = 4'b0011;
     parameter logic [3:0] OPTYPE_CONT       = 4'b0111;
     parameter logic [3:0] OPTYPE_LOAD       = 4'b1001;
-    parameter logic [3:0] OPTYPE_STORE      = 4'b0101;
+    parameter logic [3:0] OPTYPE_STORE      = 4'b1101;
 
     parameter logic RD_VALID    = 1'b1;
     parameter logic RD_INVALID  = 1'b0;

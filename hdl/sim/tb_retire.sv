@@ -20,9 +20,11 @@ module tb_retire
     logic clk;
     logic rst;
 
-    phy_rf_data_t value_in;
+    phy_rf_data_t value1_in;
+    phy_rf_data_t value2_in;
     logic comp_result_in;
-    res_st_cell_t op_in;
+    res_st_cell_t op1_in;
+    res_st_cell_t op2_in;
 
     logic phy_rf_wr_en;
     phy_rf_addr_t phy_rf_wr_addr;
@@ -55,9 +57,11 @@ module tb_retire
     retire dut (
         .clk(clk),
         .rst(rst),
-        .value_in(value_in),
+        .value1_in(value1_in),
+        .value2_in(value2_in),
         .comp_result_in(comp_result_in),
-        .op_in(op_in),
+        .op1_in(op1_in),
+        .op2_in(op2_in),
         .phy_rf_wr_en(phy_rf_wr_en),
         .phy_rf_wr_addr(phy_rf_wr_addr),
         .phy_rf_wr_data(phy_rf_wr_data),
@@ -88,9 +92,11 @@ module tb_retire
     begin
         clk <= 1'b0;
         rst <= 1'b0;
-        value_in <= 'd15;
+        value1_in <= 'd15;
+        value2_in <= 'd25;
         comp_result_in <= 'b0;
-        op_in <= 'b0;
+        op1_in <= 'b0;
+        op2_in <= 'b0;
         rob_incr_tail_ptr <= 1'b1;
         dmem_valid_in <= 1'b0;
         dmem_valid_addr_in <= 'b0;
@@ -102,29 +108,29 @@ module tb_retire
         repeat(4) @(posedge clk);
         rst <= 1'b0;
         
-        op_in.busy <= 1'b1;
-        op_in.op <= 'b011;
-        op_in.qj <= 'd0;
-        op_in.qk <= 'd0;
-        op_in.vj <= 'd5;
-        op_in.vk <= 'd10;
-        op_in.a <= 'b0;
-        op_in.dest <= 'd3;
-        op_in.rob_addr <= 'd1;
+        op1_in.busy <= 1'b1;
+        op1_in.op <= 'b011;
+        op1_in.qj <= 'd0;
+        op1_in.qk <= 'd0;
+        op1_in.vj <= 'd5;
+        op1_in.vk <= 'd10;
+        op1_in.a <= 'b0;
+        op1_in.dest <= 'd3;
+        op1_in.rob_addr <= 'd1;
 
         @(posedge clk);
-        op_in.busy <= 1'b1;
-        op_in.op <= 'b011;
-        op_in.qj <= 'd0;
-        op_in.qk <= 'd3;
-        op_in.vj <= 'd8;
-        op_in.vk <= 'd0;
-        op_in.a <= 'b0;
-        op_in.dest <= 'd4;
-        op_in.rob_addr <= 'd2;
+        op1_in.busy <= 1'b1;
+        op1_in.op <= 'b011;
+        op1_in.qj <= 'd0;
+        op1_in.qk <= 'd3;
+        op1_in.vj <= 'd8;
+        op1_in.vk <= 'd0;
+        op1_in.a <= 'b0;
+        op1_in.dest <= 'd4;
+        op1_in.rob_addr <= 'd2;
 
         @(posedge clk);
-        op_in.op <= 'b0;
+        op1_in.op <= 'b0;
 
         #200;
         $finish;
