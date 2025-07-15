@@ -1,6 +1,6 @@
 // Execute stage of The Qu Processor
 // Created:     2025-07-04
-// Modified:    2025-07-13
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -74,6 +74,13 @@ module execute
                 alu_opd2 = op_in.a;
                 alu_opd3 = op_in.vj;
                 alu_opd4 = op_in.vk;
+            end
+            ALU_INPUT_SEL_JAL:
+            begin
+                alu_opd1 = op_in.pc;
+                alu_opd2 = op_in.a;
+                alu_opd3 = 'd0;
+                alu_opd4 = 'd0;
             end
             default:
             begin

@@ -222,6 +222,7 @@ package qu_common;
     } dest_t;
 
     typedef struct packed {
+        pc_t pc_new;
         phy_rf_addr_t phyreg_old;
         logic [31:0] value;
         dest_t dest;

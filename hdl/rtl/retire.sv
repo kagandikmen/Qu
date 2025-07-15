@@ -93,11 +93,14 @@ module retire
 
     assign rob_wr1_en = op_in_valid;
     assign rob_wr1_addr = op_in.rob_addr;
-    assign rob_wr1_in.value = (op_in.op.optype == OPTYPE_STORE) ? op_in.vk : value_in;
+    assign rob_wr1_in.value = (op_in.op.optype == OPTYPE_STORE) ? op_in.vk : 
+                              (op_in.op.optype == OPTYPE_CONT) ? op_in.pc+4 :
+                              value_in;
 
     // Currently, all branches are assumed not taken. This will be improved later.
-    assign rob_wr1_in.mispredicted_branch = (op_in.op.optype == OPTYPE_BRANCH) && comp_result_in;
-    
+    assign rob_wr1_in.mispredicted_branch = ((op_in.op.optype == OPTYPE_BRANCH) && comp_result_in) || (op_in.op.optype == OPTYPE_CONT);
+    assign rob_wr1_in.pc_new = value_in[QU_PC_WIDTH-1:0];
+
     assign rob_wr1_in.phyreg_old = op_in.phyreg_old;
     assign rob_wr1_in.store = (op_in.op.optype == OPTYPE_STORE);
     assign rob_wr1_in.load = (op_in.op.optype == OPTYPE_LOAD);
@@ -229,7 +232,7 @@ module retire
             phy_rf_wr_data = rob_rd1_out.value;
         end
 
-        pc_to_jump = rob_rd1_out.value;
+        pc_to_jump = rob_rd1_out.pc_new;
 
         dmem_addr_out_buf = rob_rd1_out.store ? rob_rd1_out.dest.dmem_dest : rob_rd1_out.value;
         dmem_data_out_buf = rob_rd1_out.value;
