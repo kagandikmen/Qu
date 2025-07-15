@@ -1,7 +1,7 @@
 /* 
  * Test sequence for jumping
  * Created:     2025-07-15
- * Modified:    
+ * Modified:    2025-07-15
  *
  * Copyright (c) 2025 Kagan Dikmen
  * SPDX-License-Identifier: MIT 
@@ -25,3 +25,4 @@ dest2:
     addi x4, x0, 60
     addi x7, x0, 70
     addi x8, x0, 80
+    jalr x6, x0, 4
