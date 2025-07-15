@@ -45,7 +45,7 @@ module tb_back_end
     logic mispredicted_branch;
     pc_t pc_to_jump;
 
-    logic dmem_wr_en;
+    logic [3:0] dmem_wr_en;
     logic dmem_rd_en;
     logic [31:0] dmem_addr;
     logic [31:0] dmem_data_out;

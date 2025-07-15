@@ -44,7 +44,7 @@ module tb_retire
     logic mispredicted_branch;
     pc_t pc_to_jump;
 
-    logic dmem_wr_en_out;
+    logic [3:0] dmem_wr_en_out;
     logic dmem_rd_en_out;
     logic [31:0] dmem_addr_out;
     logic [31:0] dmem_data_out;

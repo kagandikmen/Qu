@@ -1,6 +1,6 @@
 // Common RTL library for The Qu Processor
 // Created:     2025-06-26
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -223,6 +223,7 @@ package qu_common;
         phy_rf_addr_t phyreg_old;
         logic [31:0] value;
         dest_t dest;
+        logic [2:0] ldst_funct3;
         logic store;
         logic load;
         logic mispredicted_branch;

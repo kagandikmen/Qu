@@ -58,7 +58,7 @@ module back_end
         output  pc_t pc_to_jump,
 
         // data memory interface
-        output  logic dmem_wr_en,
+        output  logic [3:0] dmem_wr_en,
         output  logic dmem_rd_en,
         output  logic [31:0] dmem_addr,
         output  logic [31:0] dmem_data_out,
@@ -114,7 +114,7 @@ module back_end
     phy_rf_data_t retire_retire_value_out;
     logic retire_mispredicted_branch_out;
     pc_t retire_pc_to_jump_out;
-    logic retire_dmem_wr_en_out;
+    logic [3:0] retire_dmem_wr_en_out;
     logic retire_dmem_rd_en_out;
     logic [31:0] retire_dmem_addr_out;
     logic [31:0] retire_dmem_data_out;

@@ -50,7 +50,7 @@ module retire
         output  logic mispredicted_branch,
         output  pc_t pc_to_jump,
 
-        output  logic dmem_wr_en_out,
+        output  logic [3:0] dmem_wr_en_out,
         output  logic dmem_rd_en_out,
         output  logic [31:0] dmem_addr_out,
         output  logic [31:0] dmem_data_out,
@@ -81,7 +81,7 @@ module retire
     logic op_in_valid;
 
     logic retire_en_buf;
-    logic dmem_wr_en_out_buf;
+    logic [3:0] dmem_wr_en_out_buf;
     logic dmem_rd_en_out_buf;
     logic [31:0] dmem_addr_out_buf;
     logic [31:0] dmem_data_out_buf;
@@ -100,6 +100,7 @@ module retire
     assign rob_wr1_in.phyreg_old = op_in.phyreg_old;
     assign rob_wr1_in.store = (op_in.op.optype == OPTYPE_STORE);
     assign rob_wr1_in.load = (op_in.op.optype == OPTYPE_LOAD);
+    assign rob_wr1_in.ldst_funct3 = op_in.op.alu_input_sel;
     assign rob_wr1_in.dest = (op_in.op.optype == OPTYPE_STORE) ? value_in : {'b0, op_in.dest};
     assign rob_wr1_in.state = ROB_STATE_PENDING;
 
@@ -157,36 +158,45 @@ module retire
 
         if(rob_rd1_out.state == ROB_STATE_PENDING)
         begin
+
+            mispredicted_branch = rob_rd1_out.mispredicted_branch;
+            phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
+
+            if(rob_rd1_out.store)
+            begin
+                case(rob_rd1_out.ldst_funct3)
+                    FUNCT3_SB:
+                        dmem_wr_en_out_buf = 4'b0001;
+                    FUNCT3_SH:
+                        dmem_wr_en_out_buf = 4'b0011;
+                    FUNCT3_SW:
+                        dmem_wr_en_out_buf = 4'b1111;
+                    default:
+                        dmem_wr_en_out_buf = 4'b0000;
+                endcase
+            end
+
             if(rob_rd1_out.load && dmem_valid_in)
             begin
-                mispredicted_branch = rob_rd1_out.mispredicted_branch;
-                dmem_wr_en_out_buf = rob_rd1_out.store;
                 dmem_rd_en_out_buf = 1'b0;
                 phy_rf_wr_en = 1'b1;
                 busy_table_wr_en = 1'b1;
-                phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
                 retire_en_buf = 1'b1;
                 phy_rf_wr_data = dmem_data_in;
             end
             else if(rob_rd1_out.load && !dmem_valid_in)
             begin
-                mispredicted_branch = rob_rd1_out.mispredicted_branch;
-                dmem_wr_en_out_buf = rob_rd1_out.store;
                 dmem_rd_en_out_buf = 1'b1;
                 phy_rf_wr_en = 1'b0;
                 busy_table_wr_en = 1'b0;
-                phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
                 retire_en_buf = 1'b0;
                 phy_rf_wr_data = 'd0;
             end
             else
             begin
-                mispredicted_branch = rob_rd1_out.mispredicted_branch;
-                dmem_wr_en_out_buf = rob_rd1_out.store;
-                dmem_rd_en_out_buf = rob_rd1_out.load;
-                phy_rf_wr_en = (rob_rd1_out.dest != 'd0);
-                busy_table_wr_en = (rob_rd1_out.dest != 'd0);
-                phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
+                dmem_rd_en_out_buf = 1'b0;
+                phy_rf_wr_en = (rob_rd1_out.dest != 'd0 && !rob_rd1_out.store);
+                busy_table_wr_en = (rob_rd1_out.dest != 'd0 && !rob_rd1_out.store);
                 retire_en_buf = (rob_rd1_out.dest != 'd0);
                 phy_rf_wr_data = rob_rd1_out.value;
             end

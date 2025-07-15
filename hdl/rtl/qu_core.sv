@@ -98,7 +98,7 @@ module qu_core
 
     logic [$clog2(DMEM_DEPTH)-1:0] dmem_addr_in;
     logic [31:0] dmem_din_in;
-    logic dmem_wr_en;
+    logic [3:0] dmem_wr_en;
     logic dmem_en_in;
     logic dmem_valid_out;
     logic [31:0] dmem_dout_out;
@@ -126,7 +126,7 @@ module qu_core
     logic back_end_rob_full_out;
     logic back_end_mispredicted_branch_out;
     pc_t back_end_pc_to_jump_out;
-    logic back_end_dmem_wr_en_out;
+    logic [3:0] back_end_dmem_wr_en_out;
     logic back_end_dmem_rd_en_out;
     logic [31:0] back_end_dmem_addr_out;
     logic [31:0] back_end_dmem_data_out;
@@ -305,8 +305,8 @@ module qu_core
 
     // a: pmem, b: dmem
     ram_dp_rf #(
-        .NB_COL(1),
-        .COL_WIDTH(32),
+        .NB_COL(4),
+        .COL_WIDTH(8),
         .RAM_DEPTH(2**PC_WIDTH),
         .RAM_PERFORMANCE("LOW_LATENCY"),
         .INIT_FILE(MEM_INIT_FILE)
