@@ -1,6 +1,6 @@
 // Retire stage of The Qu Processor
 // Created:     2025-07-06
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -41,10 +41,10 @@ module retire
         input   logic rob_incr_tail_ptr,
         output  logic rob_full,
 
-        // reservation station interface
-        output  logic res_st_retire_en,
-        output  rob_addr_t res_st_retire_rob_addr,
-        output  phy_rf_data_t res_st_retire_value,
+        // retire broadcast
+        output  logic retire_en,
+        output  rob_addr_t retire_rob_addr,
+        output  phy_rf_data_t retire_value,
 
         // mispredicted branch
         output  logic mispredicted_branch,
@@ -80,7 +80,7 @@ module retire
 
     logic op_in_valid;
 
-    logic res_st_retire_en_buf;
+    logic retire_en_buf;
     logic dmem_wr_en_out_buf;
     logic dmem_rd_en_out_buf;
     logic [31:0] dmem_addr_out_buf;
@@ -89,11 +89,6 @@ module retire
     phy_rf_addr_t phyreg_renamed_free_reg_addr_buf;
 
     assign op_in_valid = op_in.op.optype[0];
-
-    assign head_ptr_padded[$bits(rob_addr_t)] = 1'b0;
-    assign head_ptr_padded[$bits(rob_addr_t)-1:0] = head_ptr;
-    assign tail_ptr_padded[$bits(rob_addr_t)] = 1'b0;
-    assign tail_ptr_padded[$bits(rob_addr_t)-1:0] = tail_ptr;
 
     assign rob_wr1_en = op_in_valid;
     assign rob_wr1_addr = op_in.rob_addr;
@@ -109,8 +104,11 @@ module retire
     assign rob_wr1_in.state = ROB_STATE_PENDING;
 
     assign rob_tail_ptr = tail_ptr;
-    assign res_st_retire_en = res_st_retire_en_buf;
-    assign rob_full = (tail_ptr_padded + 1 == head_ptr_padded);
+    assign retire_en = retire_en_buf;
+    assign rob_full = (tail_ptr + 1 == head_ptr 
+                    || tail_ptr + 2 == head_ptr
+                    || tail_ptr == head_ptr + 5
+                    || tail_ptr == head_ptr + 6);   // TODO: improve
 
     assign dmem_wr_en_out = dmem_wr_en_out_buf;
     assign dmem_rd_en_out = dmem_rd_en_out_buf;
@@ -125,9 +123,9 @@ module retire
         .wr1_en(rob_wr1_en),
         .wr1_addr(rob_wr1_addr),
         .wr1_in(rob_wr1_in),
-        .wr2_en(1'b0),
-        .wr2_addr(),
-        .wr2_in(),
+        .wr2_en(rob_wr2_en),
+        .wr2_addr(rob_wr2_addr),
+        .wr2_in(rob_wr2_in),
         .rd1_addr(rob_rd1_addr),
         .rd1_out(rob_rd1_out),
         .rd2_addr(rob_rd2_addr),
@@ -141,7 +139,7 @@ module retire
             tail_ptr <= (tail_ptr == ROB_DEPTH-1) ? 'd1 : tail_ptr + 1;
         end
 
-        if(res_st_retire_en_buf)
+        if(retire_en_buf)
         begin
             head_ptr <= (head_ptr == ROB_DEPTH-1) ? 'd1 : head_ptr + 1;
         end
@@ -167,7 +165,7 @@ module retire
                 phy_rf_wr_en = 1'b1;
                 busy_table_wr_en = 1'b1;
                 phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
-                res_st_retire_en_buf = 1'b1;
+                retire_en_buf = 1'b1;
                 phy_rf_wr_data = dmem_data_in;
             end
             else if(rob_rd1_out.load && !dmem_valid_in)
@@ -178,7 +176,7 @@ module retire
                 phy_rf_wr_en = 1'b0;
                 busy_table_wr_en = 1'b0;
                 phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
-                res_st_retire_en_buf = 1'b0;
+                retire_en_buf = 1'b0;
                 phy_rf_wr_data = 'd0;
             end
             else
@@ -189,7 +187,7 @@ module retire
                 phy_rf_wr_en = (rob_rd1_out.dest != 'd0);
                 busy_table_wr_en = (rob_rd1_out.dest != 'd0);
                 phyreg_renamed_free_reg_addr_buf = rob_rd1_out.phyreg_old;
-                res_st_retire_en_buf = (rob_rd1_out.dest != 'd0); 
+                retire_en_buf = (rob_rd1_out.dest != 'd0);
                 phy_rf_wr_data = rob_rd1_out.value;
             end
         end
@@ -201,7 +199,7 @@ module retire
             phy_rf_wr_en = 'b0;
             busy_table_wr_en = 'b0;
             phyreg_renamed_free_reg_addr_buf = 'b0;
-            res_st_retire_en_buf = 'b0;
+            retire_en_buf = 'b0;
             phy_rf_wr_data = rob_rd1_out.value;
         end
 
@@ -215,9 +213,13 @@ module retire
         busy_table_wr_addr = rob_rd1_out.dest.phy_rf_padded_dest.dest;
         busy_table_wr_data = 1'b0;
 
-        res_st_retire_rob_addr = head_ptr;
-        res_st_retire_value = rob_rd1_out.value;
+        retire_rob_addr = head_ptr;
+        retire_value = rob_rd1_out.value;
 
+        rob_wr2_en = (rob_rd1_out.state == ROB_STATE_PENDING && retire_en_buf);
+        rob_wr2_addr = head_ptr;
+        rob_wr2_in = rob_rd1_out;
+        rob_wr2_in.state = ROB_STATE_RETIRED;
     end
 
 endmodule

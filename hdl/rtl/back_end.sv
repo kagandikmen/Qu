@@ -1,6 +1,6 @@
 // Top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -32,9 +32,9 @@ module back_end
         input   res_st_cell_t res_st_rd4_in,
 
         // reservation station retire interface
-        output  logic res_st_retire_en,
-        output  rob_addr_t res_st_retire_rob_addr,
-        output  phy_rf_data_t res_st_retire_value,
+        output  logic retire_en,
+        output  rob_addr_t retire_rob_addr,
+        output  phy_rf_data_t retire_value,
 
         // register file writeback interface
         output  logic phy_rf_wr_en,
@@ -109,9 +109,9 @@ module back_end
     rob_addr_t retire_rob_tail_ptr_out;
     logic retire_rob_incr_tail_ptr_in;
     logic retire_rob_full_out;
-    logic retire_res_st_retire_en_out;
-    rob_addr_t retire_res_st_retire_rob_addr_out;
-    phy_rf_data_t retire_res_st_retire_value_out;
+    logic retire_retire_en_out;
+    rob_addr_t retire_retire_rob_addr_out;
+    phy_rf_data_t retire_retire_value_out;
     logic retire_mispredicted_branch_out;
     pc_t retire_pc_to_jump_out;
     logic retire_dmem_wr_en_out;
@@ -147,9 +147,9 @@ module back_end
     assign res_st_rd2_addr = schedule_res_st_rd2_addr_out;
     assign res_st_rd3_addr = schedule_res_st_rd3_addr_out;
     assign res_st_rd4_addr = schedule_res_st_rd4_addr_out;
-    assign res_st_retire_en = retire_res_st_retire_en_out;
-    assign res_st_retire_rob_addr = retire_res_st_retire_rob_addr_out;
-    assign res_st_retire_value = retire_res_st_retire_value_out;
+    assign retire_en = retire_retire_en_out;
+    assign retire_rob_addr = retire_retire_rob_addr_out;
+    assign retire_value = retire_retire_value_out;
     assign phy_rf_wr_en = retire_phy_rf_wr_en_out;
     assign phy_rf_wr_addr = retire_phy_rf_wr_addr_out;
     assign phy_rf_wr_data = retire_phy_rf_wr_data_out;
@@ -238,9 +238,9 @@ module back_end
         .rob_tail_ptr(retire_rob_tail_ptr_out),
         .rob_incr_tail_ptr(retire_rob_incr_tail_ptr_in),
         .rob_full(retire_rob_full_out),
-        .res_st_retire_en(retire_res_st_retire_en_out),
-        .res_st_retire_rob_addr(retire_res_st_retire_rob_addr_out),
-        .res_st_retire_value(retire_res_st_retire_value_out),
+        .retire_en(retire_retire_en_out),
+        .retire_rob_addr(retire_retire_rob_addr_out),
+        .retire_value(retire_retire_value_out),
         .mispredicted_branch(retire_mispredicted_branch_out),
         .pc_to_jump(retire_pc_to_jump_out),
         .dmem_wr_en_out(retire_dmem_wr_en_out),

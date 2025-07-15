@@ -1,6 +1,6 @@
 // Testbench for the top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -46,6 +46,9 @@ module tb_front_end
     logic busy_table_wr_en;
     logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr;
     logic busy_table_wr_data;
+    logic retire_en;
+    rob_addr_t retire_rob_addr;
+    phy_rf_addr_t phyreg_renamed_free_reg_addr;
     rob_addr_t rob_tail_ptr;
     logic rob_incr_tail_ptr;
     logic rob_full;
@@ -84,6 +87,9 @@ module tb_front_end
         .busy_table_wr_en(busy_table_wr_en),
         .busy_table_wr_addr(busy_table_wr_addr),
         .busy_table_wr_data(busy_table_wr_data),
+        .retire_en(retire_en),
+        .retire_rob_addr(retire_rob_addr),
+        .phyreg_renamed_free_reg_addr(phyreg_renamed_free_reg_addr),
         .rob_tail_ptr(rob_tail_ptr),
         .rob_incr_tail_ptr(rob_incr_tail_ptr),
         .rob_full(rob_full),
@@ -123,7 +129,10 @@ module tb_front_end
         busy_table_wr_en <= 1'b0;
         busy_table_wr_addr <= 'd0;
         busy_table_wr_data <= 1'b0;
-        rob_tail_ptr <= 'd0;
+        retire_en <= 1'b0;
+        retire_rob_addr <= 'd0;
+        phyreg_renamed_free_reg_addr <= 'd0;
+        rob_tail_ptr <= 'd1;
         rob_full <= 1'b0;
 
         @(posedge clk);
@@ -139,6 +148,16 @@ module tb_front_end
         @(posedge clk);
         instr <= get_encoding_i_instr(FUNCT3_ADDI, 'd4, 'd3, 'd20);
         id_en <= 1'b1;
+
+        @(posedge clk);
+        instr <= 'b0;
+        
+        repeat(10) @(posedge clk);
+        retire_en <= 1'b1;
+        retire_rob_addr <= 'd1;
+
+        @(posedge clk);
+        retire_en <= 1'b0;
 
         #200;
         $finish;

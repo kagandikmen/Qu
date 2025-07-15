@@ -1,6 +1,6 @@
 // Rename stage testbench
 // Created:     2025-06-30
-// Modified:    2025-07-05
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -39,6 +39,9 @@ module tb_rename
     rob_addr_t rob_tail_ptr;
     logic rob_incr_tail_ptr;
 
+    logic retire_en;
+    rob_addr_t retire_rob_addr;
+
     rename #(
     ) dut (
         .clk(clk),
@@ -56,7 +59,9 @@ module tb_rename
         .res_st_wr_addr_out(res_st_wr_addr_out),
         .res_st_data_out(res_st_data_out),
         .rob_tail_ptr(rob_tail_ptr),
-        .rob_incr_tail_ptr(rob_incr_tail_ptr)
+        .rob_incr_tail_ptr(rob_incr_tail_ptr),
+        .retire_en(retire_en),
+        .retire_rob_addr(retire_rob_addr)
     );
 
     always #5   clk = ~clk;
@@ -71,6 +76,8 @@ module tb_rename
         phy_rf_rs1_data_in <= 'd2;
         phy_rf_rs2_data_in <= 'd4;
         rob_tail_ptr <= 'd0;
+        retire_en <= 1'b0;
+        retire_rob_addr <= 'd0;
 
         @(posedge clk);
         rst <= 1'b1;
@@ -78,6 +85,9 @@ module tb_rename
         @(posedge clk);
         rst <= 1'b0;
         uop_in.uop_ic.optype <= 3'b011;
+        uop_in.uop_ic.rd_valid <= 1'b1;
+        uop_in.uop_ic.rs1_valid <= 1'b1;
+        uop_in.uop_ic.rs2_valid <= 1'b1;
         uop_in.uop_ic.rd <= 'd4;
         uop_in.uop_ic.rs1 <= 'd8;
         uop_in.uop_ic.rs2 <= 'd12;
@@ -106,6 +116,15 @@ module tb_rename
 
         @(posedge clk);
         uop_in.uop_ic.optype <= 3'b000;
+        uop_in.uop_ic.rd_valid <= 1'b0;
+        uop_in.uop_ic.rs1_valid <= 1'b0;
+        uop_in.uop_ic.rs2_valid <= 1'b0;
+        retire_en <= 1'b1;
+        retire_rob_addr <= 'd2;
+
+        @(posedge clk);
+        retire_en <= 1'b0;
+        retire_rob_addr <= 'd3;
         
         #100;
         $finish;

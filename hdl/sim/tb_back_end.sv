@@ -1,6 +1,6 @@
 // Testbench for the top back-end module of The Qu Processor
 // Created:     2025-07-03
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -24,9 +24,9 @@ module tb_back_end
     res_st_addr_t res_st_rd4_addr;
     res_st_cell_t res_st_rd4_in;
 
-    logic res_st_retire_en;
-    rob_addr_t res_st_retire_rob_addr;
-    phy_rf_data_t res_st_retire_value;
+    logic retire_en;
+    rob_addr_t retire_rob_addr;
+    phy_rf_data_t retire_value;
 
     logic phy_rf_wr_en;
     phy_rf_addr_t phy_rf_wr_addr;
@@ -64,9 +64,9 @@ module tb_back_end
         .res_st_rd3_in(res_st_rd3_in),
         .res_st_rd4_addr(res_st_rd4_addr),
         .res_st_rd4_in(res_st_rd4_in),
-        .res_st_retire_en(res_st_retire_en),
-        .res_st_retire_rob_addr(res_st_retire_rob_addr),
-        .res_st_retire_value(res_st_retire_value),
+        .retire_en(retire_en),
+        .retire_rob_addr(retire_rob_addr),
+        .retire_value(retire_value),
         .phy_rf_wr_en(phy_rf_wr_en),
         .phy_rf_wr_addr(phy_rf_wr_addr),
         .phy_rf_wr_data(phy_rf_wr_data),

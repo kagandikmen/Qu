@@ -1,6 +1,6 @@
 // The Qu Processor CPU core module
 // Created:     2025-06-27
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -60,6 +60,8 @@ module qu_core
 
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_busy_table_wr_addr_in;
     logic front_end_busy_table_wr_data_in;
+    logic front_end_retire_en_in;
+    rob_addr_t front_end_retire_rob_addr_in;
     rob_addr_t front_end_rob_tail_ptr_in;
     logic front_end_rob_incr_tail_ptr_out;
     logic [PHY_RF_ADDR_WIDTH-1:0] front_end_rf_rs1_addr_out;
@@ -109,9 +111,9 @@ module qu_core
     res_st_cell_t back_end_res_st_rd3_in;
     res_st_addr_t back_end_res_st_rd4_addr_out;
     res_st_cell_t back_end_res_st_rd4_in;
-    logic back_end_res_st_retire_en_out;
-    rob_addr_t back_end_res_st_retire_rob_addr_out;
-    phy_rf_data_t back_end_res_st_retire_value_out;
+    logic back_end_retire_en_out;
+    rob_addr_t back_end_retire_rob_addr_out;
+    phy_rf_data_t back_end_retire_value_out;
     logic back_end_phy_rf_wr_en_out;
     phy_rf_addr_t back_end_phy_rf_wr_addr_out;
     phy_rf_data_t back_end_phy_rf_wr_data_out;
@@ -147,6 +149,8 @@ module qu_core
     assign front_end_busy_table_wr_en_in = back_end_busy_table_wr_en_out;
     assign front_end_busy_table_wr_addr_in = back_end_busy_table_wr_addr_out;
     assign front_end_busy_table_wr_data_in = back_end_busy_table_wr_data_out;
+    assign front_end_retire_en_in = back_end_retire_en_out;
+    assign front_end_retire_rob_addr_in = back_end_retire_rob_addr_out;
     assign front_end_phyreg_renamed_free_reg_addr_in = back_end_phyreg_renamed_free_reg_addr_out;
     assign front_end_rob_tail_ptr_in = back_end_rob_tail_ptr_out;
     assign front_end_rob_full_in = back_end_rob_full_out;
@@ -158,9 +162,9 @@ module qu_core
     assign res_st_rd2_addr_in = back_end_res_st_rd2_addr_out;
     assign res_st_rd3_addr_in = back_end_res_st_rd3_addr_out;
     assign res_st_rd4_addr_in = back_end_res_st_rd4_addr_out;
-    assign res_st_retire_en = back_end_res_st_retire_en_out;
-    assign res_st_retire_addr_in = back_end_res_st_retire_rob_addr_out;
-    assign res_st_retire_value_in = back_end_res_st_retire_value_out;
+    assign res_st_retire_en = back_end_retire_en_out;
+    assign res_st_retire_addr_in = back_end_retire_rob_addr_out;
+    assign res_st_retire_value_in = back_end_retire_value_out;
 
     assign rf_rs1_addr_in = front_end_rf_rs1_addr_out;
     assign rf_rs2_addr_in = front_end_rf_rs2_addr_out;
@@ -213,6 +217,8 @@ module qu_core
         .busy_table_wr_en(front_end_busy_table_wr_en_in),
         .busy_table_wr_addr(front_end_busy_table_wr_addr_in),
         .busy_table_wr_data(front_end_busy_table_wr_data_in),
+        .retire_en(front_end_retire_en_in),
+        .retire_rob_addr(front_end_retire_rob_addr_in),
         .phyreg_renamed_free_reg_addr(front_end_phyreg_renamed_free_reg_addr_in),
         .rob_tail_ptr(front_end_rob_tail_ptr_in),
         .rob_incr_tail_ptr(front_end_rob_incr_tail_ptr_out),
@@ -274,9 +280,9 @@ module qu_core
         .res_st_rd3_in(back_end_res_st_rd3_in),
         .res_st_rd4_addr(back_end_res_st_rd4_addr_out),
         .res_st_rd4_in(back_end_res_st_rd4_in),
-        .res_st_retire_en(back_end_res_st_retire_en_out),
-        .res_st_retire_rob_addr(back_end_res_st_retire_rob_addr_out),
-        .res_st_retire_value(back_end_res_st_retire_value_out),
+        .retire_en(back_end_retire_en_out),
+        .retire_rob_addr(back_end_retire_rob_addr_out),
+        .retire_value(back_end_retire_value_out),
         .phy_rf_wr_en(back_end_phy_rf_wr_en_out),
         .phy_rf_wr_addr(back_end_phy_rf_wr_addr_out),
         .phy_rf_wr_data(back_end_phy_rf_wr_data_out),

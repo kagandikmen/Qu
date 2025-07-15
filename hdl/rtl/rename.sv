@@ -1,6 +1,6 @@
 // Rename stage of The Qu Processor
 // Created:     2025-06-30
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -41,7 +41,10 @@ module rename
         
         // reorder buffer interface
         input   rob_addr_t rob_tail_ptr,
-        output  logic rob_incr_tail_ptr
+        output  logic rob_incr_tail_ptr,
+
+        input   logic retire_en,
+        input   rob_addr_t retire_rob_addr
     );
 
     res_st_addr_t res_st_wr_ptr;
@@ -113,6 +116,15 @@ module rename
 
     always_ff @(posedge clk)
     begin
+
+        if(retire_en)
+        begin
+            for(int i=1; i<PHY_RF_DEPTH; i=i+1) begin
+                if(qi_list[i] == retire_rob_addr)
+                    qi_list[i] <= 'b0;
+            end
+        end
+
         if(rst)
         begin
             qi_list <= '{default: 'b0};

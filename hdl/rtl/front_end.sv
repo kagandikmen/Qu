@@ -1,6 +1,6 @@
 // Top front-end module of The Qu Processor
 // Created:     2025-07-01
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -47,6 +47,8 @@ module front_end
         input   logic busy_table_wr_en,
         input   logic [PHY_RF_ADDR_WIDTH-1:0] busy_table_wr_addr,
         input   logic busy_table_wr_data,
+        input   logic retire_en,
+        input   rob_addr_t retire_rob_addr,
         input   phy_rf_addr_t phyreg_renamed_free_reg_addr,
         input   rob_addr_t rob_tail_ptr,
         output  logic rob_incr_tail_ptr,
@@ -132,7 +134,9 @@ module front_end
     logic [PHY_RF_ADDR_WIDTH-1:0] rename_phy_rf_rs1_addr_out;
     logic [31:0]rename_phy_rf_rs1_data_in;
     logic [PHY_RF_ADDR_WIDTH-1:0] rename_phy_rf_rs2_addr_out;
-    logic [31:0]rename_phy_rf_rs2_data_in;
+    logic [31:0] rename_phy_rf_rs2_data_in;
+    logic rename_retire_en_in;
+    rob_addr_t rename_retire_rob_addr_in;
 
     fetch #(
         .INSTR_WIDTH(INSTR_WIDTH),
@@ -259,7 +263,9 @@ module front_end
         .res_st_wr_addr_out(res_st_wr_addr_out),
         .res_st_data_out(res_st_data_out),
         .rob_tail_ptr(rob_tail_ptr),
-        .rob_incr_tail_ptr(rob_incr_tail_ptr)
+        .rob_incr_tail_ptr(rob_incr_tail_ptr),
+        .retire_en(rename_retire_en_in),
+        .retire_rob_addr(rename_retire_rob_addr_in)
     );
 
     assign next_pc = fetch_next_pc_out;
@@ -308,6 +314,8 @@ module front_end
     assign rename_busy_table_data2_in = busy_table_rd2_out;
     assign rename_phy_rf_rs1_data_in = rf_rs1_data_in;
     assign rename_phy_rf_rs2_data_in = rf_rs2_data_in;
+    assign rename_retire_en_in = retire_en;
+    assign rename_retire_rob_addr_in = retire_rob_addr;
 
 endmodule
 
