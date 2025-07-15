@@ -49,6 +49,7 @@ module tb_retire
     logic [31:0] dmem_addr_out;
     logic [31:0] dmem_data_out;
     logic dmem_valid_in;
+    logic [$clog2(MEM_DEPTH)-1:0] dmem_valid_addr_in;
     logic [31:0] dmem_data_in;
 
     retire dut (
@@ -77,6 +78,7 @@ module tb_retire
         .dmem_addr_out(dmem_addr_out),
         .dmem_data_out(dmem_data_out),
         .dmem_valid_in(dmem_valid_in),
+        .dmem_valid_addr_in(dmem_valid_addr_in),
         .dmem_data_in(dmem_data_in)
     );
 
@@ -91,6 +93,7 @@ module tb_retire
         op_in <= 'b0;
         rob_incr_tail_ptr <= 1'b1;
         dmem_valid_in <= 1'b0;
+        dmem_valid_addr_in <= 'b0;
         dmem_data_in <= 'd4;
 
         @(posedge clk);

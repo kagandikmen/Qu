@@ -34,6 +34,8 @@ package qu_common;
     parameter int ROB_DEPTH = 8;
     parameter int ROB_ADDR_WIDTH = $clog2(ROB_DEPTH);
 
+    parameter int MEM_DEPTH = 2**QU_PC_WIDTH;
+
     //
     //  funct3 parameters
     //

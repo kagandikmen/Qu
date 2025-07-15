@@ -37,8 +37,6 @@ module qu_core
         input   logic schedule_en
     );
 
-    localparam DMEM_DEPTH = 2**PC_WIDTH;
-
     logic startup_ctrl_if_en_out;
     logic startup_ctrl_id_en_out;
 
@@ -96,11 +94,12 @@ module qu_core
     phy_rf_addr_t rf_rd_addr;
     phy_rf_data_t rf_data_in;
 
-    logic [$clog2(DMEM_DEPTH)-1:0] dmem_addr_in;
+    logic [$clog2(MEM_DEPTH)-1:0] dmem_addr_in;
     logic [31:0] dmem_din_in;
     logic [3:0] dmem_wr_en;
     logic dmem_en_in;
     logic dmem_valid_out;
+    logic [$clog2(MEM_DEPTH)-1:0] dmem_valid_addr_out;
     logic [31:0] dmem_dout_out;
 
     res_st_addr_t back_end_res_st_rd1_addr_out;
@@ -131,6 +130,7 @@ module qu_core
     logic [31:0] back_end_dmem_addr_out;
     logic [31:0] back_end_dmem_data_out;
     logic back_end_dmem_valid_in;
+    logic [$clog2(MEM_DEPTH)-1:0] back_end_dmem_valid_addr_in;
     logic [31:0] back_end_dmem_data_in;
 
     assign pmem_addr_in = {2'b0, front_end_next_pc_out[PC_WIDTH-1:2]};
@@ -183,6 +183,7 @@ module qu_core
     assign back_end_res_st_rd4_in = res_st_rd4_out;
     assign back_end_rob_incr_tail_ptr_in = front_end_rob_incr_tail_ptr_out;
     assign back_end_dmem_valid_in = dmem_valid_out;
+    assign back_end_dmem_valid_addr_in = dmem_valid_addr_out;
     assign back_end_dmem_data_in = dmem_dout_out;
 
     startup_ctrl qu_startup_ctrl (
@@ -300,6 +301,7 @@ module qu_core
         .dmem_addr(back_end_dmem_addr_out),
         .dmem_data_out(back_end_dmem_data_out),
         .dmem_valid_in(back_end_dmem_valid_in),
+        .dmem_valid_addr_in(back_end_dmem_valid_addr_in),
         .dmem_data_in(back_end_dmem_data_in)
     );
 
@@ -326,6 +328,8 @@ module qu_core
         .regceb(1'b1),
         .valida(),
         .validb(dmem_valid_out),
+        .valida_addr(),
+        .validb_addr(dmem_valid_addr_out),
         .douta(pmem_dout_out),
         .doutb(dmem_dout_out)
     );

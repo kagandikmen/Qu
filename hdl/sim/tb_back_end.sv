@@ -8,6 +8,10 @@
 
 `timescale 1ns/1ps
 
+`include "../lib/qu_common.svh"
+
+import qu_common::MEM_DEPTH;
+
 module tb_back_end
     #()();
 
@@ -50,6 +54,7 @@ module tb_back_end
     logic [31:0] dmem_addr;
     logic [31:0] dmem_data_out;
     logic dmem_valid_in;
+    logic [$clog2(MEM_DEPTH)-1:0] dmem_valid_addr_in;
     logic [31:0] dmem_data_in;
 
     back_end dut (
@@ -84,6 +89,7 @@ module tb_back_end
         .dmem_addr(dmem_addr),
         .dmem_data_out(dmem_data_out),
         .dmem_valid_in(dmem_valid_in),
+        .dmem_valid_addr_in(dmem_valid_addr_in),
         .dmem_data_in(dmem_data_in)
     );
 
@@ -96,6 +102,7 @@ module tb_back_end
         schedule_en <= 1'b1;
         rob_incr_tail_ptr <= 1'b1;
         dmem_valid_in <= 1'b1;
+        dmem_valid_addr_in <= 'd0;
         dmem_data_in <= 'd4;
 
         res_st_rd1_in.rob_addr <= 2'd0;

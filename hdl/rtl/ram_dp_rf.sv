@@ -1,6 +1,6 @@
 // Double-Port Read-First RAM Module
 // Created:     2025-07-14
-// Modified:    2025-07-14
+// Modified:    2025-07-15
 
 // Copyright (c) 2025 Kagan Dikmen
 // SPDX-License-Identifier: MIT
@@ -33,6 +33,8 @@ module ram_dp_rf #(
   input regceb,                          // Port B output register enable
   output valida,                         // Port A output valid flag
   output validb,                         // Port B output valid flag
+  output [clogb2(RAM_DEPTH-1)-1:0] valida_addr,
+  output [clogb2(RAM_DEPTH-1)-1:0] validb_addr,
   output [(NB_COL*COL_WIDTH)-1:0] douta, // Port A RAM output data
   output [(NB_COL*COL_WIDTH)-1:0] doutb  // Port B RAM output data
 );
@@ -41,8 +43,10 @@ module ram_dp_rf #(
   reg [(NB_COL*COL_WIDTH)-1:0] ram_data_a = {(NB_COL*COL_WIDTH){1'b0}};
   reg [(NB_COL*COL_WIDTH)-1:0] ram_data_b = {(NB_COL*COL_WIDTH){1'b0}};
 
-  reg valid_reg_a;
-  reg valid_reg_b;
+  reg reg_valida;
+  reg reg_validb;
+  reg [clogb2(RAM_DEPTH-1)-1:0] reg_valida_addr;
+  reg [clogb2(RAM_DEPTH-1)-1:0] reg_validb_addr;
 
   // The following code either initializes the memory values to a specified file or to all zeros to match hardware
   generate
@@ -60,17 +64,21 @@ module ram_dp_rf #(
   always @(posedge clka)
     if (ena) begin
       ram_data_a <= BRAM[addra];
-      valid_reg_a <= 1'b1;
+      reg_valida <= 1'b1;
+      reg_valida_addr <= addra;
     end else begin
-      valid_reg_a <= 1'b0;
+      reg_valida <= 1'b0;
+      reg_valida_addr <= addra;
     end
 
   always @(posedge clka)
     if (enb) begin
       ram_data_b <= BRAM[addrb];
-      valid_reg_b <= 1'b1;
+      reg_validb <= 1'b1;
+      reg_validb_addr <= addrb;
     end else begin
-      valid_reg_b <= 1'b0;
+      reg_validb <= 1'b0;
+      reg_validb_addr <= addrb;
     end
 
   generate
@@ -94,8 +102,10 @@ end
       // The following is a 1 clock cycle read latency at the cost of a longer clock-to-out timing
        assign douta = ram_data_a;
        assign doutb = ram_data_b;
-       assign valida = valid_reg_a;
-       assign validb = valid_reg_b;
+       assign valida = reg_valida;
+       assign validb = reg_validb;
+       assign valida_addr = reg_valida_addr;
+       assign validb_addr = reg_validb_addr;
 
     end else begin: output_register
 
@@ -104,53 +114,77 @@ end
       reg [(NB_COL*COL_WIDTH)-1:0] douta_reg = {(NB_COL*COL_WIDTH){1'b0}};
       reg [(NB_COL*COL_WIDTH)-1:0] doutb_reg = {(NB_COL*COL_WIDTH){1'b0}};
 
-      reg valid_reg_temp_a = 0;
-      reg valid_reg_temp_b = 0;
+      reg reg_temp_valida = 0;
+      reg reg_temp_validb = 0;
 
-      reg valida_buf = 0;
-      reg validb_buf = 0;
+      reg [clogb2(RAM_DEPTH-1)-1:0] reg_temp_valida_addr = 'b0;
+      reg [clogb2(RAM_DEPTH-1)-1:0] reg_temp_validb_addr = 'b0;
+
+      reg buf_valida = 0;
+      reg buf_validb = 0;
+
+      reg [clogb2(RAM_DEPTH-1)-1:0] buf_valida_addr = 'b0;
+      reg [clogb2(RAM_DEPTH-1)-1:0] buf_validb_addr = 'b0;
 
       always @(posedge clka)
-        if (ena)
-          valid_reg_temp_a <= 1'b1;
-        else
-          valid_reg_temp_a <= 1'b0;
+        if (ena) begin
+          reg_temp_valida <= 1'b1;
+          reg_temp_valida_addr <= addra;
+        end else begin
+          reg_temp_valida <= 1'b0;
+          reg_temp_valida_addr <= 'b0;
+        end
 
       always @(posedge clka) begin
-        if (rsta)
+        if (rsta) begin
           douta_reg <= {(NB_COL*COL_WIDTH){1'b0}};
-        else if (regcea)
+        end else if (regcea) begin
           douta_reg <= ram_data_a;
+        end
 
-        if (regcea)
-          valida_buf <= valid_reg_temp_a;
-        else
-          valida_buf <= 1'b0;
+        if (regcea) begin
+          buf_valida <= reg_temp_valida;
+          buf_valida_addr <= reg_temp_valida_addr;
+        end else begin
+          buf_valida <= 1'b0;
+          buf_valida_addr <= 'b0;
+        end 
       end
 
-      always @(posedge clka)
-        if (enb)
-          valid_reg_temp_b <= 1'b1;
-        else
-          valid_reg_temp_b <= 1'b0;
+      always @(posedge clka) begin
+        if (enb) begin
+          reg_temp_validb <= 1'b1;
+          reg_temp_validb_addr <= addrb;
+        end else begin
+          reg_temp_validb <= 1'b0;
+          reg_temp_validb_addr <= 'b0;
+        end
+      end
 
       always @(posedge clka) begin
-        if (rstb)
+        if (rstb) begin
           doutb_reg <= {(NB_COL*COL_WIDTH){1'b0}};
-        else if (regceb)
+        end else if (regceb) begin
           doutb_reg <= ram_data_b;
+        end
 
-        if (regceb)
-          validb_buf <= valid_reg_temp_b;
-        else
-          validb_buf <= 1'b0;
+        if (regceb) begin
+          buf_validb <= reg_temp_validb;
+          buf_validb_addr <= reg_temp_validb_addr;
+        end else begin
+          buf_validb <= 1'b0;
+          buf_validb_addr <= 'b0;
+        end
       end
 
       assign douta = douta_reg;
       assign doutb = doutb_reg;
 
-      assign valida = valida_buf;
-      assign validb = validb_buf;
+      assign valida = buf_valida;
+      assign validb = buf_validb;
+
+      assign valida_addr = buf_valida_addr;
+      assign validb_addr = buf_validb_addr;
 
     end
   endgenerate

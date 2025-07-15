@@ -55,6 +55,7 @@ module retire
         output  logic [31:0] dmem_addr_out,
         output  logic [31:0] dmem_data_out,
         input   logic dmem_valid_in,
+        input   logic [$clog2(MEM_DEPTH)-1:0] dmem_valid_addr_in,
         input   logic [31:0] dmem_data_in
     );
 
@@ -176,7 +177,7 @@ module retire
                 endcase
             end
 
-            if(rob_rd1_out.load && dmem_valid_in)
+            if(rob_rd1_out.load && dmem_valid_in && dmem_valid_addr_in == rob_rd1_out.dest.dmem_dest)
             begin
                 dmem_rd_en_out_buf = 1'b0;
                 phy_rf_wr_en = 1'b1;
