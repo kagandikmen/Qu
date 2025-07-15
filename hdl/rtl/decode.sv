@@ -298,6 +298,22 @@ module decode
             uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_JALR;
             uop_out_buf.uop_ic.optype = OPTYPE_CONT;
         end
+        else if(opcode == LUI_OPCODE)
+        begin
+            uop_out_buf.uop_ic.imm = imm32;
+            uop_out_buf.uop_ic.imm_valid = IMM_VALID;
+            uop_out_buf.uop_ic.rs2 = 'd0;
+            uop_out_buf.uop_ic.rs2_valid = RS2_INVALID;
+            uop_out_buf.uop_ic.rs1 = 'd0;
+            uop_out_buf.uop_ic.rs1_valid = RS1_INVALID;
+            uop_out_buf.uop_ic.rd = rd;
+            uop_out_buf.uop_ic.rd_valid = RD_VALID;
+            uop_out_buf.uop_ic.alu_subunit_op_sel = ALU_SUBUNIT_OP_SEL_ADDITION;
+            uop_out_buf.uop_ic.alu_subunit_res_sel = ALU_SUBUNIT_RES_SEL_ADDER;
+            uop_out_buf.uop_ic.alu_cu_input_sel = ALU_CU_INPUT_SEL_OPD1_OPD2;
+            uop_out_buf.uop_ic.alu_input_sel = ALU_INPUT_SEL_LUI;
+            uop_out_buf.uop_ic.optype = OPTYPE_INT;
+        end
     end
 
 endmodule

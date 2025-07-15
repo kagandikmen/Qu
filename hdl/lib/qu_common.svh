@@ -23,7 +23,7 @@ package qu_common;
     parameter int RES_ST_OP_WIDTH = 18;
     parameter int RES_ST_ADDR_WIDTH = $clog2(RES_ST_DEPTH);
     parameter int RES_ST_VDATA_WIDTH = 32;
-    parameter int RES_ST_ADATA_WIDTH = 12;
+    parameter int RES_ST_ADATA_WIDTH = 32;
 
     parameter int LOG_RF_DEPTH = 32;
     parameter int LOG_RF_WIDTH = 32;
