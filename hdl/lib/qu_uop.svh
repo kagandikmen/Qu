@@ -46,6 +46,7 @@ package qu_uop;
     parameter logic [2:0] ALU_INPUT_SEL_JAL = 3'b010;
     parameter logic [2:0] ALU_INPUT_SEL_JALR = 3'b011;
     parameter logic [2:0] ALU_INPUT_SEL_LUI = 3'b100;
+    parameter logic [2:0] ALU_INPUT_SEL_AUIPC = 3'b101;
 
     //  luftALU parameters
 

@@ -96,6 +96,13 @@ module execute
                 alu_opd3 = 'd0;
                 alu_opd4 = 'd0;
             end
+            ALU_INPUT_SEL_AUIPC:
+            begin
+                alu_opd1 = op_in.pc;
+                alu_opd2 = op_in.a;
+                alu_opd3 = 'd0;
+                alu_opd4 = 'd0;
+            end
             default:
             begin
                 alu_opd1 = 'd0;
