@@ -23,3 +23,6 @@ _start:
     addi x7, x0, 590
     sw x0, 8(x2)
     sb x7, 8(x2)
+    sw x7, 8(x2)
+    addi x10, x7, 20
+    lb x8, 8(x2)

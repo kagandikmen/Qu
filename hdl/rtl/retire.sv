@@ -182,7 +182,22 @@ module retire
                 phy_rf_wr_en = 1'b1;
                 busy_table_wr_en = 1'b1;
                 retire_en_buf = 1'b1;
-                phy_rf_wr_data = dmem_data_in;
+
+                case(rob_rd1_out.ldst_funct3)
+                    FUNCT3_LW:
+                        phy_rf_wr_data = dmem_data_in;
+                    FUNCT3_LHU:
+                        phy_rf_wr_data = {16'b0, dmem_data_in[15:0]};
+                    FUNCT3_LH:
+                        phy_rf_wr_data = {{16{dmem_data_in[15]}}, dmem_data_in[15:0]};
+                    FUNCT3_LBU:
+                        phy_rf_wr_data = {24'b0, dmem_data_in[7:0]};
+                    FUNCT3_LB:
+                        phy_rf_wr_data = {{24{dmem_data_in[7]}}, dmem_data_in[7:0]};
+                    default:
+                        phy_rf_wr_data = 'b0;
+                endcase
+                
             end
             else if(rob_rd1_out.load && !dmem_valid_in)
             begin
