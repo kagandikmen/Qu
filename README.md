@@ -12,6 +12,18 @@
 
 The Qu Processor is a 32-bit RISC-V CPU designed in SystemVerilog with a superscalar, out-of-order, and speculative execution pipeline. It is loosely based on Apple's Firestorm/Icestorm microarchitecture from M1 series processors. The Qu Processor is intended as an educational endeavor for a better understanding of modern processor architectures beyond simpler beginner-level undertakings.
 
+<picture>
+  <source
+    srcset="docs/qu_architecture_dark.svg"
+    media="(prefers-color-scheme: dark)"
+  />
+  <source
+    srcset="docs/qu_architecture_light.svg"
+    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+  />
+  <img src="docs/qu_architecture_light.svg" alt="The Qu Processor Architectural Overview" />
+</picture><br /><br />
+
 ## Key Specs
 
 ![Static Badge](https://img.shields.io/badge/RISC--V-2e3168) ![GitHub last commit](https://img.shields.io/github/last-commit/kagandikmen/Qu) ![GitHub License](https://img.shields.io/github/license/kagandikmen/Qu)
@@ -63,22 +75,6 @@ Execute stage consists of an arithmetic logic unit and a load-store unit that ca
 ##### Retire (RT)
 
 Retire stage is where instructions are "committed" in-order, which means that they are finally granted permission to update the state elements existent in the computing system, such as the physical registers and the memory. However, they might also be flushed in case of a mispredicted branch, unconditional jump, or exception.
-
----
-
-Below is an overview of the entire microarchitecture:
-
-<picture>
-  <source
-    srcset="docs/qu_architecture_dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <source
-    srcset="docs/qu_architecture_light.svg"
-    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
-  />
-  <img src="docs/qu_architecture_light.svg" alt="The Qu Processor Microarchitectural Overview" />
-</picture><br /><br />
 
 ## Resources
 
