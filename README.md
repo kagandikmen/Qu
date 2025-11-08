@@ -12,17 +12,20 @@
 
 The Qu Processor is a 32-bit RISC-V CPU designed in SystemVerilog with a superscalar, out-of-order, and speculative execution pipeline. It is loosely based on Apple's Firestorm/Icestorm microarchitecture from M1 series processors. The Qu Processor is intended as an educational endeavor for a better understanding of modern processor architectures beyond simpler beginner-level undertakings.
 
-<picture>
-  <source
-    srcset="docs/qu_architecture_dark.svg"
-    media="(prefers-color-scheme: dark)"
-  />
-  <source
-    srcset="docs/qu_architecture_light.svg"
-    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
-  />
-  <img src="docs/qu_architecture_light.svg" alt="The Qu Processor Architectural Overview" width="80%" />
-</picture><br /><br />
+<p align="center">
+  <picture>
+    <source
+      srcset="docs/qu_architecture_dark.svg"
+      media="(prefers-color-scheme: dark)"
+    />
+    <source
+      srcset="docs/qu_architecture_light.svg"
+      media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+    />
+    <img src="docs/qu_architecture_light.svg" alt="The Qu Processor Architectural Overview" width="90%" />
+  </picture>
+</p>
+<br /><br />
 
 ## Key Specs
 
