@@ -25,7 +25,6 @@ The Qu Processor is a 32-bit RISC-V CPU designed in SystemVerilog with a supersc
     <img src="docs/qu_architecture_light.svg" alt="The Qu Processor Architectural Overview" width="90%" />
   </picture>
 </p>
-<br /><br />
 
 ## Key Specs
 
